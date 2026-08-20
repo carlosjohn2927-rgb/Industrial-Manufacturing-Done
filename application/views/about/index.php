@@ -2,8 +2,8 @@
 <section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
     <div class="container mx-auto px-4 py-16">
         <span class="text-xs font-semibold tracking-widest uppercase text-brand-200 bg-white/10 px-3 py-1 rounded-full">About us</span>
-        <h1 class="text-4xl lg:text-5xl font-extrabold mt-3">Built on engineering. Trusted by operators.</h1>
-        <p class="text-white mt-3 max-w-2xl">For over 35 years, <?= vp_safe_html($site_name ?? 'Halyk Petroleum') ?> has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.</p>
+        <?= vp_inline_text('about_hero_title', 'Built on engineering. Trusted by operators.', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
+        <?= vp_inline_text('about_hero_subtitle', 'For over 35 years, ' . ($site_name ?? 'Halyk Petroleum') . ' has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.', 'p', 'text-white mt-3 max-w-2xl') ?>
     </div>
 </section>
 

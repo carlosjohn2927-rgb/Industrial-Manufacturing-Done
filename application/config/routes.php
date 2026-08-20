@@ -166,6 +166,10 @@ $route['admin/homepage/reorder']                  = 'admin/homepage/reorder';
 $route['admin/homepage/delete/(:any)']            = 'admin/homepage/delete/$1';
 $route['admin/homepage/duplicate/(:any)']         = 'admin/homepage/duplicate/$1';
 
+$route['admin/inline_editor/section_save']        = 'admin/inline_editor/section_save';
+$route['admin/inline_editor/setting_save']        = 'admin/inline_editor/setting_save';
+$route['admin/inline_editor/theme_save']          = 'admin/inline_editor/theme_save';
+
 $route['admin/pages']                             = 'admin/pages/index';
 $route['admin/pages/create']                      = 'admin/pages/create';
 $route['admin/pages/save']                        = 'admin/pages/save';

@@ -5,8 +5,8 @@
     <div class="container mx-auto px-4 py-16 relative">
         <div class="max-w-2xl">
             <span class="text-xs font-semibold tracking-widest uppercase text-brand-200">Lifecycle support</span>
-            <h1 class="text-4xl lg:text-5xl font-extrabold mt-3">Services</h1>
-            <p class="text-white mt-3 text-lg">From concept to commissioning, <?= vp_safe_html($site_name ?? 'Halyk Petroleum') ?> partners with you at every stage of the equipment lifecycle.</p>
+            <?= vp_inline_text('services_hero_title', 'Services', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
+            <?= vp_inline_text('services_hero_subtitle', 'From concept to commissioning, ' . ($site_name ?? 'Halyk Petroleum') . ' partners with you at every stage of the equipment lifecycle.', 'p', 'text-white mt-3 text-lg') ?>
         </div>
     </div>
 </section>

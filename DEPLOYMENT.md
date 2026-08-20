@@ -143,11 +143,13 @@ importing two more files in phpMyAdmin — no CLI, no data loss:
 1. phpMyAdmin → your database → **Import**
 2. `database/migrations/001_cms_and_permissions.sql` → **Go**
 3. `database/migrations/002_cms_seed.sql` → **Go**
+4. `database/migrations/003_admin_full_page_editing.sql` → **Go**
+5. `database/migrations/004_black_writeup.sql` → **Go**
 
-Both files are safe to import more than once (`CREATE TABLE IF NOT EXISTS`,
-`INSERT IGNORE`). The three `ALTER TABLE media …` statements in the first file
-report *"Duplicate column name"* if they were already applied — that message can
-be ignored.
+All files are safe to import more than once (`CREATE TABLE IF NOT EXISTS`,
+`INSERT IGNORE`, `ON DUPLICATE KEY UPDATE`). The three `ALTER TABLE media …`
+statements in the first file report *"Duplicate column name"* if they were
+already applied — that message can be ignored.
 
 After the import, sign in and open **Dashboard → Website → Homepage** to start
 editing the public site.

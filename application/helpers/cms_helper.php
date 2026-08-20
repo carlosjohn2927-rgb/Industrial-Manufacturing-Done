@@ -107,6 +107,21 @@ if (!function_exists('vp_asset_url')) {
     }
 }
 
+if (!function_exists('vp_map_embed_url')) {
+    /**
+     * Build a Google Maps embed URL for a place/address string. Used by the
+     * contact page so the map always points at the configured address, with a
+     * sensible fallback when no address has been entered yet.
+     */
+    function vp_map_embed_url($query = '', $fallback = 'Houston, TX')
+    {
+        $q = trim((string) $query);
+        if ($q === '') $q = trim((string) $fallback);
+        if ($q === '') $q = 'Houston, TX';
+        return 'https://www.google.com/maps?q=' . rawurlencode($q) . '&output=embed';
+    }
+}
+
 if (!function_exists('vp_logo_url')) {
     /**
      * Website logo. $variant: 'light' (header), 'dark', 'footer'.
@@ -482,7 +497,7 @@ if (!function_exists('vp_theme_defaults')) {
     {
         return [
             'bg'               => '#ffffff',
-            'writeup'          => '#0b1424',
+            'writeup'          => '#000000',
             'sidebar_bg'       => '#000000',
             'sidebar_writeup'  => '#ffffff',
         ];
@@ -549,6 +564,119 @@ if (!function_exists('vp_theme_style_tag')) {
             . 'aside.vp-admin-sidebar .bg-brand-600,aside.vp-admin-sidebar .bg-brand-600 *,'
             . 'aside.vp-admin-sidebar .bg-red-500{color:#ffffff!important;}'
             . '</style>';
+    }
+}
+
+if (!function_exists('vp_with_query')) {
+    /**
+     * Return the current request path with one query parameter added/replaced
+     * (or removed when $value is null). Preserves every other parameter, so
+     * the inline-edit toggle never drops ?category= / ?page= filters.
+     */
+    function vp_with_query($key, $value = null)
+    {
+        $CI    =& get_instance();
+        $uri   = (string) $CI->input->server('REQUEST_URI');
+        $parts = parse_url($uri);
+        $path  = $parts['path'] ?? '/';
+        parse_str($parts['query'] ?? '', $qs);
+        if ($value === null) {
+            unset($qs[$key]);
+        } else {
+            $qs[$key] = $value;
+        }
+        $query = http_build_query($qs);
+        return $path . ($query !== '' ? '?' . $query : '');
+    }
+}
+
+if (!function_exists('vp_inline_editing')) {
+    /**
+     * TRUE when the current public page is being edited inline (the
+     * WordPress-style live editor). The real permission/role gate lives in
+     * MY_Controller::render(); this only reads the flag it sets.
+     */
+    function vp_inline_editing()
+    {
+        $CI =& get_instance();
+        return !empty($CI->data['inline_edit']);
+    }
+}
+
+if (!function_exists('vp_inline_section_data')) {
+    /**
+     * Normalise a page section into the JSON the inline editor panel needs.
+     * Output is safe to place inside a <script type="application/json"> block
+     * (tags are hex-escaped so a "</script>" sequence can never appear).
+     */
+    function vp_inline_section_data(array $section)
+    {
+        $s = vp_section_settings($section);
+        $obj = [
+            'id'          => (string) ($section['id'] ?? ''),
+            'type'        => (string) ($section['type'] ?? ''),
+            'name'        => (string) ($section['name'] ?? ''),
+            'title'       => (string) ($section['title'] ?? ''),
+            'subtitle'    => (string) ($section['subtitle'] ?? ''),
+            'body'        => (string) ($section['body'] ?? ''),
+            'buttonText'  => (string) ($section['buttonText'] ?? ''),
+            'buttonUrl'   => (string) ($section['buttonUrl'] ?? ''),
+            'buttonText2' => (string) ($section['buttonText2'] ?? ''),
+            'buttonUrl2'  => (string) ($section['buttonUrl2'] ?? ''),
+            'colors'      => [
+                'bg'      => (string) ($s['bg_color'] ?? ''),
+                'text'    => (string) ($s['text_color'] ?? ''),
+                'heading' => (string) ($s['heading_color'] ?? ''),
+            ],
+        ];
+        return json_encode($obj, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG);
+    }
+}
+
+if (!function_exists('vp_inline_section_open')) {
+    /**
+     * Wrapper that owns one rendered page section. In inline-edit mode it
+     * carries an "Edit" button and the section's data so the live editor can
+     * open it without a round-trip.
+     */
+    function vp_inline_section_open(array $section)
+    {
+        $id = (string) ($section['id'] ?? '');
+        $html = '<div class="vp-inline-section" data-vp-section="' . vp_safe_html($id) . '"'
+              . ' data-vp-section-type="' . vp_safe_html((string) ($section['type'] ?? '')) . '">';
+        if (vp_inline_editing() && $id !== '' && strpos($id, 'fallback-') !== 0) {
+            $html .= '<button type="button" class="vp-inline-edit-btn" data-vp-inline-edit="' . vp_safe_html($id) . '" aria-label="Edit this section">'
+                   . '<i class="ri-edit-line"></i> Edit</button>';
+            $html .= '<script type="application/json" data-vp-section-data="' . vp_safe_html($id) . '">'
+                   . vp_inline_section_data($section) . '</script>';
+        }
+        return $html;
+    }
+}
+
+if (!function_exists('vp_inline_section_close')) {
+    function vp_inline_section_close()
+    {
+        return '</div>';
+    }
+}
+
+if (!function_exists('vp_inline_text')) {
+    /**
+     * Render a page text block that, in inline-edit mode, can be rewritten
+     * directly on the live page. The value is stored as a site setting under
+     * $key so changes persist without touching any view file.
+     */
+    function vp_inline_text($key, $fallback, $tag = 'p', $class = '')
+    {
+        $tag = in_array($tag, ['h1', 'h2', 'h3', 'h4', 'p', 'span', 'div'], true) ? $tag : 'p';
+        $value = (string) vp_cms_setting($key, $fallback);
+        $cls   = $class !== '' ? ' class="' . vp_safe_html($class) . '"' : '';
+        if (vp_inline_editing()) {
+            return '<' . $tag . $cls . ' data-vp-editable data-vp-setting="' . vp_safe_html($key) . '">'
+                 . vp_safe_html($value) . '</' . $tag . '>';
+        }
+        return '<' . $tag . $cls . '>' . vp_safe_html($value) . '</' . $tag . '>';
     }
 }
 

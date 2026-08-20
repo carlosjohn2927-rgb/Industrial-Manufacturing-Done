@@ -56,6 +56,7 @@ to a database created before this release — both are safe to re-run:
 database/migrations/001_cms_and_permissions.sql
 database/migrations/002_cms_seed.sql
 database/migrations/003_admin_full_page_editing.sql
+database/migrations/004_black_writeup.sql
 ```
 
 ---

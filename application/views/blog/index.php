@@ -1,8 +1,8 @@
 <?php /** @var array $rows */ ?>
 <section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
     <div class="container mx-auto px-4 py-12">
-        <h1 class="text-4xl font-extrabold">Blog &amp; insights</h1>
-        <p class="text-white mt-2 max-w-2xl">Engineering articles, selection guides and industry insights from our team.</p>
+        <?= vp_inline_text('blog_hero_title', 'Blog & insights', 'h1', 'text-4xl font-extrabold') ?>
+        <?= vp_inline_text('blog_hero_subtitle', 'Engineering articles, selection guides and industry insights from our team.', 'p', 'text-white mt-2 max-w-2xl') ?>
     </div>
 </section>
 <section class="container mx-auto px-4 py-12">

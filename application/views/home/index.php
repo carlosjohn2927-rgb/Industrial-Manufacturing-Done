@@ -8,8 +8,10 @@ $types = array_keys(vp_section_types());
 ?>
 <?php foreach ($sections as $section): ?>
     <?php
+    echo vp_inline_section_open($section);
     $view = in_array($section['type'], $types, true) ? $section['type'] : 'richtext';
     $this->load->view('partials/sections/' . $view, array_merge(get_defined_vars(), ['section' => $section]));
+    echo vp_inline_section_close();
     ?>
 <?php endforeach; ?>
 
