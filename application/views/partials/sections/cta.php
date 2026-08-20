@@ -9,7 +9,7 @@ $this->load->view('partials/sections/_helpers');
         <?php if (!empty($section['body'])): ?><div class="mt-3 max-w-2xl mx-auto"><?= $section['body'] ?></div><?php endif; ?>
         <div class="mt-6 flex flex-wrap gap-3 justify-center">
             <?php if (!empty($section['buttonText'])): ?>
-                <a href="<?= vp_safe_html(vp_section_link($section['buttonUrl'])) ?>" class="inline-block bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-3 rounded-lg"><?= vp_safe_html($section['buttonText']) ?></a>
+                <a href="<?= vp_safe_html(vp_section_link($section['buttonUrl'])) ?>" class="vp-cta-quote inline-block bg-brand-600 hover:bg-brand-700 text-black font-bold px-6 py-3 rounded-lg"><?= vp_safe_html($section['buttonText']) ?></a>
             <?php endif; ?>
             <?php if (!empty($section['buttonText2'])): ?>
                 <a href="<?= vp_safe_html(vp_section_link($section['buttonUrl2'])) ?>" class="inline-block border border-black/20 font-bold px-6 py-3 rounded-lg"><?= vp_safe_html($section['buttonText2']) ?></a>

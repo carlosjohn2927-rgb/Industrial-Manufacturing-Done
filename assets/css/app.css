@@ -262,11 +262,44 @@ form .vp-input::placeholder, form .vp-textarea::placeholder { color: #6b7280; fo
 .vp-writeup-band div {
     color: var(--vp-writeup, #000000);
 }
+
+/* Photo overlays: keep the write-up readable but let the picture show. */
+.vp-writeup-overlay {
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+.vp-writeup-overlay h1,
+.vp-writeup-overlay h2,
+.vp-writeup-overlay h3,
+.vp-writeup-overlay h4,
+.vp-writeup-overlay p,
+.vp-writeup-overlay span,
+.vp-writeup-overlay li,
+.vp-writeup-overlay div {
+    color: #000000;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.95), 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+.vp-writeup-overlay a {
+    text-shadow: none;
+}
+
+/* Hero / overlay primary buttons stay white-on-blue. */
 .vp-writeup-band .vp-btn-primary,
 .vp-writeup-band a.bg-brand-500,
 .vp-writeup-band a.bg-brand-600,
 .vp-writeup-band a.bg-brand-700 {
     color: #ffffff;
+}
+
+/* Homepage bottom CTA: black write-up on the Request a Quote button. */
+section.vp-writeup-band a.bg-brand-500,
+section.vp-writeup-band a.bg-brand-600,
+section.vp-writeup-band a.bg-brand-700,
+section.vp-writeup-band .vp-btn-primary,
+section.vp-writeup-band .vp-cta-quote {
+    color: #000000 !important;
 }
 
 /* Contact page map (Leaflet). Isolate stacking so tiles stay under the header. */

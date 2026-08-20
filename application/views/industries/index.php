@@ -1,10 +1,10 @@
 <?php /** @var array $industries */ ?>
-<section class="vp-writeup-band bg-white border-b">
-    <div class="container mx-auto px-4 py-12">
-        <?= vp_inline_text('industries_hero_title', 'Industries we serve', 'h1', 'text-4xl font-extrabold') ?>
-        <?= vp_inline_text('industries_hero_subtitle', "Engineered for the requirements of the world's most demanding sectors.", 'p', 'mt-2 max-w-2xl') ?>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'industries/oil-gas.jpg',
+    'hero_alt'           => 'Oil and gas processing facility at sunset',
+    'hero_title_html'    => vp_inline_text('industries_hero_title', 'Industries we serve', 'h1', 'text-4xl lg:text-5xl font-extrabold'),
+    'hero_subtitle_html' => vp_inline_text('industries_hero_subtitle', "Engineered for the requirements of the world's most demanding sectors.", 'p', 'mt-3 max-w-2xl text-lg'),
+]); ?>
 <section class="container mx-auto px-4 py-12">
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <?php foreach ($industries as $i): ?>

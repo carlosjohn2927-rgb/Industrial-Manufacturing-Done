@@ -1,11 +1,12 @@
 <?php /** @var array $intro */ /** @var array $testimonials */ /** @var array $partners */ ?>
-<section class="vp-writeup-band bg-white border-b">
-    <div class="container mx-auto px-4 py-16">
-        <span class="text-xs font-semibold tracking-widest uppercase text-brand-700 bg-brand-50 px-3 py-1 rounded-full">About us</span>
-        <?= vp_inline_text('about_hero_title', 'Built on engineering. Trusted by operators.', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
-        <?= vp_inline_text('about_hero_subtitle', 'For over 35 years, ' . ($site_name ?? 'Halyk Petroleum') . ' has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.', 'p', 'mt-3 max-w-2xl') ?>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'about-facility.jpg',
+    'hero_alt'           => 'Engineers reviewing a pressure vessel in our fabrication facility',
+    'hero_eyebrow'       => 'About us',
+    'hero_title_html'    => vp_inline_text('about_hero_title', 'Built on engineering. Trusted by operators.', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3'),
+    'hero_subtitle_html' => vp_inline_text('about_hero_subtitle', 'For over 35 years, ' . ($site_name ?? 'Halyk Petroleum') . ' has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.', 'p', 'mt-3 max-w-2xl text-lg'),
+    'hero_min'           => '420px',
+]); ?>
 
 <section class="container mx-auto px-4 py-12">
     <div class="grid lg:grid-cols-2 gap-10 items-center mb-10">
