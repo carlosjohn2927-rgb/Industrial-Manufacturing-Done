@@ -245,12 +245,14 @@ form .vp-input::placeholder, form .vp-textarea::placeholder { color: #6b7280; fo
 .vp-prose th { font-weight: 700; color: #000000; }
 
 /* ------------------------------------------------------------------ */
-/* Top / bottom page write-up bands: black text on a light surface.    */
-/* Used by inner-page heroes, photo-hero text cards, and the CTA.      */
+/* Top-of-page write-up bands: WHITE write-up on every site page.      */
+/* Photo heroes keep their faint card over the picture (white text     */
+/* with a dark halo); plain top bands (article/news headers, search,   */
+/* RFQ) sit on a black surface so the white write-up stays readable.   */
 /* ------------------------------------------------------------------ */
 .vp-writeup-band {
-    background-color: #ffffff;
-    color: var(--vp-writeup, #000000);
+    background-color: #000000 !important;
+    color: #ffffff !important;
 }
 .vp-writeup-band h1,
 .vp-writeup-band h2,
@@ -260,10 +262,15 @@ form .vp-input::placeholder, form .vp-textarea::placeholder { color: #6b7280; fo
 .vp-writeup-band span,
 .vp-writeup-band li,
 .vp-writeup-band div {
-    color: var(--vp-writeup, #000000);
+    color: #ffffff !important;
+}
+.vp-writeup-band [class*='text-gray-'],
+.vp-writeup-band [class*='text-slate-'],
+.vp-writeup-band [class*='text-brand-'] {
+    color: #ffffff !important;
 }
 
-/* Photo overlays: keep the write-up readable but let the picture show. */
+/* Photo overlays: white write-up over the picture, let it show through. */
 .vp-writeup-overlay {
     background-color: rgba(255, 255, 255, 0.10) !important;
     box-shadow: none !important;
@@ -278,27 +285,25 @@ form .vp-input::placeholder, form .vp-textarea::placeholder { color: #6b7280; fo
 .vp-writeup-overlay span,
 .vp-writeup-overlay li,
 .vp-writeup-overlay div {
-    color: #000000;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.95), 0 1px 2px rgba(255, 255, 255, 0.8);
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 14px rgba(0, 0, 0, 0.45);
 }
 .vp-writeup-overlay a {
     text-shadow: none;
 }
 
-/* Hero / overlay primary buttons stay white-on-blue. */
+/* Buttons inside the top write-up bands stay white-on-blue. */
 .vp-writeup-band .vp-btn-primary,
 .vp-writeup-band a.bg-brand-500,
 .vp-writeup-band a.bg-brand-600,
-.vp-writeup-band a.bg-brand-700 {
-    color: #ffffff;
+.vp-writeup-band a.bg-brand-700,
+.vp-writeup-band .vp-cta-quote {
+    color: #ffffff !important;
 }
 
-/* Homepage bottom CTA: black write-up on the Request a Quote button. */
-section.vp-writeup-band a.bg-brand-500,
-section.vp-writeup-band a.bg-brand-600,
-section.vp-writeup-band a.bg-brand-700,
-section.vp-writeup-band .vp-btn-primary,
-section.vp-writeup-band .vp-cta-quote {
+/* Secondary (white) buttons inside the top bands need dark labels. */
+.vp-writeup-band a.bg-white,
+.vp-writeup-band a.bg-gray-50 {
     color: #000000 !important;
 }
 
