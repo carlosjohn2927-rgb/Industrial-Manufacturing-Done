@@ -1,15 +1,12 @@
 <?php /** @var array $services */ ?>
-<section class="relative bg-ink-900 overflow-hidden min-h-[400px] flex items-center">
-    <img src="<?= IMG_URL ?>services-engineering.jpg" alt="Field engineer commissioning industrial equipment" class="absolute inset-0 w-full h-full object-cover object-center" fetchpriority="high" decoding="async">
-    <div class="absolute inset-0 bg-black/25"></div>
-    <div class="container mx-auto px-4 py-16 relative">
-        <div class="vp-writeup-band max-w-2xl rounded-2xl shadow-xl p-6 md:p-8">
-            <span class="text-xs font-semibold tracking-widest uppercase text-brand-700">Lifecycle support</span>
-            <?= vp_inline_text('services_hero_title', 'Services', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
-            <?= vp_inline_text('services_hero_subtitle', 'From concept to commissioning, ' . ($site_name ?? 'Halyk Petroleum') . ' partners with you at every stage of the equipment lifecycle.', 'p', 'mt-3 text-lg') ?>
-        </div>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'services-engineering.jpg',
+    'hero_alt'           => 'Field engineer commissioning industrial equipment',
+    'hero_eyebrow'       => 'Lifecycle support',
+    'hero_title_html'    => vp_inline_text('services_hero_title', 'Services', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3'),
+    'hero_subtitle_html' => vp_inline_text('services_hero_subtitle', 'From concept to commissioning, ' . ($site_name ?? 'Halyk Petroleum') . ' partners with you at every stage of the equipment lifecycle.', 'p', 'mt-3 text-lg'),
+    'hero_min'           => '400px',
+]); ?>
 <section class="container mx-auto px-4 py-12">
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         <?php foreach ($services as $s): ?>

@@ -20,9 +20,9 @@ $wide = ($page['template'] ?? 'default') === 'wide';
     <section class="relative bg-ink-900 min-h-[280px] flex items-end">
         <img src="<?= vp_safe_html(vp_asset_url($page['featuredImage'])) ?>" alt="<?= vp_safe_html($page['title']) ?>"
              class="absolute inset-0 w-full h-full object-cover" decoding="async">
-        <div class="absolute inset-0 bg-black/25"></div>
+        <div class="absolute inset-0 bg-black/10"></div>
         <div class="relative container mx-auto px-4 py-12">
-            <div class="vp-writeup-band max-w-2xl rounded-2xl shadow-xl p-6 md:p-8">
+            <div class="vp-writeup-band vp-writeup-overlay max-w-2xl rounded-2xl p-6 md:p-8">
                 <h1 class="text-4xl lg:text-5xl font-extrabold"><?= vp_safe_html($page['title']) ?></h1>
                 <?php if (!empty($page['excerpt'])): ?>
                     <p class="text-lg mt-3 max-w-2xl"><?= vp_safe_html($page['excerpt']) ?></p>

@@ -1,10 +1,10 @@
 <?php /** @var array $rows */ ?>
-<section class="vp-writeup-band bg-white border-b">
-    <div class="container mx-auto px-4 py-12">
-        <h1 class="text-4xl font-extrabold">News</h1>
-        <p class="mt-2">Latest news and announcements.</p>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'news/iso-quality.jpg',
+    'hero_alt'           => 'Quality inspection of manufactured industrial equipment',
+    'hero_title_html'    => '<h1 class="text-4xl lg:text-5xl font-extrabold">News</h1>',
+    'hero_subtitle_html' => '<p class="mt-3 text-lg">Latest news and announcements.</p>',
+]); ?>
 <section class="container mx-auto px-4 py-12">
     <?php if (empty($rows)): ?>
         <p class="text-ink-800 text-center py-12">No news yet.</p>

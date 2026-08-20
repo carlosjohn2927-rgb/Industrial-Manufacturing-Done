@@ -1,15 +1,12 @@
 <?php /** @var array $grouped */ ?>
-<section class="relative bg-ink-900 overflow-hidden min-h-[360px] flex items-end">
-    <img src="<?= IMG_URL ?>downloads-library.jpg" alt="Industrial engineering guides and technical resources" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" decoding="async">
-    <div class="absolute inset-0 bg-black/25"></div>
-    <div class="container mx-auto px-4 py-14 relative">
-        <div class="vp-writeup-band max-w-2xl rounded-2xl shadow-xl p-6 md:p-8">
-            <span class="text-xs font-semibold tracking-widest uppercase text-brand-700">Engineering resources</span>
-            <?= vp_inline_text('downloads_hero_title', 'Downloads', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
-            <?= vp_inline_text('downloads_hero_subtitle', 'Brochures, selection guides, datasheets and engineering tools.', 'p', 'mt-3 max-w-2xl text-lg') ?>
-        </div>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'downloads-library.jpg',
+    'hero_alt'           => 'Industrial engineering guides and technical resources',
+    'hero_eyebrow'       => 'Engineering resources',
+    'hero_title_html'    => vp_inline_text('downloads_hero_title', 'Downloads', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3'),
+    'hero_subtitle_html' => vp_inline_text('downloads_hero_subtitle', 'Brochures, selection guides, datasheets and engineering tools.', 'p', 'mt-3 max-w-2xl text-lg'),
+    'hero_min'           => '360px',
+]); ?>
 <section class="container mx-auto px-4 py-10 max-w-4xl">
     <?php foreach ($grouped as $cat => $rows): ?>
         <h2 class="text-xl font-bold mt-6 mb-3"><?= vp_safe_html($cat) ?></h2>

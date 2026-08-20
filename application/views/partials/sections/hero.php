@@ -7,9 +7,9 @@ $badges  = (array) vp_section_option($section, 'badges', []);
 ?>
 <section class="relative overflow-hidden bg-ink-900 min-h-[520px] flex items-center"<?= vp_section_style_attr($section) ?>>
     <img src="<?= vp_safe_html($img) ?>" alt="<?= vp_safe_html($section['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" decoding="async">
-    <div class="absolute inset-0 bg-black/25"></div>
+    <div class="absolute inset-0 bg-black/10"></div>
     <div class="container mx-auto px-4 py-20 lg:py-28 relative">
-        <div class="vp-writeup-band max-w-2xl rounded-2xl shadow-xl p-6 md:p-8">
+        <div class="vp-writeup-band vp-writeup-overlay max-w-2xl rounded-2xl p-6 md:p-8">
             <?php if ($eyebrow): ?>
                 <span class="inline-block text-xs font-semibold tracking-widest uppercase text-brand-700 bg-brand-50 px-3 py-1 rounded-full"><?= vp_safe_html($eyebrow) ?></span>
             <?php endif; ?>

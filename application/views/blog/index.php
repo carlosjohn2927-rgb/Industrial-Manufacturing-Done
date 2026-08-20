@@ -1,10 +1,10 @@
 <?php /** @var array $rows */ ?>
-<section class="vp-writeup-band bg-white border-b">
-    <div class="container mx-auto px-4 py-12">
-        <?= vp_inline_text('blog_hero_title', 'Blog & insights', 'h1', 'text-4xl font-extrabold') ?>
-        <?= vp_inline_text('blog_hero_subtitle', 'Engineering articles, selection guides and industry insights from our team.', 'p', 'mt-2 max-w-2xl') ?>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'blog/asme-pressure-vessel.jpg',
+    'hero_alt'           => 'Welded ASME pressure vessel in the fabrication shop',
+    'hero_title_html'    => vp_inline_text('blog_hero_title', 'Blog & insights', 'h1', 'text-4xl lg:text-5xl font-extrabold'),
+    'hero_subtitle_html' => vp_inline_text('blog_hero_subtitle', 'Engineering articles, selection guides and industry insights from our team.', 'p', 'mt-3 max-w-2xl text-lg'),
+]); ?>
 <section class="container mx-auto px-4 py-12">
     <?php if (empty($rows)): ?>
         <p class="text-ink-800 text-center py-12">No articles published yet.</p>

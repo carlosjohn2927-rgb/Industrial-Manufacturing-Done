@@ -10,12 +10,12 @@
 /** @var string $search */
 /** @var string $base_url */
 ?>
-<section class="vp-writeup-band bg-white border-b">
-    <div class="container mx-auto px-4 py-12">
-        <?= vp_inline_text('products_hero_title', 'Product catalog', 'h1', 'text-4xl font-extrabold') ?>
-        <?= vp_inline_text('products_hero_subtitle', 'Valves, pumps, heat exchangers, pressure vessels, filtration and instrumentation — engineered to the highest standards.', 'p', 'mt-2') ?>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'products/valves.jpg',
+    'hero_alt'           => 'Industrial valves ready for process service',
+    'hero_title_html'    => vp_inline_text('products_hero_title', 'Product catalog', 'h1', 'text-4xl lg:text-5xl font-extrabold'),
+    'hero_subtitle_html' => vp_inline_text('products_hero_subtitle', 'Valves, pumps, heat exchangers, pressure vessels, filtration and instrumentation — engineered to the highest standards.', 'p', 'mt-3 text-lg'),
+]); ?>
 
 <section class="bg-white border-b">
     <div class="container mx-auto px-4 py-5">

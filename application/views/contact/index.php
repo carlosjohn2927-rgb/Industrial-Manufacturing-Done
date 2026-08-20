@@ -1,10 +1,10 @@
 <?php /** @var array $contact */ ?>
-<section class="vp-writeup-band bg-white border-b">
-    <div class="container mx-auto px-4 py-12">
-        <?= vp_inline_text('contact_hero_title', 'Contact us', 'h1', 'text-4xl font-extrabold') ?>
-        <?= vp_inline_text('contact_hero_subtitle', 'Sales, service, careers and general enquiries - we respond within 1 business day.', 'p', 'mt-2 max-w-2xl') ?>
-    </div>
-</section>
+<?php $this->load->view('partials/photo_writeup_hero', [
+    'hero_image'         => IMG_URL . 'contact-engineer.jpg',
+    'hero_alt'           => 'Industrial engineer discussing a customer project',
+    'hero_title_html'    => vp_inline_text('contact_hero_title', 'Contact us', 'h1', 'text-4xl lg:text-5xl font-extrabold'),
+    'hero_subtitle_html' => vp_inline_text('contact_hero_subtitle', 'Sales, service, careers and general enquiries - we respond within 1 business day.', 'p', 'mt-3 max-w-2xl text-lg'),
+]); ?>
 <section class="container mx-auto px-4 py-12 grid lg:grid-cols-3 gap-8">
     <div class="lg:col-span-2 vp-card vp-card-pad">
         <form method="post" action="<?= base_url('contact/submit') ?>" class="space-y-4">
