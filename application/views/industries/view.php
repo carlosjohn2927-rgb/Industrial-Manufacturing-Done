@@ -13,7 +13,7 @@
 
 <section class="relative bg-ink-900 overflow-hidden min-h-[380px] flex items-end">
     <img src="<?= vp_safe_html(vp_industry_image($industry)) ?>" alt="<?= vp_safe_html($industry['name']) ?> facility" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" decoding="async">
-    <div class="absolute inset-0 bg-black/10"></div>
+    <div class="absolute inset-0 bg-black/40"></div>
     <div class="container mx-auto px-4 py-14 relative">
         <div class="vp-writeup-band vp-writeup-overlay max-w-2xl rounded-2xl p-6 md:p-8">
             <h1 class="text-4xl lg:text-5xl font-extrabold"><?= vp_safe_html($industry['name']) ?></h1>

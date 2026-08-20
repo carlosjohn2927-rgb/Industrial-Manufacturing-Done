@@ -8,7 +8,7 @@ $cs_intro = $cs_intro ?? 'This page is part of the conversion. It will be fully 
 ?>
 <section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-16">
-        <span class="text-xs font-semibold tracking-widest uppercase text-brand-700 bg-brand-50 px-3 py-1 rounded-full">Coming soon</span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-white bg-white/15 px-3 py-1 rounded-full">Coming soon</span>
         <h1 class="text-4xl font-extrabold mt-3"><?= vp_safe_html($cs_title) ?></h1>
         <p class="mt-3 max-w-2xl"><?= vp_safe_html($cs_intro) ?></p>
     </div>
