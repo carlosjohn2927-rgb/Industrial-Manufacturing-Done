@@ -1,5 +1,9 @@
 /* Vortex Precision - public site CSS */
 :root {
+    --vp-bg: #ffffff;
+    --vp-writeup: #0b1424;
+    --vp-sidebar-bg: #000000;
+    --vp-sidebar-writeup: #ffffff;
     --brand-50:  #eef5ff;
     --brand-100: #d9e8ff;
     --brand-200: #bcd6ff;
@@ -84,7 +88,8 @@ form .vp-error { color: #b91c1c; font-size: 12px; margin-top: 4px; }
 html { -webkit-text-size-adjust: 100%; }
 body {
     font-weight: 500;
-    color: #0b1424;
+    color: var(--vp-writeup, #0b1424);
+    background-color: var(--vp-bg, #ffffff);
     font-size: 17px;
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
@@ -93,10 +98,10 @@ body {
 }
 
 /* Long-form content ("write-up"): bolder, darker, more leading. */
-.vp-prose { color: #111827; font-size: 1.0625rem; }
+.vp-prose { color: var(--vp-writeup, #111827); font-size: 1.0625rem; }
 .vp-prose p {
     font-weight: 500;
-    color: #1f2937;
+    color: var(--vp-writeup, #1f2937);
     line-height: 1.85;
     font-size: 1.0625rem;
     letter-spacing: .003em;

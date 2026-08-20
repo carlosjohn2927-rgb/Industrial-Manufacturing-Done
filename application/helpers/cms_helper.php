@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Halyk Petroleum — CMS helper.
  *
  * Every piece of website chrome the dashboard can edit (site identity, logo,
- * favicon, navigation, header, footer, homepage sections, pages) is read
+ * favicon, colours, navigation, header, footer, homepage sections, pages) is read
  * through these functions. Views must never hard-code the values.
  *
  * Resolution order for a setting:
@@ -429,6 +429,101 @@ if (!function_exists('vp_section_blocks')) {
             }
         }
         return $out;
+    }
+}
+
+if (!function_exists('vp_sanitize_hex_color')) {
+    /**
+     * Accept only #RGB / #RRGGBB. Anything else falls back so a crafted
+     * setting cannot inject CSS.
+     */
+    function vp_sanitize_hex_color($value, $fallback = '#000000')
+    {
+        $value = trim((string) $value);
+        if (preg_match('/^#([0-9a-fA-F]{3})$/', $value, $m)) {
+            $h = strtolower($m[1]);
+            return '#' . $h[0] . $h[0] . $h[1] . $h[1] . $h[2] . $h[2];
+        }
+        if (preg_match('/^#([0-9a-fA-F]{6})$/', $value)) {
+            return strtolower($value);
+        }
+        return $fallback;
+    }
+}
+
+if (!function_exists('vp_theme_defaults')) {
+    /** Built-in theme colours used when a setting is empty or invalid. */
+    function vp_theme_defaults()
+    {
+        return [
+            'bg'               => '#ffffff',
+            'writeup'          => '#0b1424',
+            'sidebar_bg'       => '#000000',
+            'sidebar_writeup'  => '#ffffff',
+        ];
+    }
+}
+
+if (!function_exists('vp_theme')) {
+    /**
+     * Dashboard-managed site colours.
+     *
+     * Keys: bg, writeup, sidebar_bg, sidebar_writeup (always 7-char hex).
+     */
+    function vp_theme($key = null)
+    {
+        static $cache = null;
+        if ($cache === null) {
+            $d = vp_theme_defaults();
+            $cache = [
+                'bg'              => vp_sanitize_hex_color(vp_cms_setting('theme_bg', $d['bg']), $d['bg']),
+                'writeup'         => vp_sanitize_hex_color(vp_cms_setting('theme_writeup', $d['writeup']), $d['writeup']),
+                'sidebar_bg'      => vp_sanitize_hex_color(vp_cms_setting('theme_sidebar_bg', $d['sidebar_bg']), $d['sidebar_bg']),
+                'sidebar_writeup' => vp_sanitize_hex_color(vp_cms_setting('theme_sidebar_writeup', $d['sidebar_writeup']), $d['sidebar_writeup']),
+            ];
+        }
+        if ($key === null) return $cache;
+        return $cache[$key] ?? vp_theme_defaults()[$key] ?? '#000000';
+    }
+}
+
+if (!function_exists('vp_theme_style_tag')) {
+    /**
+     * Last-in-document colour lock. Tailwind CDN and the readability pass
+     * both hard-code greys; this block re-applies the dashboard colours so
+     * Admin / Super Admin changes actually show on the live site.
+     */
+    function vp_theme_style_tag()
+    {
+        $t = vp_theme();
+        $bg      = $t['bg'];
+        $writeup = $t['writeup'];
+        $sbg     = $t['sidebar_bg'];
+        $stext   = $t['sidebar_writeup'];
+        return '<style id="vp-theme">'
+            . ':root{--vp-bg:' . $bg . ';--vp-writeup:' . $writeup
+            . ';--vp-sidebar-bg:' . $sbg . ';--vp-sidebar-writeup:' . $stext . ';}'
+            . 'html,body{background-color:var(--vp-bg)!important;color:var(--vp-writeup)!important;}'
+            . '.vp-prose,.vp-prose p,.vp-prose li,.vp-card p,.vp-card li,.vp-review p,.vp-review,'
+            . '.vp-label,form label,'
+            . '.text-ink-800,.text-ink-900,.text-ink-700{color:var(--vp-writeup)!important;}'
+            . 'body .bg-white,body .bg-gray-50,header.bg-white{background-color:var(--vp-bg)!important;}'
+            . '.text-white{color:#ffffff!important;}'
+            . '.bg-ink-900 p,.bg-ink-800 p,.from-ink-900 p,.from-brand-600 p,'
+            . '.bg-ink-900 li,.from-ink-900 li,.from-brand-600 li,footer p,footer li{color:#ffffff;}'
+            . '.bg-ink-900 .text-ink-800,.from-ink-900 .text-ink-800,'
+            . '.bg-ink-900 .text-ink-900,.from-ink-900 .text-ink-900,'
+            . '.from-brand-600 .text-ink-800,footer .text-ink-800,footer .text-ink-900,'
+            . '.bg-ink-900 h1,.bg-ink-900 h2,.bg-ink-900 h3,.bg-ink-900 h4,'
+            . '.from-ink-900 h1,.from-ink-900 h2,.from-ink-900 h3,.from-ink-900 h4,'
+            . 'footer h1,footer h2,footer h3,footer h4{color:#ffffff!important;}'
+            . 'aside.vp-admin-sidebar{background-color:var(--vp-sidebar-bg)!important;color:var(--vp-sidebar-writeup)!important;}'
+            . 'aside.vp-admin-sidebar,aside.vp-admin-sidebar a,aside.vp-admin-sidebar span,'
+            . 'aside.vp-admin-sidebar div,aside.vp-admin-sidebar nav,aside.vp-admin-sidebar p,'
+            . 'aside.vp-admin-sidebar i{color:var(--vp-sidebar-writeup)!important;}'
+            . 'aside.vp-admin-sidebar .bg-brand-600,aside.vp-admin-sidebar .bg-brand-600 *,'
+            . 'aside.vp-admin-sidebar .bg-red-500{color:#ffffff!important;}'
+            . '</style>';
     }
 }
 

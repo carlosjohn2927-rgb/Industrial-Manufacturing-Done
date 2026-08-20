@@ -16,7 +16,8 @@
 
     <div class="flex flex-wrap gap-3">
         <button class="vp-btn vp-btn-primary" type="submit"><i class="ri-save-3-line"></i> Save settings</button>
-        <a class="vp-btn vp-btn-secondary" href="<?= base_url('admin/appearance') ?>"><i class="ri-palette-line"></i> Logo &amp; branding</a>
+        <a class="vp-btn vp-btn-secondary" href="<?= base_url('admin/appearance') ?>"><i class="ri-image-2-line"></i> Logo &amp; branding</a>
+        <a class="vp-btn vp-btn-secondary" href="<?= base_url('admin/appearance/colors') ?>"><i class="ri-contrast-drop-2-line"></i> Colours</a>
         <a class="vp-btn vp-btn-secondary" href="<?= base_url('admin/seo') ?>"><i class="ri-search-eye-line"></i> SEO settings</a>
     </div>
 </form>

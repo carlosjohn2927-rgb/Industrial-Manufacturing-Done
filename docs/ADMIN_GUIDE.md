@@ -120,6 +120,7 @@ Super Admin from the dashboard.
 | **Navigation** (`/admin/menus`) | header menu, footer columns and legal links |
 | **Header & Footer** (`/admin/appearance/header`) | announcement bar, CTA button, contact block, social links, footer text |
 | **Logo & Branding** (`/admin/appearance`) | website name/title/description, logo (light/dark/footer), favicon, alt text, logo size |
+| **Colours** (`/admin/appearance/colors`) | background and write-up colours for the whole site; Admin / Super Admin sidebar (black background, white menu text by default) |
 
 Changes are live on the public website as soon as you save.
 

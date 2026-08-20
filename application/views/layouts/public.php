@@ -74,24 +74,6 @@
 
 <script src="<?= JS_URL ?>app.js?v=<?= VP_ASSET_VERSION ?>"></script>
 <script src="<?= JS_URL ?>chat.js?v=<?= VP_ASSET_VERSION ?>"></script>
-<style id="vp-contrast-lock">
-/* Last-in-document lock so Tailwind CDN cannot wash write-up back to grey. */
-body { color: #0b1424; }
-.vp-prose, .vp-prose p, .vp-prose li, .vp-card p, .vp-card li, .vp-review p, .vp-review {
-    color: #0b1424;
-}
-.text-ink-800 { color: #101b2e !important; }
-.text-ink-900 { color: #0b1424 !important; }
-.text-white { color: #ffffff !important; }
-.bg-ink-900 p, .bg-ink-800 p, .from-ink-900 p, .from-brand-600 p,
-.bg-ink-900 li, .from-ink-900 li, .from-brand-600 li, footer p, footer li {
-    color: #ffffff;
-}
-.bg-ink-900 .text-ink-800, .from-ink-900 .text-ink-800,
-.bg-ink-900 .text-ink-900, .from-ink-900 .text-ink-900,
-.from-brand-600 .text-ink-800, footer .text-ink-800, footer .text-ink-900 {
-    color: #ffffff !important;
-}
-</style>
+<?= vp_theme_style_tag() ?>
 </body>
 </html>

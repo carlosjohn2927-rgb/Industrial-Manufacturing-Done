@@ -17,7 +17,7 @@ $site = vp_site();
     <script nonce="<?= vp_safe_html($csp_nonce ?? '') ?>">var VP_ADMIN_BASE = <?= json_encode(base_url()) ?>;</script>
     <link rel="icon" href="<?= vp_safe_html(vp_favicon_url()) ?>">
     <link rel="apple-touch-icon" href="<?= vp_safe_html(vp_logo_url('light')) ?>">
-    <meta name="theme-color" content="#0b1424">
+    <meta name="theme-color" content="<?= vp_safe_html(vp_theme('sidebar_bg')) ?>">
 
     <script src="<?= JS_URL ?>tailwind-config.js?v=<?= VP_ASSET_VERSION ?>"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -77,5 +77,6 @@ $site = vp_site();
 
 <script src="<?= JS_URL ?>app.js?v=<?= VP_ASSET_VERSION ?>"></script>
 <script src="<?= JS_URL ?>admin.js?v=<?= VP_ASSET_VERSION ?>"></script>
+<?= vp_theme_style_tag() ?>
 </body>
 </html>

@@ -48,7 +48,7 @@ $config['permissions'] = [
     'homepage.manage'     => ['Manage homepage sections',                'Website',  false],
     'pages.manage'        => ['Manage website pages',                    'Website',  false],
     'menus.manage'        => ['Manage navigation menus',                 'Website',  false],
-    'appearance.manage'   => ['Manage logo, favicon, header and footer', 'Website',  false],
+    'appearance.manage'   => ['Manage logo, colours, header and footer', 'Website',  false],
     'media.manage'        => ['Manage the media library',                'Website',  false],
     'seo.manage'          => ['Manage SEO settings',                     'Website',  false],
 

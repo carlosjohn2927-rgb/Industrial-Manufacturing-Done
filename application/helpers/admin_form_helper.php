@@ -128,6 +128,35 @@ if (!function_exists('vp_select_field')) {
     }
 }
 
+if (!function_exists('vp_color_field')) {
+    /**
+     * Colour picker + hex text field, kept in sync by assets/js/admin.js.
+     */
+    function vp_color_field($name, $value = '', $label = '', $help = '', $css_var = '')
+    {
+        $id  = vp_field_id($name);
+        $val = function_exists('vp_sanitize_hex_color')
+            ? vp_sanitize_hex_color($value, '#000000')
+            : (string) $value;
+        $var = $css_var !== '' ? ' data-vp-theme-var="' . vp_safe_html($css_var) . '"' : '';
+        ob_start(); ?>
+        <div data-vp-color>
+            <?php if ($label !== ''): ?><label class="vp-label" for="<?= $id ?>"><?= vp_safe_html($label) ?></label><?php endif; ?>
+            <div class="flex items-center gap-2">
+                <input type="color" value="<?= vp_safe_html($val) ?>"
+                       class="h-10 w-12 rounded-lg border cursor-pointer p-0 bg-transparent" aria-label="<?= vp_safe_html($label) ?> picker"
+                       data-vp-color-picker<?= $var ?>>
+                <input class="vp-input font-mono" type="text" id="<?= $id ?>" name="<?= vp_safe_html($name) ?>"
+                       value="<?= vp_safe_html($val) ?>" maxlength="7" pattern="^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$"
+                       placeholder="#000000" data-vp-color-text<?= $var ?>>
+            </div>
+            <?php if ($help !== ''): ?><p class="text-xs text-ink-800/60 mt-1"><?= vp_safe_html($help) ?></p><?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+}
+
 if (!function_exists('vp_admin_card_open')) {
     function vp_admin_card_open($title = '', $subtitle = '', $icon = '')
     {
