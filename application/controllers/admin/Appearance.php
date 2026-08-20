@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — logo, favicon, header and footer management.
+ * Halyk Petroleum — logo, favicon, colours, header and footer management.
  *
  * Everything edited here is stored in the `settings` table and read by the
  * public theme through the CMS helper, so a change is live immediately and
@@ -155,5 +155,49 @@ class Appearance extends Admin_Controller
         $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'HEADER_FOOTER']);
         $this->flash('success', 'Header and footer updated — visible on the website now.');
         redirect('admin/appearance/header');
+    }
+
+    /* ---------------- Colours ------------------------------------------ */
+
+    public function colors()
+    {
+        $this->page_title = 'Colours';
+        $this->render('admin/appearance/colors', [
+            'theme'    => vp_theme(),
+            'defaults' => vp_theme_defaults(),
+        ]);
+    }
+
+    public function save_colors()
+    {
+        if ($this->input->method() !== 'post') show_404();
+
+        $defaults = vp_theme_defaults();
+        $map = [
+            'theme_bg'              => $defaults['bg'],
+            'theme_writeup'         => $defaults['writeup'],
+            'theme_sidebar_bg'      => $defaults['sidebar_bg'],
+            'theme_sidebar_writeup' => $defaults['sidebar_writeup'],
+        ];
+
+        if ($this->input->post('reset')) {
+            foreach ($map as $key => $fallback) {
+                $this->settings->set($key, $fallback, 'STRING', 'THEME');
+            }
+            $this->settings->clear_cache();
+            $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'THEME', 'reset' => 1]);
+            $this->flash('success', 'Colours reset to the defaults (white write-up on the site, black sidebar with white menu text).');
+            redirect('admin/appearance/colors');
+            return;
+        }
+
+        foreach ($map as $key => $fallback) {
+            $this->settings->set($key, vp_sanitize_hex_color($this->input->post($key), $fallback), 'STRING', 'THEME');
+        }
+
+        $this->settings->clear_cache();
+        $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'THEME']);
+        $this->flash('success', 'Colours saved — the public website and both dashboards now use them.');
+        redirect('admin/appearance/colors');
     }
 }

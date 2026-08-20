@@ -15,7 +15,7 @@ $notif      = (int) ($unread_notifications ?? 0);
 $is_super   = !empty($is_super_admin);
 $logo       = vp_logo_url('dark');
 ?>
-<aside class="vp-admin-sidebar bg-ink-900 text-white w-64 flex-shrink-0 hidden md:flex md:flex-col" id="vp-admin-sidebar">
+<aside class="vp-admin-sidebar bg-black text-white w-64 flex-shrink-0 hidden md:flex md:flex-col" id="vp-admin-sidebar">
     <div class="p-4 border-b border-white/10">
         <a href="<?= base_url() ?>" target="_blank" rel="noopener"
            class="block group" title="Open the public website in a new tab">

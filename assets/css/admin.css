@@ -80,9 +80,32 @@ body.admin, .vp-admin { font-weight: 500; color: #0b1424; font-size: 15px; line-
 .admin .text-gray-500, body.admin .text-gray-500 { color: #101b2e !important; }
 .admin .text-gray-600, body.admin .text-gray-600 { color: #0b1424 !important; }
 .admin .text-gray-700, body.admin .text-gray-700 { color: #0b1424 !important; }
-aside.bg-ink-900 .text-gray-200,
-aside.bg-ink-900 .text-gray-400,
-aside.bg-ink-900 .text-gray-500 { color: #ffffff !important; }
+aside.vp-admin-sidebar .text-gray-200,
+aside.vp-admin-sidebar .text-gray-400,
+aside.vp-admin-sidebar .text-gray-500 { color: var(--vp-sidebar-writeup, #ffffff) !important; }
+
+/* Admin / Super Admin sidebar: black background, white write-up by default.
+   Both colours are dashboard-managed (Appearance → Colours). */
+aside.vp-admin-sidebar {
+    background-color: var(--vp-sidebar-bg, #000000) !important;
+    color: var(--vp-sidebar-writeup, #ffffff) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+aside.vp-admin-sidebar,
+aside.vp-admin-sidebar a,
+aside.vp-admin-sidebar span,
+aside.vp-admin-sidebar div,
+aside.vp-admin-sidebar nav,
+aside.vp-admin-sidebar p,
+aside.vp-admin-sidebar i {
+    color: var(--vp-sidebar-writeup, #ffffff);
+}
+aside.vp-admin-sidebar a.bg-brand-600,
+aside.vp-admin-sidebar a.bg-brand-600 span,
+aside.vp-admin-sidebar a.bg-brand-600 i,
+aside.vp-admin-sidebar .bg-red-500 {
+    color: #ffffff !important;
+}
 
 /* --- dashboard form widgets (CMS editors) --- */
 .vp-label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #1b2740; }

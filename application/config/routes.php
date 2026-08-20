@@ -185,6 +185,8 @@ $route['admin/appearance/upload']                 = 'admin/appearance/upload';
 $route['admin/appearance/remove']                 = 'admin/appearance/remove';
 $route['admin/appearance/header']                 = 'admin/appearance/header';
 $route['admin/appearance/save_header']            = 'admin/appearance/save_header';
+$route['admin/appearance/colors']                 = 'admin/appearance/colors';
+$route['admin/appearance/save_colors']            = 'admin/appearance/save_colors';
 
 $route['admin/media/browse']                      = 'admin/media/browse';
 $route['admin/media/replace/(:any)']              = 'admin/media/replace/$1';

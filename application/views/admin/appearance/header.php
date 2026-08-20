@@ -1,5 +1,7 @@
 <?php /** @var array $site */ ?>
-<form method="post" action="<?= base_url('admin/appearance/save_header') ?>" class="max-w-5xl space-y-6">
+<div class="max-w-5xl space-y-6">
+<?php $this->load->view('admin/appearance/_tabs'); ?>
+<form method="post" action="<?= base_url('admin/appearance/save_header') ?>" class="space-y-6">
     <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
 
     <div class="bg-blue-50 border border-blue-200 text-blue-900 rounded-xl px-4 py-3 text-sm flex gap-2">
@@ -51,3 +53,4 @@
         <a class="vp-btn vp-btn-secondary" href="<?= base_url() ?>" target="_blank" rel="noopener"><i class="ri-external-link-line"></i> View website</a>
     </div>
 </form>
+</div>

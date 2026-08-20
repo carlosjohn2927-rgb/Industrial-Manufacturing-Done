@@ -38,6 +38,47 @@
                 if (!confirm(f.dataset.confirm || 'Are you sure?')) e.preventDefault();
             });
         });
+        document.querySelectorAll('button[data-confirm]').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                if (!confirm(btn.getAttribute('data-confirm') || 'Are you sure?')) e.preventDefault();
+            });
+        });
+
+        // Colour pickers (Appearance → Colours): keep hex field, native picker
+        // and live CSS-variable preview in sync.
+        function vpExpandHex(v) {
+            v = String(v || '').trim();
+            if (/^#[0-9a-fA-F]{3}$/.test(v)) {
+                return ('#' + v[1] + v[1] + v[2] + v[2] + v[3] + v[3]).toLowerCase();
+            }
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) return v.toLowerCase();
+            return '';
+        }
+        document.querySelectorAll('[data-vp-color]').forEach(function (wrap) {
+            var picker = wrap.querySelector('[data-vp-color-picker]');
+            var text = wrap.querySelector('[data-vp-color-text]');
+            if (!picker || !text) return;
+            var apply = function (hex, fromPicker) {
+                if (!hex) return;
+                if (!fromPicker) picker.value = hex;
+                text.value = hex;
+                var name = (fromPicker ? picker : text).getAttribute('data-vp-theme-var');
+                if (name) document.documentElement.style.setProperty(name, hex);
+                var surface = document.querySelector('[data-vp-preview-surface]');
+                var sidebar = document.querySelector('[data-vp-preview-sidebar]');
+                if (name === '--vp-bg' && surface) surface.style.backgroundColor = hex;
+                if (name === '--vp-writeup') {
+                    document.querySelectorAll('[data-vp-preview-writeup]').forEach(function (el) {
+                        el.style.color = hex;
+                    });
+                }
+                if (name === '--vp-sidebar-bg' && sidebar) sidebar.style.backgroundColor = hex;
+                if (name === '--vp-sidebar-writeup' && sidebar) sidebar.style.color = hex;
+            };
+            picker.addEventListener('input', function () { apply(picker.value, true); });
+            text.addEventListener('input', function () { apply(vpExpandHex(text.value), false); });
+            apply(vpExpandHex(text.value) || picker.value, true);
+        });
 
         // Dashboard: quotes-by-status doughnut (data passed via data-quotes
         // so no inline script is needed - CSP blocks those in production).

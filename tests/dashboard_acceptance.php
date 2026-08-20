@@ -162,7 +162,7 @@ section('2. Super Admin access');
 
 $super_sections = [
     'admin', 'admin/admins', 'admin/homepage', 'admin/pages', 'admin/menus',
-    'admin/appearance', 'admin/appearance/header', 'admin/media', 'admin/settings',
+    'admin/appearance', 'admin/appearance/header', 'admin/appearance/colors', 'admin/media', 'admin/settings',
     'admin/settings/contact', 'admin/settings/social', 'admin/settings/system',
     'admin/settings/advanced', 'admin/reports', 'admin/audit', 'admin/users',
     'admin/products', 'admin/quotes', 'admin/seo', 'admin/profile', 'admin/notifications',
@@ -213,6 +213,7 @@ foreach ($granted as $s) {
 check('Admin can open the granted sections', $ok, implode(', ', $bad));
 
 $denied = ['admin/admins', 'admin/settings', 'admin/settings/system', 'admin/appearance',
+           'admin/appearance/colors',
            'admin/homepage', 'admin/pages', 'admin/menus', 'admin/media', 'admin/users',
            'admin/audit', 'admin/seo', 'admin/reports'];
 $ok = true; $bad = [];
@@ -225,6 +226,7 @@ check('Admin cannot reach ungranted sections by typing the URL (403)', $ok, impl
 $posts = [
     'admin/settings/save'            => ['site_name' => 'HACKED'],
     'admin/appearance/save_branding' => ['logo_light' => '/hacked.png'],
+        'admin/appearance/save_colors'    => ['theme_bg' => '#000000', 'theme_writeup' => '#ffffff'],
     'admin/homepage/save'            => ['id' => 'x', 'type' => 'hero', 'title' => 'HACKED'],
     'admin/admins/save'              => ['email' => 'evil@x.com', 'firstName' => 'E', 'lastName' => 'V',
                                          'role' => 'SUPER_ADMIN', 'password' => 'Password12345'],
@@ -525,6 +527,28 @@ check('Denied access attempts are recorded', strpos(get('admin/audit?action=ACCE
 if ($adminId) {
     $act = get('admin/admins/activity/' . $adminId, $superJar);
     check('Per-administrator activity view works', $act['code'] === 200);
+}
+
+/* ---------- 10. Cleanup -------------------------------------------- */
+section('10. Cleanup');
+
+if ($adminId) {
+    $r = post('admin/admins/delete/' . $adminId, [], $superJar, 'admin/admins');
+    check('Super Admin can delete an Admin account',
+        $r['code'] === 200 && strpos($r['body'], $TMP_ADMIN['email']) === false);
+}
+@unlink($tmpPng);
+
+/* ------------------------------------------------------------------ */
+
+echo "\n" . str_repeat('─', 60) . "\n";
+echo "Passed: {$pass}   Failed: {$fail}\n";
+if ($failures) {
+    echo "\nFailures:\n";
+    foreach ($failures as $f) echo "  • {$f}\n";
+}
+exit($fail === 0 ? 0 : 1);
+k('Per-administrator activity view works', $act['code'] === 200);
 }
 
 /* ---------- 10. Cleanup -------------------------------------------- */

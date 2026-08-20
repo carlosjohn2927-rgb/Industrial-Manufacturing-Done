@@ -8,6 +8,7 @@ $logo_variants = [
 ];
 ?>
 <div class="max-w-5xl space-y-6">
+    <?php $this->load->view('admin/appearance/_tabs'); ?>
 
     <div class="bg-white border rounded-2xl p-5 flex flex-wrap items-center gap-4">
         <div class="px-4 py-3 rounded-xl bg-gray-50 border">

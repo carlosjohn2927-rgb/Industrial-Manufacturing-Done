@@ -134,6 +134,7 @@ Everything the public site shows is stored in the database and edited here.
 | Pages | `/admin/pages` | title, slug, content, featured image, SEO title/description, status, visibility, publish date |
 | Navigation | `/admin/menus` | header menu, two footer columns, legal links: add / edit / reorder / enable / disable, internal path, CMS page or external URL |
 | Logo & branding | `/admin/appearance` | website name/title/description, primary logo, dark logo, footer logo, favicon, alt text, logo height |
+| Colours | `/admin/appearance/colors` | site-wide background and write-up colours, plus Admin / Super Admin sidebar background (black) and menu write-up (white) |
 | Header & footer | `/admin/appearance/header` | announcement bar, CTA button, contact block, social links, footer about/copyright/note |
 | Media library | `/admin/media` | upload, replace, rename, alt text, copy URL, delete (files used as logo/favicon are protected) |
 | Settings | `/admin/settings` | identity, contact, social, system (maintenance, chat assistant, email identity), plus a raw key/value editor |
