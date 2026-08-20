@@ -3,7 +3,7 @@
 $rows = $blocks['industries'] ?? [];
 if (empty($rows)) return;
 ?>
-<section class="container mx-auto px-4 py-16">
+<section class="container mx-auto px-4 py-16"<?= vp_section_style_attr($section) ?>>
     <div class="text-center max-w-2xl mx-auto mb-10">
         <?php if (!empty($section['title'])): ?><h2 class="text-3xl font-extrabold text-ink-900"><?= vp_safe_html($section['title']) ?></h2><?php endif; ?>
         <?php if (!empty($section['subtitle'])): ?><p class="text-ink-800 mt-3"><?= vp_safe_html($section['subtitle']) ?></p><?php endif; ?>

@@ -34,9 +34,11 @@ class Page extends MY_Controller
         $this->page_title       = $page['metaTitle'] ?: $page['title'];
         $this->page_description = $page['metaDescription'] ?: vp_truncate(strip_tags((string) $page['excerpt']), 160);
 
+        $sections = vp_sections('page:' . $page['slug']);
         $this->render('pages/view', [
             'page'     => $page,
-            'sections' => vp_sections('page:' . $page['slug']),
+            'sections' => $sections,
+            'blocks'   => vp_section_blocks($sections),
             'is_draft' => $page['status'] !== 'PUBLISHED',
         ]);
     }

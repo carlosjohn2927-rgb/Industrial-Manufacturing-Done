@@ -45,7 +45,7 @@ $config['permissions'] = [
     'testimonials.manage' => ['Manage testimonials',                     'Content',  false],
     'partners.manage'     => ['Manage partners',                         'Content',  false],
 
-    'homepage.manage'     => ['Manage homepage sections',                'Website',  false],
+    'homepage.manage'     => ['Manage page builder (entire website)',    'Website',  false],
     'pages.manage'        => ['Manage website pages',                    'Website',  false],
     'menus.manage'        => ['Manage navigation menus',                 'Website',  false],
     'appearance.manage'   => ['Manage logo, colours, header and footer', 'Website',  false],

@@ -270,6 +270,52 @@
             });
         }
 
+        /* ---------------- Page builder drag-and-drop -------------------- */
+        var builder = document.getElementById('vp-builder-list');
+        if (builder) {
+            var dragEl = null;
+            builder.addEventListener('dragstart', function (e) {
+                var row = e.target.closest('.vp-section-row');
+                if (!row) return;
+                dragEl = row;
+                e.dataTransfer.effectAllowed = 'move';
+                row.classList.add('opacity-50');
+            });
+            builder.addEventListener('dragend', function () {
+                if (dragEl) dragEl.classList.remove('opacity-50');
+                dragEl = null;
+                builder.querySelectorAll('.vp-section-row').forEach(function (r) { r.classList.remove('ring-2'); });
+            });
+            builder.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                var row = e.target.closest('.vp-section-row');
+                if (!row || row === dragEl) return;
+                var rect = row.getBoundingClientRect();
+                var before = (e.clientY - rect.top) < rect.height / 2;
+                builder.querySelectorAll('.vp-section-row').forEach(function (r) { r.classList.remove('ring-2'); });
+                row.classList.add('ring-2');
+                if (before) builder.insertBefore(dragEl, row);
+                else builder.insertBefore(dragEl, row.nextSibling);
+            });
+            builder.addEventListener('drop', function (e) {
+                e.preventDefault();
+                var ids = [];
+                builder.querySelectorAll('.vp-section-row[data-id]').forEach(function (r) { ids.push(r.getAttribute('data-id')); });
+                var fd = new FormData();
+                ids.forEach(function (id) { fd.append('order[]', id); });
+                fd.append('pageKey', builder.getAttribute('data-page-key') || 'home');
+                fd.append('ajax', '1');
+                var tok = document.querySelector('meta[name="csrf-token"]');
+                if (tok) fd.append(tok.getAttribute('data-name'), tok.getAttribute('content'));
+                fetch(VP_ADMIN_BASE + 'admin/homepage/reorder', { method: 'POST', body: fd, credentials: 'same-origin' })
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        if (tok && d && d.csrf) tok.setAttribute('content', d.csrf);
+                    })
+                    .catch(function () {});
+            });
+        }
+
         /* ---------------- Repeatable item rows (stats, cards, …) --------- */
         document.addEventListener('click', function (e) {
             var add = e.target.closest('[data-vp-repeat-add]');

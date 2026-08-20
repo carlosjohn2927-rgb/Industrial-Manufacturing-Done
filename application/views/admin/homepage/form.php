@@ -11,12 +11,16 @@ $editing  = !empty($row);
 $def      = $types[$type] ?? ['Section', 'ri-layout-line', ''];
 
 $has_heading  = true;
-$has_body     = in_array($type, ['richtext', 'hero', 'cta', 'banner', 'newsletter', 'faq', 'services'], true);
-$has_image    = in_array($type, ['hero', 'banner', 'richtext', 'services'], true);
-$has_buttons  = in_array($type, ['hero', 'cta', 'banner', 'products', 'richtext', 'newsletter'], true);
+$has_body     = in_array($type, ['richtext', 'hero', 'cta', 'banner', 'newsletter', 'faq', 'services', 'image', 'video', 'file', 'gallery'], true);
+$has_image    = in_array($type, ['hero', 'banner', 'richtext', 'services', 'image', 'video'], true);
+$has_buttons  = in_array($type, ['hero', 'cta', 'banner', 'products', 'richtext', 'newsletter', 'file'], true);
 $has_limit    = in_array($type, ['products', 'categories', 'industries', 'testimonials', 'partners', 'faq'], true);
 $has_items    = in_array($type, ['stats', 'services'], true);
 $has_badges   = ($type === 'hero');
+$has_video    = ($type === 'video');
+$has_file     = ($type === 'file');
+$has_gallery  = ($type === 'gallery');
+$gallery      = $settings['gallery'] ?? [];
 ?>
 <form method="post" action="<?= base_url('admin/homepage/save') ?>" class="max-w-5xl space-y-6">
     <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">

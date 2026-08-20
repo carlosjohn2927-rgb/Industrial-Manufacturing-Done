@@ -3,7 +3,7 @@
 $rows = $blocks['partners'] ?? [];
 if (empty($rows)) return;
 ?>
-<section class="bg-white border-t">
+<section class="bg-white border-t"<?= vp_section_style_attr($section) ?>>
     <div class="container mx-auto px-4 py-12">
         <?php if (!empty($section['title'])): ?>
             <p class="text-center text-xs uppercase tracking-widest text-ink-800 mb-6"><?= vp_safe_html($section['title']) ?></p>

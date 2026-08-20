@@ -15,7 +15,7 @@
             <button type="button" class="ml-auto p-2 rounded hover:bg-gray-100" data-vp-media-close aria-label="Close"><i class="ri-close-line text-xl"></i></button>
         </div>
         <div class="px-5 py-3 border-b bg-gray-50 flex flex-wrap items-center gap-3">
-            <input type="file" id="vp-media-upload-input" class="text-sm" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip">
+            <input type="file" id="vp-media-upload-input" class="text-sm" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.mp4,.webm,.ogg,.mov">
             <button type="button" id="vp-media-upload-btn" class="vp-btn vp-btn-primary text-sm"><i class="ri-upload-2-line"></i> Upload</button>
             <input type="search" id="vp-media-search" class="vp-input text-sm ml-auto max-w-xs" placeholder="Search files…">
         </div>

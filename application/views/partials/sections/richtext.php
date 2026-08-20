@@ -3,7 +3,7 @@
 $this->load->view('partials/sections/_helpers');
 $img = vp_asset_url($section['image'] ?? '');
 ?>
-<section class="bg-white">
+<section class="bg-white"<?= vp_section_style_attr($section) ?>>
     <div class="container mx-auto px-4 py-16">
         <div class="grid <?= $img ? 'lg:grid-cols-2' : '' ?> gap-10 items-center">
             <div>

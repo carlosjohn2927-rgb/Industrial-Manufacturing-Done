@@ -12,11 +12,20 @@ class Homepage extends Admin_Controller
 {
     protected $required_permission = 'homepage.manage';
 
-    /** Page keys that can be managed with this builder. */
+    /** Built-in website pages this builder can take over. */
     private $page_keys = [
-        'home'      => 'Homepage',
-        'about'     => 'About page',
-        'services'  => 'Services page',
+        'home'       => 'Homepage',
+        'about'      => 'About',
+        'services'   => 'Services',
+        'products'   => 'Products',
+        'industries' => 'Industries',
+        'contact'    => 'Contact',
+        'blog'       => 'Blog',
+        'news'       => 'News',
+        'careers'    => 'Careers',
+        'faq'        => 'FAQ',
+        'downloads'  => 'Downloads',
+        'rfq'        => 'Request a quote',
     ];
 
     public function __construct()
@@ -33,13 +42,15 @@ class Homepage extends Admin_Controller
     public function index($pageKey = 'home')
     {
         $pageKey = $this->_page_key($pageKey);
-        $this->page_title = $this->page_keys[$pageKey] . ' sections';
+        $labels = $this->_all_page_keys();
+        $this->page_title = ($labels[$pageKey] ?? 'Page') . ' — page builder';
 
         $this->render('admin/homepage/index', [
-            'pageKey'   => $pageKey,
-            'page_keys' => $this->page_keys,
-            'sections'  => $this->Page_section_model->for_page($pageKey),
-            'types'     => vp_section_types(),
+            'pageKey'    => $pageKey,
+            'page_keys'  => $this->_all_page_keys(),
+            'preview'    => $this->_preview_url($pageKey),
+            'sections'   => $this->Page_section_model->for_page($pageKey),
+            'types'      => vp_section_types(),
         ]);
     }
 
@@ -155,7 +166,7 @@ class Homepage extends Admin_Controller
         redirect('admin/homepage/index/' . $row['pageKey']);
     }
 
-    /** Persist a whole new order (used by the drag-free order form). */
+    /** Persist a whole new order (drag-and-drop or the order form). */
     public function reorder()
     {
         if ($this->input->method() !== 'post') show_404();
@@ -164,6 +175,8 @@ class Homepage extends Admin_Controller
         $map = [];
         $i = 10;
         foreach ($order as $id) {
+            $id = (string) $id;
+            if ($id === '') continue;
             $map[$id] = $i;
             $i += 10;
         }
@@ -171,8 +184,30 @@ class Homepage extends Admin_Controller
             $this->Page_section_model->reorder($map);
             $this->audit->log(AUDIT_UPDATE, 'page_section', null, ['reorder' => count($map), 'page' => $pageKey]);
         }
+        if ($this->input->post('ajax')) {
+            return $this->json(['ok' => true, 'csrf' => $this->security->get_csrf_hash()]);
+        }
         $this->flash('success', 'Section order saved.');
-        redirect('admin/homepage/index/' . $pageKey);
+        redirect('admin/homepage/index/' . rawurlencode($pageKey));
+    }
+
+    public function duplicate($id = null)
+    {
+        if ($this->input->method() !== 'post') show_404();
+        $row = $id ? $this->Page_section_model->find($id) : null;
+        if (!$row) show_404();
+        $copy = $row;
+        unset($copy['id']);
+        $copy['id']        = MY_Model::uuid();
+        $copy['name']      = trim((string) $row['name']) . ' (copy)';
+        $copy['isSystem']  = 0;
+        $copy['sortOrder'] = $this->Page_section_model->next_order($row['pageKey']);
+        $copy['createdAt'] = date('Y-m-d H:i:s');
+        $copy['updatedAt'] = $copy['createdAt'];
+        $this->db->insert('page_sections', $copy);
+        $this->audit->log(AUDIT_CREATE, 'page_section', $copy['id'], ['duplicate_of' => $id]);
+        $this->flash('success', 'Section duplicated.');
+        redirect('admin/homepage/edit/' . $copy['id']);
     }
 
     public function delete($id = null)
@@ -194,10 +229,32 @@ class Homepage extends Admin_Controller
 
     /* ------------------------------------------------------------------ */
 
+    private function _all_page_keys()
+    {
+        $keys = $this->page_keys;
+        if ($this->db->table_exists('pages')) {
+            $pages = $this->db->select('slug, title')->order_by('title', 'ASC')->get('pages')->result_array();
+            foreach ($pages as $p) {
+                $slug = trim((string) $p['slug']);
+                if ($slug === '') continue;
+                $keys['page:' . $slug] = 'Page: ' . $p['title'];
+            }
+        }
+        return $keys;
+    }
+
     private function _page_key($key)
     {
-        $key = (string) $key;
-        return array_key_exists($key, $this->page_keys) ? $key : 'home';
+        $key = rawurldecode((string) $key);
+        $all = $this->_all_page_keys();
+        return array_key_exists($key, $all) ? $key : 'home';
+    }
+
+    private function _preview_url($pageKey)
+    {
+        if ($pageKey === 'home') return base_url();
+        if (strpos($pageKey, 'page:') === 0) return base_url(substr($pageKey, 5));
+        return base_url($pageKey);
     }
 
     private function _clean($v)
@@ -225,6 +282,23 @@ class Homepage extends Admin_Controller
 
         $eyebrow = $this->_clean($this->input->post('eyebrow'));
         if ($eyebrow) $out['eyebrow'] = $eyebrow;
+
+        foreach (['bg_color', 'text_color', 'heading_color'] as $ck) {
+            $raw = trim((string) $this->input->post($ck));
+            if ($raw === '' || strtolower($raw) === 'default') continue;
+            $hex = vp_sanitize_hex_color($raw, '');
+            if ($hex !== '') $out[$ck] = $hex;
+        }
+
+        $video = $this->_clean($this->input->post('video'));
+        if ($video) $out['video'] = $video;
+        $fileUrl = $this->_clean($this->input->post('fileUrl'));
+        if ($fileUrl) $out['fileUrl'] = $fileUrl;
+        $fileLabel = $this->_clean($this->input->post('fileLabel'));
+        if ($fileLabel) $out['fileLabel'] = $fileLabel;
+
+        $gallery = array_values(array_filter(array_map('trim', (array) $this->input->post('gallery'))));
+        if ($gallery) $out['gallery'] = $gallery;
 
         $badges = array_values(array_filter(array_map('trim', (array) $this->input->post('badges'))));
         if ($badges) $out['badges'] = $badges;

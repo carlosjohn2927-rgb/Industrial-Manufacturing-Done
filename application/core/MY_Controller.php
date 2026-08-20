@@ -120,7 +120,7 @@ class MY_Controller extends CI_Controller
              . "img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; "
              . "script-src 'self' 'nonce-{$nonce}' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://code.jquery.com; "
              . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-             . "connect-src 'self' https:; frame-src https://www.youtube.com";
+             . "connect-src 'self' https:; frame-src https://www.youtube.com https://player.vimeo.com";
         $this->output->set_header('Content-Security-Policy: ' . $csp);
     }
 
@@ -145,7 +145,21 @@ class MY_Controller extends CI_Controller
         $data['admin_edit'] = $this->_admin_edit_target($data);
 
         $layout = $layout !== null ? $layout : $this->layout;
+
+        // Prepend page-builder blocks on built-in public pages (catalogs, forms)
+        // that still keep their native content underneath.
+        $ctrl = strtolower((string) $this->router->fetch_class());
+        $method = strtolower((string) $this->router->fetch_method());
+        $builderPages = ['contact', 'products', 'industries', 'blog', 'news', 'careers', 'faq', 'downloads', 'rfq'];
+        if (($layout === 'public') && $method === 'index' && in_array($ctrl, $builderPages, true) && empty($data['cms_sections'])) {
+            $data['cms_sections'] = vp_sections($ctrl);
+            $data['cms_blocks'] = vp_section_blocks($data['cms_sections']);
+        }
+
         $content = $this->load->view($view, $data, TRUE);
+        if (!empty($data['cms_sections'])) {
+            $content = $this->load->view('partials/cms_sections', $data, TRUE) . $content;
+        }
 
         if ($layout === '' || $layout === null) {
             $this->output->set_output($content);
@@ -190,10 +204,13 @@ class MY_Controller extends CI_Controller
                 }
                 break;
             case 'products':
-                $target = !empty($data['product']['id'])
-                    ? 'admin/products/edit/' . rawurlencode($data['product']['id'])
-                    : 'admin/products';
-                $permission = 'products.manage';
+                if (!empty($data['product']['id'])) {
+                    $target = 'admin/products/edit/' . rawurlencode($data['product']['id']);
+                    $permission = 'products.manage';
+                } else {
+                    $target = 'admin/homepage/index/products';
+                    $permission = 'homepage.manage';
+                }
                 break;
             case 'industries':
                 $target = !empty($data['industry']['id'])
@@ -202,10 +219,13 @@ class MY_Controller extends CI_Controller
                 $permission = 'industries.manage';
                 break;
             case 'blog':
-                $target = !empty($data['post']['id'])
-                    ? 'admin/blog/edit/' . rawurlencode($data['post']['id'])
-                    : 'admin/blog';
-                $permission = 'blog.manage';
+                if (!empty($data['post']['id'])) {
+                    $target = 'admin/blog/edit/' . rawurlencode($data['post']['id']);
+                    $permission = 'blog.manage';
+                } else {
+                    $target = 'admin/homepage/index/blog';
+                    $permission = 'homepage.manage';
+                }
                 break;
             case 'news':
                 $target = !empty($data['row']['id'])
@@ -220,17 +240,22 @@ class MY_Controller extends CI_Controller
                 $permission = 'careers.manage';
                 break;
             case 'faq':
-                $target = 'admin/faqs'; $permission = 'faqs.manage';
+                $target = 'admin/homepage/index/faq'; $permission = 'homepage.manage';
                 break;
             case 'downloads':
-                $target = 'admin/downloads'; $permission = 'downloads.manage';
+                $target = 'admin/homepage/index/downloads'; $permission = 'homepage.manage';
                 break;
             case 'contact':
-                $target = 'admin/settings/contact'; $permission = 'settings.manage';
+                $target = 'admin/homepage/index/contact'; $permission = 'homepage.manage';
                 break;
             case 'rfq':
                 if ($method === 'index') {
-                    $target = 'admin/settings/system'; $permission = 'settings.manage';
+                    $target = 'admin/homepage/index/rfq'; $permission = 'homepage.manage';
+                }
+                break;
+            case 'blog':
+                if (empty($data['post']['id'])) {
+                    $target = 'admin/homepage/index/blog'; $permission = 'homepage.manage';
                 }
                 break;
         }

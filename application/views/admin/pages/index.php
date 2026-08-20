@@ -25,6 +25,7 @@
                 <td class="text-xs text-ink-800/60"><?= vp_time_ago($r['updatedAt'] ?? $r['createdAt']) ?></td>
                 <td class="text-right whitespace-nowrap">
                     <a class="text-xs text-ink-800 hover:underline" href="<?= base_url('admin/pages/edit/' . $r['id']) ?>">Edit</a>
+                    <a class="text-xs text-brand-700 hover:underline ml-2" href="<?= base_url('admin/homepage/index/' . rawurlencode('page:' . $r['slug'])) ?>">Builder</a>
                     <form action="<?= base_url('admin/pages/toggle/' . $r['id']) ?>" method="post" class="inline">
                         <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
                         <button class="text-xs text-brand-700 hover:underline ml-2" type="submit"><?= $r['status'] === 'PUBLISHED' ? 'Unpublish' : 'Publish' ?></button>

@@ -2,7 +2,7 @@
 /** Newsletter sign-up. @var array $section */
 $this->load->view('partials/sections/_helpers');
 ?>
-<section class="bg-gray-50 border-y">
+<section class="bg-gray-50 border-y"<?= vp_section_style_attr($section) ?>>
     <div class="container mx-auto px-4 py-14 text-center max-w-2xl">
         <?php if (!empty($section['title'])): ?><h2 class="text-2xl font-extrabold text-ink-900"><?= vp_safe_html($section['title']) ?></h2><?php endif; ?>
         <?php if (!empty($section['subtitle'])): ?><p class="text-ink-800 mt-2"><?= vp_safe_html($section['subtitle']) ?></p><?php endif; ?>

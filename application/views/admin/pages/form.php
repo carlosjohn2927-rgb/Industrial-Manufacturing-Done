@@ -32,6 +32,7 @@ $editing = !empty($row);
                 <div class="pt-2 flex flex-col gap-2">
                     <button class="vp-btn vp-btn-primary justify-center" type="submit"><i class="ri-save-3-line"></i> <?= $editing ? 'Save page' : 'Create page' ?></button>
                     <?php if ($editing): ?>
+                        <a class="vp-btn vp-btn-secondary justify-center" href="<?= base_url('admin/homepage/index/' . rawurlencode('page:' . $row['slug'])) ?>"><i class="ri-layout-masonry-line"></i> Open page builder</a>
                         <a class="vp-btn vp-btn-secondary justify-center" href="<?= base_url($row['slug']) ?>" target="_blank" rel="noopener"><i class="ri-external-link-line"></i> View page</a>
                     <?php endif; ?>
                     <a class="vp-btn vp-btn-secondary justify-center" href="<?= base_url('admin/pages') ?>">Back to pages</a>

@@ -3,7 +3,7 @@
 $items = (array) vp_section_option($section, 'items', []);
 if (empty($items)) return;
 ?>
-<section class="bg-white border-b">
+<section class="bg-white border-b"<?= vp_section_style_attr($section) ?>>
     <div class="container mx-auto px-4 py-10">
         <?php if (!empty($section['title'])): ?>
             <h2 class="text-2xl font-extrabold text-ink-900 text-center mb-6"><?= vp_safe_html($section['title']) ?></h2>
