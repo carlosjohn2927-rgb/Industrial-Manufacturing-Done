@@ -31,7 +31,12 @@ if (!function_exists('vp_load_env_file')) {
             }
             // Never override a real environment variable
             if (getenv($k) === false && !isset($_ENV[$k]) && !isset($_SERVER[$k])) {
-                putenv($k . '=' . $v);
+                // Guarded: some hardened hosts disable putenv(); $_ENV/$_SERVER
+                // are still populated below so the config readers can find the
+                // value (they fall back to $_ENV/$_SERVER when getenv fails).
+                if (function_exists('putenv')) {
+                    @putenv($k . '=' . $v);
+                }
                 $_ENV[$k] = $v;
                 $_SERVER[$k] = $v;
             }
@@ -39,6 +44,11 @@ if (!function_exists('vp_load_env_file')) {
     }
 }
 vp_load_env_file(__DIR__ . '/.env');
+if (!is_file(__DIR__ . '/.env')) {
+    // Give the server error log a hint when the .env file is missing, so
+    // "The application is not configured" is not a dead end on cPanel.
+    error_log('Vortex Precision: .env file not found at ' . __DIR__ . '/.env — ' . __FILE__);
+}
 if (dirname(__DIR__) . '/.env' !== __DIR__ . '/.env') {
     vp_load_env_file(dirname(__DIR__) . '/.env');
 }

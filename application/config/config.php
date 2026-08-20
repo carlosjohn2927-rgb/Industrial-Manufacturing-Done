@@ -27,8 +27,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 if (!function_exists('vp_config_env')) {
     function vp_config_env($key, $default = '')
     {
-        $v = getenv($key);
-        return ($v === false || $v === '') ? $default : $v;
+        // Real environment first, then the values index.php's .env loader
+        // stored in $_ENV / $_SERVER (some hosts restrict putenv/getenv).
+        foreach ([getenv($key), isset($_ENV[$key]) ? $_ENV[$key] : null, isset($_SERVER[$key]) ? $_SERVER[$key] : null] as $v) {
+            if ($v !== false && $v !== null && $v !== '') {
+                return $v;
+            }
+        }
+        return $default;
     }
 }
 
