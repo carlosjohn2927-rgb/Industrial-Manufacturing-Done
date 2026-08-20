@@ -70,7 +70,7 @@ $recent    = $recent_notifications ?? [];
         <!-- Profile -->
         <div class="relative" data-vp-dropdown>
             <button type="button" class="flex items-center gap-2 text-sm p-1 pr-2 rounded-lg hover:bg-gray-100" data-vp-dropdown-toggle>
-                <img class="w-8 h-8 rounded-full bg-gray-200" src="<?= vp_avatar_url($user['email'] ?? 'admin@example.com', 64) ?>" alt="">
+                <img class="w-8 h-8 rounded-full bg-gray-200" src="<?= vp_safe_html(vp_avatar_url($user ?? ['email' => 'admin@example.com'], 64)) ?>" alt="">
                 <span class="hidden md:block text-left leading-tight">
                     <span class="block font-semibold"><?= vp_safe_html($name ?: 'Administrator') ?></span>
                     <span class="block text-[11px] <?= $is_super ? 'text-amber-600 font-semibold' : 'text-ink-800/70' ?>">

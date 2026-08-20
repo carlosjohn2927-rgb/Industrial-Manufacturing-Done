@@ -169,6 +169,15 @@ class Acl
             $rows = [];
         }
 
+        // Shipped role defaults are always included. Database rows can add
+        // legacy/custom grants, while per-user denies can still remove access
+        // for a specific account. This keeps older installs in sync when new
+        // admin modules are added in code.
+        $defaults = (array) $this->CI->config->item('role_default_permissions', 'permissions');
+        foreach ((array) ($defaults[$role] ?? []) as $k) {
+            if ($this->exists($k) && !$this->is_super_only($k)) $keys[$k] = true;
+        }
+
         foreach ($rows as $r) {
             $actions = json_decode((string) ($r['actions'] ?? '[]'), true);
             if (!is_array($actions)) $actions = [];
@@ -187,14 +196,6 @@ class Acl
                 foreach ($candidates as $c) {
                     if ($this->exists($c) && !$this->is_super_only($c)) $keys[$c] = true;
                 }
-            }
-        }
-
-        // No rows at all for this role -> fall back to the shipped defaults.
-        if (empty($rows)) {
-            $defaults = (array) $this->CI->config->item('role_default_permissions', 'permissions');
-            foreach ((array) ($defaults[$role] ?? []) as $k) {
-                if ($this->exists($k) && !$this->is_super_only($k)) $keys[$k] = true;
             }
         }
 

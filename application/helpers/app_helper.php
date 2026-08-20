@@ -139,12 +139,27 @@ if (!function_exists('vp_role_label')) {
 
 if (!function_exists('vp_avatar_url')) {
     /**
-     * Returns a Gravatar URL for the given email (md5 lowercase).
+     * Return a saved profile avatar when available, otherwise fall back to
+     * Gravatar. Accepts either a user row array or an email string.
      */
-    function vp_avatar_url($email, $size = 80)
+    function vp_avatar_url($user_or_email, $size = 80, $avatar = null)
     {
+        if (is_array($user_or_email)) {
+            $avatar = $user_or_email['avatar'] ?? $avatar;
+            $email = $user_or_email['email'] ?? '';
+        } else {
+            $email = $user_or_email;
+        }
+
+        $avatar = trim((string) $avatar);
+        if ($avatar !== '') {
+            if (function_exists('vp_asset_url')) return vp_asset_url($avatar);
+            if (preg_match('~^(https?:)?//~i', $avatar) || strpos($avatar, 'data:') === 0 || $avatar[0] === '/') return $avatar;
+            return '/' . ltrim($avatar, '/');
+        }
+
         $hash = md5(strtolower(trim((string) $email)));
-        return 'https://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=mp';
+        return 'https://www.gravatar.com/avatar/' . $hash . '?s=' . (int) $size . '&d=mp';
     }
 }
 

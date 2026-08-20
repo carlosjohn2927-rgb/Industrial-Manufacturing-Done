@@ -59,12 +59,16 @@ $copyright = $site['copyright'] ?: ('© ' . date('Y') . ' ' . $site['name'] . '.
                 <?php if ($site['hours']): ?><li><i class="ri-time-line"></i> <?= vp_safe_html($site['hours']) ?></li><?php endif; ?>
             </ul>
             <?php if ($social): ?>
-                <div class="mt-4 flex gap-2 text-lg">
-                    <?php foreach ($social as $network => $url): ?>
-                        <a class="hover:text-white" href="<?= vp_safe_html($url) ?>" rel="noopener" target="_blank" aria-label="<?= vp_safe_html($network) ?>">
-                            <i class="<?= vp_safe_html(vp_social_icon($network)) ?>"></i>
-                        </a>
-                    <?php endforeach; ?>
+                <div class="mt-5">
+                    <h5 class="sr-only">Social media</h5>
+                    <div class="flex flex-wrap gap-2">
+                        <?php foreach ($social as $network => $url): ?>
+                            <a class="w-9 h-9 rounded-full border border-white/25 bg-white/10 hover:bg-white hover:text-black transition inline-flex items-center justify-center text-xl"
+                               href="<?= vp_safe_html($url) ?>" rel="noopener" target="_blank" aria-label="<?= vp_safe_html(ucfirst($network)) ?>">
+                                <i class="<?= vp_safe_html(vp_social_icon($network)) ?>"></i>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             <?php endif; ?>
         </div>

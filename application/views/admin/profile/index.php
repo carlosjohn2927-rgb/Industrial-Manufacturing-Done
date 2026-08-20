@@ -6,7 +6,7 @@ $is_super = ($row['role'] ?? '') === ROLE_SUPER_ADMIN;
 ?>
 <div class="max-w-4xl space-y-6">
     <div class="bg-white border rounded-2xl p-5 flex flex-wrap items-center gap-4">
-        <img class="w-14 h-14 rounded-full bg-gray-200" src="<?= vp_avatar_url($row['email'], 112) ?>" alt="">
+        <img class="w-14 h-14 rounded-full bg-gray-200" src="<?= vp_safe_html(vp_avatar_url($row, 112)) ?>" alt="">
         <div>
             <div class="font-bold text-lg text-ink-900"><?= vp_safe_html(trim($row['firstName'] . ' ' . $row['lastName'])) ?></div>
             <div class="text-sm text-ink-800/70"><?= vp_safe_html($row['email']) ?></div>
@@ -23,7 +23,7 @@ $is_super = ($row['role'] ?? '') === ROLE_SUPER_ADMIN;
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= base_url('admin/profile/save') ?>" class="space-y-4">
+    <form method="post" action="<?= base_url('admin/profile/save') ?>" enctype="multipart/form-data" class="space-y-4">
         <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
         <?= vp_admin_card_open('My details', '', 'ri-user-settings-line') ?>
             <div class="grid md:grid-cols-2 gap-4">
@@ -32,6 +32,21 @@ $is_super = ($row['role'] ?? '') === ROLE_SUPER_ADMIN;
                 <?= vp_text_field('email', $row['email'], 'Email address', ['type' => 'email', 'required' => true]) ?>
                 <?= vp_text_field('phone', $row['phone'] ?? '', 'Phone') ?>
             </div>
+
+            <div class="border rounded-xl p-4 bg-gray-50 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <img class="w-20 h-20 rounded-full bg-gray-200 object-cover" src="<?= vp_safe_html(vp_avatar_url($row, 160)) ?>" alt="Current profile picture">
+                <div class="flex-1">
+                    <label class="block text-sm font-semibold text-ink-900 mb-1" for="avatar">Profile picture</label>
+                    <input id="avatar" class="vp-input" type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <p class="text-xs text-ink-800/60 mt-1">Upload JPG, PNG, WebP or GIF up to 2 MB. Leave empty to keep your current picture.</p>
+                    <?php if (!empty($row['avatar'])): ?>
+                        <label class="inline-flex items-center gap-2 text-xs text-ink-800/70 mt-2">
+                            <input type="checkbox" name="remove_avatar" value="1"> Remove saved picture and use Gravatar
+                        </label>
+                    <?php endif; ?>
+                </div>
+            </div>
+
             <p class="text-xs text-ink-800/60">Your role and permissions can only be changed by the Super Admin.</p>
             <button class="vp-btn vp-btn-primary" type="submit"><i class="ri-save-3-line"></i> Save profile</button>
         <?= vp_admin_card_close() ?>

@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Vortex Precision - Mailer.
  *
  * Sends transactional email with idempotency via email_logs.dedupe_key.
- * Transport: PHP mail() by default; if RESEND_API_KEY is set, uses Resend HTTP API.
+ * Transport order: dashboard/.env SMTP, Resend HTTP API, then PHP mail().
  */
 class Mailer
 {
@@ -153,8 +153,7 @@ class Mailer
      */
     /**
      * Sender identity: dashboard-managed (Settings → System → Email) with the
-     * environment/config value as the fallback. Credentials themselves stay in
-     * .env and are never editable from the browser.
+     * environment/config value as the fallback.
      */
     public function sender($key)
     {
@@ -168,6 +167,30 @@ class Mailer
             if ($v !== '') return $v;
         }
         return $this->CI->config->item($key);
+    }
+
+    /** SMTP configuration: dashboard-managed settings win, .env/config remains the fallback. */
+    private function smtp_config($key)
+    {
+        static $map = [
+            'host'   => ['setting' => 'smtp_host',   'config' => 'smtp_host',   'default' => ''],
+            'port'   => ['setting' => 'smtp_port',   'config' => 'smtp_port',   'default' => '465'],
+            'user'   => ['setting' => 'smtp_user',   'config' => 'smtp_user',   'default' => ''],
+            'pass'   => ['setting' => 'smtp_pass',   'config' => 'smtp_pass',   'default' => ''],
+            'crypto' => ['setting' => 'smtp_crypto', 'config' => 'smtp_crypto', 'default' => 'ssl'],
+        ];
+        if (!isset($map[$key])) return '';
+        $def = $map[$key];
+        $value = '';
+        if (isset($this->CI->settings)) {
+            $value = trim((string) $this->CI->settings->get($def['setting'], ''));
+        }
+        if ($value === '') {
+            $value = trim((string) $this->CI->config->item($def['config']));
+        }
+        if ($value === '') $value = $def['default'];
+        if ($key === 'crypto' && !in_array($value, ['ssl', 'tls'], true)) $value = '';
+        return $value;
     }
 
     public function health()
@@ -209,22 +232,22 @@ class Mailer
      */
     public function describe_transport()
     {
-        $smtpHost = $this->CI->config->item('smtp_host');
-        $smtpPass = $this->CI->config->item('smtp_pass');
+        $smtpHost = $this->smtp_config('host');
+        $smtpPass = $this->smtp_config('pass');
         if (!empty($smtpHost) && !empty($smtpPass)) {
             return ['transport' => 'smtp', 'reason' => 'SMTP via ' . $smtpHost, 'misconfigured' => false];
         }
         if (!empty($this->CI->config->item('resend_api_key'))) {
             $r = ['transport' => 'resend', 'reason' => 'Resend HTTP API', 'misconfigured' => false];
             if (!empty($smtpHost)) {
-                $r['reason'] .= ' (VP_SMTP_HOST is set but VP_SMTP_PASS is EMPTY - SMTP is skipped entirely. Set the mailbox password or clear VP_SMTP_HOST.)';
+                $r['reason'] .= ' (SMTP host is set but SMTP password is empty — SMTP is skipped. Add the mailbox password in Admin → Settings → System or clear the SMTP host.)';
             }
             return $r;
         }
         $r = ['transport' => 'mail', 'reason' => 'PHP mail() fallback (shared hosts often drop this mail as spam)', 'misconfigured' => true];
         if (!empty($smtpHost)) {
-            $r['reason'] = 'VP_SMTP_HOST is set but VP_SMTP_PASS is EMPTY, so mail silently falls back to PHP mail(). '
-                . 'Set the mailbox password in app/.env (see .env.example) or run: php install/test-mail.php';
+            $r['reason'] = 'SMTP host is set but SMTP password is empty, so mail falls back to PHP mail(). '
+                . 'Add the mailbox password in Admin → Settings → System or run: php install/test-mail.php';
         }
         return $r;
     }
@@ -234,15 +257,15 @@ class Mailer
         $providerId = null;
         $errorMessage = '';
         // 1) SMTP (cPanel email account) when both host and password are set.
-        $smtpHost = $this->CI->config->item('smtp_host');
-        $smtpPass = $this->CI->config->item('smtp_pass');
+        $smtpHost = $this->smtp_config('host');
+        $smtpPass = $this->smtp_config('pass');
         if (!empty($smtpHost) && !empty($smtpPass)) {
             return $this->send_via_smtp($to, $subject, $html, $providerId, $errorMessage);
         }
         // Partially configured SMTP used to fail silently; make it loud in the log.
         if (!empty($smtpHost) && empty($smtpPass)) {
-            log_message('error', 'Mailer: VP_SMTP_HOST is set but VP_SMTP_PASS is EMPTY - '
-                . 'SMTP skipped. Fix app/.env or clear VP_SMTP_HOST. Run: php install/test-mail.php');
+            log_message('error', 'Mailer: SMTP host is set but SMTP password is EMPTY - '
+                . 'SMTP skipped. Add the mailbox password in Admin -> Settings -> System -> SMTP or clear the SMTP host. Run: php install/test-mail.php');
         }
         // 2) Resend HTTP API when an API key is present.
         $apiKey = $this->CI->config->item('resend_api_key');
@@ -323,17 +346,17 @@ class Mailer
 
     /**
      * Send via SMTP (cPanel / shared-hosting email accounts).
-     * Configuration comes from app/.env (VP_SMTP_HOST/PORT/USER/PASS/CRYPTO).
+     * Configuration comes from Admin → Settings → System, falling back to .env.
      */
     private function send_via_smtp($to, $subject, $html, &$providerId = null, &$errorMessage = '')
     {
         $providerId = null;
         $errorMessage = '';
-        $host   = $this->CI->config->item('smtp_host');
-        $port   = (int) $this->CI->config->item('smtp_port');
-        $user   = $this->CI->config->item('smtp_user');
-        $pass   = $this->CI->config->item('smtp_pass');
-        $crypto = $this->CI->config->item('smtp_crypto') ?: 'ssl';
+        $host   = $this->smtp_config('host');
+        $port   = (int) $this->smtp_config('port');
+        $user   = $this->smtp_config('user');
+        $pass   = $this->smtp_config('pass');
+        $crypto = $this->smtp_config('crypto') ?: 'ssl';
 
         $fromEmail = $this->sender('from_email');
         $fromName  = $this->sender('from_name');

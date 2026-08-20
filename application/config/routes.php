@@ -196,6 +196,7 @@ $route['admin/settings/social']                   = 'admin/settings/social';
 $route['admin/settings/save_social']              = 'admin/settings/save_social';
 $route['admin/settings/system']                   = 'admin/settings/system';
 $route['admin/settings/save_system']              = 'admin/settings/save_system';
+$route['admin/settings/test_email']               = 'admin/settings/test_email';
 $route['admin/settings/advanced']                 = 'admin/settings/advanced';
 $route['admin/settings/save_advanced']            = 'admin/settings/save_advanced';
 $route['admin/settings/add']                      = 'admin/settings/add';

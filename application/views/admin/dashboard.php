@@ -14,6 +14,7 @@ $quick = [
     ['quotes.manage',    'Quotes',          'admin/quotes',            'ri-file-list-3-line'],
     ['admins.manage',    'Administrators',  'admin/admins',            'ri-shield-user-line'],
     ['settings.manage',  'Website settings','admin/settings',          'ri-settings-3-line'],
+    ['settings.manage',  'SMTP / email',    'admin/settings/system',   'ri-mail-settings-line'],
 ];
 ?>
 <div class="space-y-6">
@@ -85,6 +86,23 @@ $quick = [
         <?php endif; ?>
     </section>
 
+    <?php if (vp_can('settings.manage') && !empty($email_health)): ?>
+        <section class="bg-white border rounded-2xl p-5 flex flex-col md:flex-row md:items-center gap-4">
+            <div class="w-11 h-11 rounded-xl <?= !empty($email_health['ok']) ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' ?> flex items-center justify-center">
+                <i class="ri-mail-settings-line text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <h2 class="font-bold text-ink-900">SMTP / outgoing email</h2>
+                <p class="text-sm text-ink-800/70">
+                    Transport: <strong><?= vp_safe_html($email_health['transport'] ?? 'unknown') ?></strong> ·
+                    <?= !empty($email_health['ok']) ? 'configured' : 'needs attention' ?>
+                    <?php if (!empty($email_health['message'])): ?> — <?= vp_safe_html(vp_truncate($email_health['message'], 160)) ?><?php endif; ?>
+                </p>
+            </div>
+            <a class="vp-btn vp-btn-primary" href="<?= base_url('admin/settings/system') ?>"><i class="ri-settings-3-line"></i> Fix SMTP settings</a>
+        </section>
+    <?php endif; ?>
+
     <div class="grid lg:grid-cols-3 gap-6">
         <!-- Recent quotes -->
         <?php if (vp_can('quotes.manage')): ?>
@@ -120,7 +138,7 @@ $quick = [
                 <div class="divide-y">
                     <?php foreach ($admins as $a): ?>
                         <div class="px-5 py-3 flex items-center gap-3">
-                            <img class="w-8 h-8 rounded-full bg-gray-200" src="<?= vp_avatar_url($a['email'], 64) ?>" alt="">
+                            <img class="w-8 h-8 rounded-full bg-gray-200" src="<?= vp_safe_html(vp_avatar_url($a, 64)) ?>" alt="">
                             <div class="min-w-0">
                                 <div class="text-sm font-semibold text-ink-900 truncate"><?= vp_safe_html(trim($a['firstName'] . ' ' . $a['lastName'])) ?></div>
                                 <div class="text-[11px] text-ink-800/60"><?= vp_role_label($a['role']) ?> · <?= $a['lastLoginAt'] ? vp_time_ago($a['lastLoginAt']) : 'never signed in' ?></div>

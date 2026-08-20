@@ -407,6 +407,15 @@ INSERT IGNORE INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VA
 (UUID(),'footer_note','','STRING','FOOTER',3),
 (UUID(),'footer_newsletter_enabled','0','BOOL','FOOTER',4),
 
+(UUID(),'mail_from_email','','STRING','EMAIL',1),
+(UUID(),'mail_from_name','','STRING','EMAIL',2),
+(UUID(),'mail_reply_to','','STRING','EMAIL',3),
+(UUID(),'smtp_host','','STRING','EMAIL',4),
+(UUID(),'smtp_port','465','INT','EMAIL',5),
+(UUID(),'smtp_user','','STRING','EMAIL',6),
+(UUID(),'smtp_pass','','STRING','EMAIL',7),
+(UUID(),'smtp_crypto','ssl','STRING','EMAIL',8),
+
 (UUID(),'maintenance_mode','0','BOOL','SYSTEM',1),
 (UUID(),'maintenance_message','We are performing scheduled maintenance. Please check back shortly.','TEXT','SYSTEM',2);
 

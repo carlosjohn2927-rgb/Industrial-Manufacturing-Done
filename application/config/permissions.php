@@ -69,6 +69,7 @@ $config['role_default_permissions'] = [
         'dashboard.view', 'reports.view',
         'quotes.manage', 'contacts.manage',
         'products.manage', 'categories.manage',
+        'homepage.manage', 'pages.manage', 'menus.manage', 'appearance.manage',
         'media.manage',
     ],
     'SALES' => [
