@@ -93,7 +93,7 @@ class Media extends Admin_Controller
 
         // SVG deliberately excluded: SVG can carry scripts and would be an
         // XSS vector when opened directly.
-        $result = $this->vp_upload->handle('file', $folder, 'jpg|jpeg|png|webp|gif|ico|pdf|doc|docx|xls|xlsx|zip', 16384);
+        $result = $this->vp_upload->handle('file', $folder, 'jpg|jpeg|png|webp|gif|ico|pdf|doc|docx|xls|xlsx|zip|mp4|webm|ogg|mov', 51200);
 
         if (is_array($result) && empty($result['error'])) {
             $id = $this->Media_model->insert([

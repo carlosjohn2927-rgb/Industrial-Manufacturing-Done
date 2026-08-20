@@ -3,7 +3,7 @@
 $this->load->view('partials/sections/_helpers');
 $items = (array) vp_section_option($section, 'items', []);
 ?>
-<section class="bg-white">
+<section class="bg-white"<?= vp_section_style_attr($section) ?>>
     <div class="container mx-auto px-4 py-16">
         <div class="text-center max-w-2xl mx-auto mb-10">
             <?php if (!empty($section['title'])): ?><h2 class="text-3xl font-extrabold text-ink-900"><?= vp_safe_html($section['title']) ?></h2><?php endif; ?>

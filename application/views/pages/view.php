@@ -44,10 +44,8 @@ $wide = ($page['template'] ?? 'default') === 'wide';
     </div>
 
     <?php if (!empty($sections)): ?>
-        <div class="mt-10 space-y-10">
-            <?php foreach ($sections as $section): ?>
-                <?php $this->load->view('partials/sections/' . (in_array($section['type'], array_keys(vp_section_types()), true) ? $section['type'] : 'richtext'), array_merge(get_defined_vars(), ['section' => $section, 'blocks' => $blocks ?? []])); ?>
-            <?php endforeach; ?>
-        </div>
+        </article>
+        <?php $this->load->view('partials/cms_sections', ['cms_sections' => $sections, 'cms_blocks' => $blocks ?? []]); ?>
+        <article class="container mx-auto px-4 py-4">
     <?php endif; ?>
 </article>

@@ -3,7 +3,7 @@
 $this->load->view('partials/sections/_helpers');
 $img = vp_asset_url($section['image'] ?? '');
 ?>
-<section class="container mx-auto px-4 py-10">
+<section class="container mx-auto px-4 py-10"<?= vp_section_style_attr($section) ?>>
     <div class="relative overflow-hidden rounded-2xl bg-ink-900 text-white">
         <?php if ($img): ?>
             <img src="<?= vp_safe_html($img) ?>" alt="" class="absolute inset-0 w-full h-full object-cover opacity-40" loading="lazy" decoding="async">

@@ -2,7 +2,7 @@
 /** Call-to-action band. @var array $section */
 $this->load->view('partials/sections/_helpers');
 ?>
-<section class="bg-gradient-to-r from-brand-600 to-brand-800 text-white">
+<section class="bg-gradient-to-r from-brand-600 to-brand-800 text-white"<?= vp_section_style_attr($section) ?>>
     <div class="container mx-auto px-4 py-14 text-center">
         <?php if (!empty($section['title'])): ?><h2 class="text-3xl font-extrabold"><?= vp_safe_html($section['title']) ?></h2><?php endif; ?>
         <?php if (!empty($section['subtitle'])): ?><p class="text-white mt-2 max-w-2xl mx-auto"><?= vp_safe_html($section['subtitle']) ?></p><?php endif; ?>

@@ -4,7 +4,7 @@ $this->load->view('partials/sections/_helpers');
 $rows = $blocks['products'] ?? [];
 if (empty($rows)) return;
 ?>
-<section class="bg-gray-50">
+<section class="bg-gray-50"<?= vp_section_style_attr($section) ?>>
     <div class="container mx-auto px-4 py-16">
         <div class="flex items-end justify-between mb-8">
             <div>

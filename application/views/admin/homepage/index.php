@@ -2,34 +2,40 @@
 /** @var array $sections */
 /** @var array $types */
 /** @var string $pageKey */
+/** @var array $page_keys */
+$preview = $preview ?? ($pageKey === 'home' ? base_url() : base_url(strpos($pageKey, 'page:') === 0 ? substr($pageKey, 5) : $pageKey));
+$pk_enc = rawurlencode($pageKey);
 ?>
 <div class="max-w-6xl space-y-5">
 
     <div class="bg-white border rounded-2xl p-4 flex flex-wrap items-center gap-3">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
             <?php foreach ($page_keys as $key => $label): ?>
-                <a class="vp-tab <?= $key === $pageKey ? 'vp-tab-active' : '' ?>" href="<?= base_url('admin/homepage/index/' . $key) ?>"><?= vp_safe_html($label) ?></a>
+                <a class="vp-tab <?= $key === $pageKey ? 'vp-tab-active' : '' ?>" href="<?= base_url('admin/homepage/index/' . rawurlencode($key)) ?>"><?= vp_safe_html($label) ?></a>
             <?php endforeach; ?>
         </div>
         <div class="ml-auto flex items-center gap-2">
-            <a class="vp-btn vp-btn-secondary" href="<?= base_url($pageKey === 'home' ? '' : $pageKey) ?>" target="_blank" rel="noopener">
+            <a class="vp-btn vp-btn-secondary" href="<?= vp_safe_html($preview) ?>" target="_blank" rel="noopener">
                 <i class="ri-external-link-line"></i> Preview page
             </a>
         </div>
     </div>
 
-    <!-- Add a section -->
+    <p class="text-sm text-ink-800/70 px-1">
+        Drag sections to reorder them. Edit text, colours, images, video and files on each block — changes go live on the public website.
+    </p>
+
     <section class="bg-white border rounded-2xl">
         <header class="px-5 py-4 border-b flex items-center gap-3">
             <i class="ri-add-box-line text-xl text-brand-600"></i>
             <div>
-                <h2 class="font-bold text-ink-900">Add a section</h2>
-                <p class="text-xs text-ink-800/60">Pick a block type — it is appended to the bottom of the page and can be reordered.</p>
+                <h2 class="font-bold text-ink-900">Add a block</h2>
+                <p class="text-xs text-ink-800/60">Drop a block onto the page, then edit its content, colour and media.</p>
             </div>
         </header>
         <div class="p-5 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <?php foreach ($types as $key => $t): ?>
-                <a href="<?= base_url('admin/homepage/create/' . $pageKey . '?type=' . $key) ?>"
+                <a href="<?= base_url('admin/homepage/create/' . $pk_enc . '?type=' . $key) ?>"
                    class="border rounded-xl px-4 py-3 hover:border-brand-400 hover:bg-brand-50/40 transition">
                     <div class="flex items-center gap-2 font-semibold text-sm text-ink-900"><i class="<?= vp_safe_html($t[1]) ?> text-brand-600"></i> <?= vp_safe_html($t[0]) ?></div>
                     <p class="text-[11px] text-ink-800/60 mt-1"><?= vp_safe_html($t[2]) ?></p>
@@ -38,24 +44,26 @@
         </div>
     </section>
 
-    <!-- Existing sections -->
     <section class="bg-white border rounded-2xl">
         <header class="px-5 py-4 border-b flex items-center gap-3">
-            <i class="ri-stack-line text-xl text-brand-600"></i>
+            <i class="ri-drag-move-2-line text-xl text-brand-600"></i>
             <div>
-                <h2 class="font-bold text-ink-900">Sections on this page</h2>
-                <p class="text-xs text-ink-800/60">Order here is the order visitors see. Disabled sections are not rendered at all.</p>
+                <h2 class="font-bold text-ink-900">Page layout</h2>
+                <p class="text-xs text-ink-800/60">Drag the handle to reorder. Hidden blocks are not shown to visitors.</p>
             </div>
-            <span class="ml-auto text-xs text-ink-800/60"><?= count($sections) ?> section(s)</span>
+            <span class="ml-auto text-xs text-ink-800/60"><?= count($sections) ?> block(s)</span>
         </header>
 
-        <div class="divide-y">
+        <div id="vp-builder-list" class="divide-y" data-page-key="<?= vp_safe_html($pageKey) ?>">
             <?php if (empty($sections)): ?>
-                <p class="p-8 text-center text-sm text-ink-800/60">No sections yet — add one above.</p>
+                <p class="p-8 text-center text-sm text-ink-800/60">No blocks yet — add one above.</p>
             <?php endif; ?>
 
             <?php foreach ($sections as $i => $s): $t = $types[$s['type']] ?? ['Section', 'ri-layout-line', '']; ?>
-                <div class="vp-section-row px-5 py-4 flex flex-wrap items-center gap-4">
+                <div class="vp-section-row px-5 py-4 flex flex-wrap items-center gap-4" draggable="true" data-id="<?= vp_safe_html($s['id']) ?>">
+                    <button type="button" class="cursor-grab active:cursor-grabbing p-2 text-ink-800/40 hover:text-ink-900" title="Drag to reorder" aria-label="Drag to reorder">
+                        <i class="ri-draggable text-xl"></i>
+                    </button>
                     <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center">
                         <i class="<?= vp_safe_html($t[1]) ?> text-xl"></i>
                     </div>
@@ -71,14 +79,6 @@
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <form method="post" action="<?= base_url('admin/homepage/move/' . $s['id'] . '/up') ?>">
-                            <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
-                            <button class="p-2 rounded hover:bg-gray-100 <?= $i === 0 ? 'opacity-30 pointer-events-none' : '' ?>" title="Move up"><i class="ri-arrow-up-line"></i></button>
-                        </form>
-                        <form method="post" action="<?= base_url('admin/homepage/move/' . $s['id'] . '/down') ?>">
-                            <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
-                            <button class="p-2 rounded hover:bg-gray-100 <?= $i === count($sections) - 1 ? 'opacity-30 pointer-events-none' : '' ?>" title="Move down"><i class="ri-arrow-down-line"></i></button>
-                        </form>
                         <form method="post" action="<?= base_url('admin/homepage/toggle/' . $s['id']) ?>">
                             <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
                             <button class="vp-btn vp-btn-secondary vp-btn-sm" title="Show/hide on the website">
@@ -87,7 +87,11 @@
                             </button>
                         </form>
                         <a class="vp-btn vp-btn-secondary vp-btn-sm" href="<?= base_url('admin/homepage/edit/' . $s['id']) ?>"><i class="ri-edit-line"></i> Edit</a>
-                        <form method="post" action="<?= base_url('admin/homepage/delete/' . $s['id']) ?>" data-confirm="Delete this section from the page?">
+                        <form method="post" action="<?= base_url('admin/homepage/duplicate/' . $s['id']) ?>">
+                            <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
+                            <button class="vp-btn vp-btn-secondary vp-btn-sm" title="Duplicate"><i class="ri-file-copy-line"></i></button>
+                        </form>
+                        <form method="post" action="<?= base_url('admin/homepage/delete/' . $s['id']) ?>" data-confirm="Delete this block from the page?">
                             <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
                             <button class="vp-btn vp-btn-secondary vp-btn-sm text-red-600"><i class="ri-delete-bin-line"></i></button>
                         </form>

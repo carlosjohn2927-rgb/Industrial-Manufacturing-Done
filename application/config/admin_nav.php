@@ -36,7 +36,7 @@ $config['admin_nav'] = [
     [
         'group' => 'Website',
         'items' => [
-            ['label' => 'Homepage',       'url' => 'admin/homepage',   'icon' => 'ri-home-gear-line',  'permission' => 'homepage.manage',   'match' => 'homepage'],
+            ['label' => 'Page builder',   'url' => 'admin/homepage',   'icon' => 'ri-layout-masonry-line',  'permission' => 'homepage.manage',   'match' => 'homepage'],
             ['label' => 'Pages',          'url' => 'admin/pages',      'icon' => 'ri-pages-line',      'permission' => 'pages.manage',      'match' => 'pages'],
             ['label' => 'Navigation',     'url' => 'admin/menus',      'icon' => 'ri-menu-2-line',     'permission' => 'menus.manage',      'match' => 'menus'],
             ['label' => 'Header & Footer','url' => 'admin/appearance/header', 'icon' => 'ri-layout-top-line', 'permission' => 'appearance.manage', 'match' => 'appearance'],

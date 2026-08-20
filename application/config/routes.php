@@ -164,6 +164,7 @@ $route['admin/homepage/toggle/(:any)']            = 'admin/homepage/toggle/$1';
 $route['admin/homepage/move/(:any)/(:any)']       = 'admin/homepage/move/$1/$2';
 $route['admin/homepage/reorder']                  = 'admin/homepage/reorder';
 $route['admin/homepage/delete/(:any)']            = 'admin/homepage/delete/$1';
+$route['admin/homepage/duplicate/(:any)']         = 'admin/homepage/duplicate/$1';
 
 $route['admin/pages']                             = 'admin/pages/index';
 $route['admin/pages/create']                      = 'admin/pages/create';

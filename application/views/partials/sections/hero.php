@@ -5,7 +5,7 @@ $img     = vp_asset_url($section['image'] ?? '', IMG_URL . 'hero-industrial.jpg'
 $eyebrow = vp_section_option($section, 'eyebrow');
 $badges  = (array) vp_section_option($section, 'badges', []);
 ?>
-<section class="relative overflow-hidden bg-ink-900 text-white min-h-[520px] flex items-center">
+<section class="relative overflow-hidden bg-ink-900 text-white min-h-[520px] flex items-center"<?= vp_section_style_attr($section) ?>>
     <img src="<?= vp_safe_html($img) ?>" alt="<?= vp_safe_html($section['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" decoding="async">
     <div class="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/90 to-ink-900/20"></div>
     <div class="container mx-auto px-4 py-20 lg:py-28 relative">

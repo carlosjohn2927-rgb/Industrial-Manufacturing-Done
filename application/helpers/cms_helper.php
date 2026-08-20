@@ -318,7 +318,32 @@ if (!function_exists('vp_section_types')) {
             'banner'       => ['Promotional banner', 'ri-megaphone-line',    'Image banner with text and a button.'],
             'newsletter'   => ['Newsletter',         'ri-mail-send-line',    'Email sign-up block.'],
             'cta'          => ['Call to action',     'ri-cursor-line',       'Coloured band with heading and button.'],
+            'image'        => ['Image',              'ri-image-add-line',    'Full-width or contained photo with optional caption.'],
+            'gallery'      => ['Image gallery',      'ri-gallery-line',      'Grid of images visitors can browse.'],
+            'video'        => ['Video',              'ri-video-line',        'Uploaded video file or YouTube/Vimeo embed URL.'],
+            'file'         => ['File download',      'ri-file-upload-line',  'Downloadable document (PDF, Office, ZIP).'],
         ];
+    }
+}
+
+if (!function_exists('vp_section_style_attr')) {
+    function vp_section_style_attr($section)
+    {
+        $s = vp_section_settings($section);
+        $css = [];
+        $bg = trim((string) ($s['bg_color'] ?? ''));
+        $fg = trim((string) ($s['text_color'] ?? ''));
+        $hd = trim((string) ($s['heading_color'] ?? ''));
+        if ($bg !== '' && preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $bg)) {
+            $css[] = 'background-color:' . vp_sanitize_hex_color($bg, $bg);
+        }
+        if ($fg !== '' && preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $fg)) {
+            $css[] = 'color:' . vp_sanitize_hex_color($fg, $fg);
+        }
+        if ($hd !== '' && preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $hd)) {
+            $css[] = '--vp-heading:' . vp_sanitize_hex_color($hd, $hd);
+        }
+        return $css ? ' style="' . implode(';', $css) . '"' : '';
     }
 }
 

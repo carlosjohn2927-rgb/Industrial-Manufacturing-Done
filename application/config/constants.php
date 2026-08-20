@@ -61,7 +61,7 @@ define('UPLOAD_URL', ASSETS_URL . 'uploads/');
 
 // Bump when changing files under assets/js|css so browsers/Cloudflare fetch
 // the fresh build instead of serving a stale cached copy.
-define('VP_ASSET_VERSION', '6');
+define('VP_ASSET_VERSION', '7');
 
 // Quote activity actions (mirrors QuoteActivityAction)
 define('QA_CREATED',     'QUOTE_CREATED');
