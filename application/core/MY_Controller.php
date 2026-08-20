@@ -138,6 +138,12 @@ class MY_Controller extends CI_Controller
         $data['page_description'] = $data['page_description'] ?: $this->page_description;
         $data['body_class']       = $data['body_class'] ?: $this->body_class;
 
+        // Super Admins and Admins get a contextual "Edit this page" shortcut
+        // while browsing the public website. The destination is the editor
+        // that owns the current content (CMS page, product, post, settings,
+        // etc.), rather than a misleading one-size-fits-all form.
+        $data['admin_edit'] = $this->_admin_edit_target($data);
+
         $layout = $layout !== null ? $layout : $this->layout;
         $content = $this->load->view($view, $data, TRUE);
 
@@ -148,6 +154,89 @@ class MY_Controller extends CI_Controller
 
         $data['content'] = $content;
         $this->load->view('layouts/' . $layout, $data);
+    }
+
+    /**
+     * Resolve the dashboard editor for the current public route.
+     *
+     * @return array|null ['url' => absolute URL, 'label' => button label]
+     */
+    private function _admin_edit_target(array $data)
+    {
+        $user = $this->vp_auth->user();
+        $role = $user['role'] ?? '';
+        if (!in_array($role, [ROLE_SUPER_ADMIN, ROLE_ADMIN], true)) return null;
+
+        $controller = strtolower((string) $this->router->fetch_class());
+        $method     = strtolower((string) $this->router->fetch_method());
+        $target     = null;
+        $permission = null;
+
+        switch ($controller) {
+            case 'home':
+                $target = 'admin/homepage/index/home'; $permission = 'homepage.manage';
+                break;
+            case 'about':
+                $target = 'admin/homepage/index/about'; $permission = 'homepage.manage';
+                break;
+            case 'services':
+                $target = 'admin/homepage/index/services'; $permission = 'homepage.manage';
+                break;
+            case 'page':
+            case 'errors':
+                if (!empty($data['page']['id'])) {
+                    $target = 'admin/pages/edit/' . rawurlencode($data['page']['id']);
+                    $permission = 'pages.manage';
+                }
+                break;
+            case 'products':
+                $target = !empty($data['product']['id'])
+                    ? 'admin/products/edit/' . rawurlencode($data['product']['id'])
+                    : 'admin/products';
+                $permission = 'products.manage';
+                break;
+            case 'industries':
+                $target = !empty($data['industry']['id'])
+                    ? 'admin/industries/edit/' . rawurlencode($data['industry']['id'])
+                    : 'admin/industries';
+                $permission = 'industries.manage';
+                break;
+            case 'blog':
+                $target = !empty($data['post']['id'])
+                    ? 'admin/blog/edit/' . rawurlencode($data['post']['id'])
+                    : 'admin/blog';
+                $permission = 'blog.manage';
+                break;
+            case 'news':
+                $target = !empty($data['row']['id'])
+                    ? 'admin/news/edit/' . rawurlencode($data['row']['id'])
+                    : 'admin/news';
+                $permission = 'news.manage';
+                break;
+            case 'careers':
+                $target = !empty($data['job']['id'])
+                    ? 'admin/careers/edit/' . rawurlencode($data['job']['id'])
+                    : 'admin/careers';
+                $permission = 'careers.manage';
+                break;
+            case 'faq':
+                $target = 'admin/faqs'; $permission = 'faqs.manage';
+                break;
+            case 'downloads':
+                $target = 'admin/downloads'; $permission = 'downloads.manage';
+                break;
+            case 'contact':
+                $target = 'admin/settings/contact'; $permission = 'settings.manage';
+                break;
+            case 'rfq':
+                if ($method === 'index') {
+                    $target = 'admin/settings/system'; $permission = 'settings.manage';
+                }
+                break;
+        }
+
+        if (!$target || !$permission || !$this->acl->user_can($user, $permission)) return null;
+        return ['url' => base_url($target), 'label' => 'Edit this page'];
     }
 
     /**

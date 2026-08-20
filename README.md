@@ -4,7 +4,7 @@ A CodeIgniter 3 PHP application for an industrial manufacturing company, featuri
 
 - **Public site**: Home, Products, Services, Industries, Blog, News, Careers, FAQ, Contact, RFQ (quote requests) — every page, menu, logo and text is database-driven
 - **Super Admin Dashboard**: full control of the application — administrators, permissions, homepage, pages, navigation, header/footer, branding, media, settings, system
-- **Admin Dashboard**: the same dashboard, limited to exactly the sections the Super Admin granted (enforced server-side)
+- **Admin Dashboard**: full website/content editing for every Admin, with operational sections controlled by the Super Admin (enforced server-side)
 - **CMS**: homepage section builder, CMS pages at `/{slug}`, navigation manager, logo/favicon manager, media library
 - **AI Chat Assistant**: Floating widget with optional LLM integration (OpenAI-compatible)
 - **Auth system**: Login/register, password reset, roles + per-account permissions (Super Admin, Admin, Sales, Engineer, Editor, Customer)
@@ -55,6 +55,7 @@ to a database created before this release — both are safe to re-run:
 ```
 database/migrations/001_cms_and_permissions.sql
 database/migrations/002_cms_seed.sql
+database/migrations/003_admin_full_page_editing.sql
 ```
 
 ---

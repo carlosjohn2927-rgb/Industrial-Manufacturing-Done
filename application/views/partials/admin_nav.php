@@ -27,7 +27,28 @@ $recent    = $recent_notifications ?? [];
         <?php endif; ?>
     </div>
 
+    <!-- Browser-style navigation keeps long editing workflows in one tab. -->
+    <nav class="hidden lg:flex items-center gap-1 ml-3" aria-label="Page history">
+        <button type="button" class="vp-btn vp-btn-secondary vp-btn-sm" data-vp-history="back" title="Go to the previous page">
+            <i class="ri-arrow-left-line"></i> Previous
+        </button>
+        <button type="button" class="vp-btn vp-btn-secondary vp-btn-sm" data-vp-history="forward" title="Go to the next page in your history">
+            Forward <i class="ri-arrow-right-line"></i>
+        </button>
+        <a class="vp-btn vp-btn-secondary vp-btn-sm" href="<?= base_url('admin') ?>" title="Back to the dashboard">
+            <i class="ri-corner-up-left-line"></i> Back
+        </a>
+    </nav>
+
     <div class="ml-auto flex items-center gap-2 md:gap-3">
+        <!-- Compact history controls on smaller screens. -->
+        <button type="button" class="lg:hidden p-2 rounded hover:bg-gray-100" data-vp-history="back" aria-label="Previous page" title="Previous page">
+            <i class="ri-arrow-left-line text-xl"></i>
+        </button>
+        <button type="button" class="lg:hidden p-2 rounded hover:bg-gray-100" data-vp-history="forward" aria-label="Forward page" title="Forward page">
+            <i class="ri-arrow-right-line text-xl"></i>
+        </button>
+
         <!-- View website -->
         <a href="<?= base_url() ?>" target="_blank" rel="noopener"
            class="hidden sm:inline-flex items-center gap-2 border border-brand-200 bg-brand-50 hover:bg-brand-100 text-brand-800 text-sm font-semibold px-3 py-2 rounded-lg"

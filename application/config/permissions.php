@@ -68,9 +68,14 @@ $config['role_default_permissions'] = [
     'ADMIN' => [
         'dashboard.view', 'reports.view',
         'quotes.manage', 'contacts.manage',
-        'products.manage', 'categories.manage',
+        // Administrators are full website editors. These content permissions
+        // are also protected in Acl::effective(), so an old per-user override
+        // cannot accidentally leave an ADMIN unable to edit a public page.
+        'products.manage', 'categories.manage', 'industries.manage', 'downloads.manage',
+        'blog.manage', 'news.manage', 'faqs.manage', 'careers.manage',
+        'testimonials.manage', 'partners.manage',
         'homepage.manage', 'pages.manage', 'menus.manage', 'appearance.manage',
-        'media.manage',
+        'media.manage', 'seo.manage', 'settings.manage',
     ],
     'SALES' => [
         'dashboard.view', 'quotes.manage', 'contacts.manage',

@@ -8,8 +8,9 @@ Sign in at `/admin/login` with your staff account. A fresh installation has no s
 
 ## Dashboard
 
-- Header: clickable logo and **Homepage / View Website** buttons (open the public
-  site in a new tab), notifications bell, profile menu
+- Header: **Previous**, **Forward**, and **Back** (dashboard) navigation controls,
+  clickable logo and **Homepage / View Website** buttons (open the public site
+  in a new tab), notifications bell, profile menu
 - Counts you are allowed to see (RFQs, products, messages, customers, pages, media)
 - Quick links into the website-management screens you have permission for
 - Latest quote requests, recent administrator activity
@@ -17,7 +18,9 @@ Sign in at `/admin/login` with your staff account. A fresh installation has no s
   sign-ins (7 days), maintenance-mode state
 
 Every panel and sidebar entry is filtered by your permissions — and the same
-permission is checked again on the server for each request.
+permission is checked again on the server for each request. The `ADMIN` role
+always retains all public website/content editors; operational areas can still
+be granted or removed per account by the Super Admin.
 
 ## Quotes
 

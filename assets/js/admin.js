@@ -2,6 +2,19 @@
 (function () {
     'use strict';
     document.addEventListener('DOMContentLoaded', function () {
+        // Previous / forward controls in the dashboard header. Keeping this in
+        // the shared script (rather than inline onclick attributes) preserves
+        // the production Content-Security-Policy.
+        document.querySelectorAll('[data-vp-history]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                if (button.getAttribute('data-vp-history') === 'forward') {
+                    window.history.forward();
+                } else {
+                    window.history.back();
+                }
+            });
+        });
+
         // Sidebar toggle (mobile)
         var t = document.getElementById('vp-admin-toggle');
         var sb = document.getElementById('vp-admin-sidebar') || document.querySelector('aside');
