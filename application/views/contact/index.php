@@ -1,8 +1,8 @@
 <?php /** @var array $contact */ ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-12">
         <?= vp_inline_text('contact_hero_title', 'Contact us', 'h1', 'text-4xl font-extrabold') ?>
-        <?= vp_inline_text('contact_hero_subtitle', 'Sales, service, careers and general enquiries - we respond within 1 business day.', 'p', 'text-white mt-2 max-w-2xl') ?>
+        <?= vp_inline_text('contact_hero_subtitle', 'Sales, service, careers and general enquiries - we respond within 1 business day.', 'p', 'mt-2 max-w-2xl') ?>
     </div>
 </section>
 <section class="container mx-auto px-4 py-12 grid lg:grid-cols-3 gap-8">
@@ -54,16 +54,36 @@
     </aside>
 </section>
 
+<?php
+$map_address = vp_map_query($contact['address'] ?? '');
+$map_search  = vp_maps_search_url($map_address);
+$map_embed   = vp_map_embed_url($map_address);
+?>
 <section class="container mx-auto px-4 pb-12">
-    <div class="vp-card vp-card-pad">
-        <h2 class="text-2xl font-bold mb-4">Find us</h2>
-        <div class="overflow-hidden rounded-xl border">
+    <div class="vp-card overflow-hidden">
+        <div class="vp-card-pad border-b">
+            <h2 class="text-2xl font-bold mb-2">Find us</h2>
+            <?php if ($map_address): ?>
+                <p class="text-sm mb-3"><i class="ri-map-pin-line"></i> <?= vp_safe_html($map_address) ?></p>
+            <?php endif; ?>
+            <a class="text-sm font-semibold text-brand-600 hover:underline" href="<?= vp_safe_html($map_search) ?>" target="_blank" rel="noopener">
+                Open in Google Maps <i class="ri-external-link-line"></i>
+            </a>
+        </div>
+        <div id="vp-contact-map" class="vp-contact-map"
+             data-address="<?= vp_safe_html($map_address) ?>"
+             data-maps-url="<?= vp_safe_html($map_search) ?>"
+             role="region" aria-label="Map of our location"></div>
+        <noscript>
             <iframe
-                src="<?= vp_safe_html(vp_map_embed_url($contact['address'] ?? '')) ?>"
+                src="<?= vp_safe_html($map_embed) ?>"
                 width="100%" height="420" style="border:0; display:block;"
                 allowfullscreen="" loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
                 title="Map of our location"></iframe>
-        </div>
+        </noscript>
     </div>
 </section>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="<?= JS_URL ?>contact-map.js?v=<?= VP_ASSET_VERSION ?>"></script>

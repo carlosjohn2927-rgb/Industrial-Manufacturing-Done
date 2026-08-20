@@ -1,8 +1,8 @@
 <?php /** @var array $rows */ ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-12">
         <h1 class="text-4xl font-extrabold">News</h1>
-        <p class="text-white mt-2">Latest news and announcements.</p>
+        <p class="mt-2">Latest news and announcements.</p>
     </div>
 </section>
 <section class="container mx-auto px-4 py-12">

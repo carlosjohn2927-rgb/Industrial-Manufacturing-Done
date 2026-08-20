@@ -127,7 +127,7 @@ class MY_Controller extends CI_Controller
              . "img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; "
              . "script-src 'self' 'nonce-{$nonce}' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://code.jquery.com; "
              . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-             . "connect-src 'self' https:; frame-src https://www.youtube.com https://player.vimeo.com https://www.google.com https://maps.google.com";
+             . "connect-src 'self' https:; frame-src https://www.youtube.com https://player.vimeo.com https://www.google.com https://maps.google.com https://www.openstreetmap.org";
         $this->output->set_header('Content-Security-Policy: ' . $csp);
     }
 

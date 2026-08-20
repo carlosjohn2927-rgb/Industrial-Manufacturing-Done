@@ -2,15 +2,15 @@
 /** @var array $post */
 /** @var array|null $author */
 ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-12 max-w-3xl">
-        <div class="text-xs text-brand-200 uppercase tracking-widest">
+        <div class="text-xs text-brand-700 uppercase tracking-widest">
             <?= vp_human_date($post['publishedAt']) ?>
             <?php if (!empty($post['category'])): ?> &middot; <?= vp_safe_html($post['category']) ?><?php endif; ?>
         </div>
         <h1 class="text-3xl md:text-4xl font-extrabold mt-2"><?= vp_safe_html($post['title']) ?></h1>
         <?php if (!empty($post['excerpt'])): ?>
-            <p class="text-white mt-3 text-lg"><?= vp_safe_html($post['excerpt']) ?></p>
+            <p class="mt-3 text-lg"><?= vp_safe_html($post['excerpt']) ?></p>
         <?php endif; ?>
     </div>
 </section>

@@ -1,12 +1,13 @@
 <?php /** @var array $rows */ ?>
-<section class="relative bg-ink-900 text-white overflow-hidden min-h-[420px] flex items-end">
+<section class="relative bg-ink-900 overflow-hidden min-h-[420px] flex items-end">
     <img src="<?= IMG_URL ?>careers-team.jpg" alt="Engineering and fabrication team collaborating" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" decoding="async">
-    <div class="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/80 to-transparent"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-ink-900/70 to-transparent"></div>
+    <div class="absolute inset-0 bg-black/25"></div>
     <div class="container mx-auto px-4 py-14 relative">
-        <span class="text-xs font-semibold tracking-widest uppercase text-brand-200">Build what matters</span>
-        <?= vp_inline_text('careers_hero_title', 'Careers', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
-        <?= vp_inline_text('careers_hero_subtitle', 'Join a team that designs and builds the industrial equipment the world depends on.', 'p', 'text-white mt-3 max-w-2xl text-lg') ?>
+        <div class="vp-writeup-band max-w-2xl rounded-2xl shadow-xl p-6 md:p-8">
+            <span class="text-xs font-semibold tracking-widest uppercase text-brand-700">Build what matters</span>
+            <?= vp_inline_text('careers_hero_title', 'Careers', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
+            <?= vp_inline_text('careers_hero_subtitle', 'Join a team that designs and builds the industrial equipment the world depends on.', 'p', 'mt-3 max-w-2xl text-lg') ?>
+        </div>
     </div>
 </section>
 <section class="container mx-auto px-4 py-12 max-w-3xl">

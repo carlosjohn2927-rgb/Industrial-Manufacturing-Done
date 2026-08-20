@@ -1,12 +1,12 @@
 <?php /** @var array $services */ ?>
-<section class="relative bg-ink-900 text-white overflow-hidden min-h-[400px] flex items-center">
+<section class="relative bg-ink-900 overflow-hidden min-h-[400px] flex items-center">
     <img src="<?= IMG_URL ?>services-engineering.jpg" alt="Field engineer commissioning industrial equipment" class="absolute inset-0 w-full h-full object-cover object-center" fetchpriority="high" decoding="async">
-    <div class="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/85 to-transparent"></div>
+    <div class="absolute inset-0 bg-black/25"></div>
     <div class="container mx-auto px-4 py-16 relative">
-        <div class="max-w-2xl">
-            <span class="text-xs font-semibold tracking-widest uppercase text-brand-200">Lifecycle support</span>
+        <div class="vp-writeup-band max-w-2xl rounded-2xl shadow-xl p-6 md:p-8">
+            <span class="text-xs font-semibold tracking-widest uppercase text-brand-700">Lifecycle support</span>
             <?= vp_inline_text('services_hero_title', 'Services', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
-            <?= vp_inline_text('services_hero_subtitle', 'From concept to commissioning, ' . ($site_name ?? 'Halyk Petroleum') . ' partners with you at every stage of the equipment lifecycle.', 'p', 'text-white mt-3 text-lg') ?>
+            <?= vp_inline_text('services_hero_subtitle', 'From concept to commissioning, ' . ($site_name ?? 'Halyk Petroleum') . ' partners with you at every stage of the equipment lifecycle.', 'p', 'mt-3 text-lg') ?>
         </div>
     </div>
 </section>

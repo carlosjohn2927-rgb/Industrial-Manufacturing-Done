@@ -1,10 +1,10 @@
 <?php
 /** @var array|null $prefill */
 ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-12">
         <h1 class="text-4xl font-extrabold">Request a quote</h1>
-        <p class="text-white mt-2 max-w-2xl">Tell us about your application. Our engineering team will respond with a formal quote within 2 business days.</p>
+        <p class="mt-2 max-w-2xl">Tell us about your application. Our engineering team will respond with a formal quote within 2 business days.</p>
     </div>
 </section>
 

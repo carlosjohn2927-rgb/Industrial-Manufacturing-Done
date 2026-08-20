@@ -1,9 +1,9 @@
 <?php /** @var array $intro */ /** @var array $testimonials */ /** @var array $partners */ ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-16">
-        <span class="text-xs font-semibold tracking-widest uppercase text-brand-200 bg-white/10 px-3 py-1 rounded-full">About us</span>
+        <span class="text-xs font-semibold tracking-widest uppercase text-brand-700 bg-brand-50 px-3 py-1 rounded-full">About us</span>
         <?= vp_inline_text('about_hero_title', 'Built on engineering. Trusted by operators.', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
-        <?= vp_inline_text('about_hero_subtitle', 'For over 35 years, ' . ($site_name ?? 'Halyk Petroleum') . ' has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.', 'p', 'text-white mt-3 max-w-2xl') ?>
+        <?= vp_inline_text('about_hero_subtitle', 'For over 35 years, ' . ($site_name ?? 'Halyk Petroleum') . ' has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.', 'p', 'mt-3 max-w-2xl') ?>
     </div>
 </section>
 

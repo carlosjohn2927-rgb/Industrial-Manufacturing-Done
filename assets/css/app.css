@@ -243,3 +243,41 @@ form .vp-input::placeholder, form .vp-textarea::placeholder { color: #6b7280; fo
 /* Tables inside prose. */
 .vp-prose td { font-weight: 500; color: #000000; }
 .vp-prose th { font-weight: 700; color: #000000; }
+
+/* ------------------------------------------------------------------ */
+/* Top / bottom page write-up bands: black text on a light surface.    */
+/* Used by inner-page heroes, photo-hero text cards, and the CTA.      */
+/* ------------------------------------------------------------------ */
+.vp-writeup-band {
+    background-color: #ffffff;
+    color: var(--vp-writeup, #000000);
+}
+.vp-writeup-band h1,
+.vp-writeup-band h2,
+.vp-writeup-band h3,
+.vp-writeup-band h4,
+.vp-writeup-band p,
+.vp-writeup-band span,
+.vp-writeup-band li,
+.vp-writeup-band div {
+    color: var(--vp-writeup, #000000);
+}
+.vp-writeup-band .vp-btn-primary,
+.vp-writeup-band a.bg-brand-500,
+.vp-writeup-band a.bg-brand-600,
+.vp-writeup-band a.bg-brand-700 {
+    color: #ffffff;
+}
+
+/* Contact page map (Leaflet). Isolate stacking so tiles stay under the header. */
+.vp-contact-map {
+    height: 420px;
+    width: 100%;
+    background: #e5e7eb;
+    isolation: isolate;
+}
+.vp-contact-map .leaflet-container {
+    height: 100%;
+    width: 100%;
+    font-family: inherit;
+}
