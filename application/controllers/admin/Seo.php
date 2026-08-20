@@ -8,7 +8,9 @@
  */
 class Seo extends Admin_Controller
 {
-    protected $allowed_roles = [ROLE_SUPER_ADMIN, ROLE_ADMIN];
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'seo.manage';
+
 
     /** Field => [label, type] */
     private $fields = [
@@ -33,7 +35,7 @@ class Seo extends Admin_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('settings');
+        
         $this->load->library('form_validation');
         $this->load->helper(['form', 'url']);
     }

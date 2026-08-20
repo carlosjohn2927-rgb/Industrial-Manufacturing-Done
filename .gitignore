@@ -38,3 +38,6 @@ assets/uploads/*
 
 # Legacy app/ directory (duplicate of application/)
 app/
+# Local development SQLite database (production uses MySQL/MariaDB)
+database/*.sqlite
+database/*.sqlite-journal

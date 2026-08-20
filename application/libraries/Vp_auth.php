@@ -125,7 +125,7 @@ class Vp_auth
 
         $this->CI->load->library('rate_limiter');
         if ($this->CI->rate_limiter->too_many($lock_key, self::MAX_ATTEMPTS, self::WINDOW_MINUTES * 60)) {
-            $this->CI->load->library('audit');
+            
             $this->CI->audit->log(AUDIT_LOGIN_FAILED, 'user', null, ['email' => $email, 'reason' => 'locked']);
             $this->last_attempt_error = 'locked';
             return null;
@@ -137,14 +137,14 @@ class Vp_auth
             $row = null;
         }
         if (!$row || !password_verify((string) $password, $row['password'])) {
-            $this->CI->load->library('audit');
+            
             $this->CI->audit->log(AUDIT_LOGIN_FAILED, 'user', null, ['email' => $email]);
             $this->last_attempt_error = 'credentials';
             return null;
         }
 
         if (!$row['isActive']) {
-            $this->CI->load->library('audit');
+            
             $this->CI->audit->log(AUDIT_LOGIN_FAILED, 'user', $row['id'], ['email' => $email, 'reason' => 'inactive']);
             $this->last_attempt_error = 'inactive';
             return null;
@@ -177,7 +177,7 @@ class Vp_auth
             'lastLoginAt' => date('Y-m-d H:i:s'),
         ], ['id' => $user['id']]);
 
-        $this->CI->load->library('audit');
+        
         $this->CI->audit->log(AUDIT_LOGIN, 'user', $user['id']);
 
         if ($remember) {
@@ -202,7 +202,7 @@ class Vp_auth
     {
         $uid = $this->id();
         if ($uid) {
-            $this->CI->load->library('audit');
+            
             $this->CI->audit->log(AUDIT_LOGOUT, 'user', $uid);
         }
         $this->CI->session->unset_userdata(['vp_user_id', 'vp_user_role']);
@@ -287,7 +287,7 @@ class Vp_auth
         if ($ok) {
             // list_tables() caches per request; invalidate so later checks pass.
             $this->CI->db->data_cache = [];
-            $this->CI->load->library('audit');
+            
             $this->CI->audit->log(AUDIT_UPDATE, 'ci_sessions', null, ['action' => 'auto_create']);
         }
         return $done = $ok;

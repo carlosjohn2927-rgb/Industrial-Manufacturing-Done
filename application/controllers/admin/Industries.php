@@ -2,6 +2,9 @@
 
 class Industries extends Admin_Crud
 {
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'industries.manage';
+
     protected $model_name   = 'Industry_model';
     protected $redirect_url = 'admin/industries';
     protected $order_by     = ['sortOrder' => 'ASC', 'name' => 'ASC'];

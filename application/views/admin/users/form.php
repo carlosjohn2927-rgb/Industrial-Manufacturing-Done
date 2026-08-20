@@ -12,12 +12,10 @@
         <div class="vp-form-row"><label>Company</label><input class="vp-input" name="company" value="<?= vp_safe_html($row['company'] ?? '') ?>"></div>
     </div>
     <div class="vp-grid-2">
-        <div class="vp-form-row"><label>Role</label>
-            <select class="vp-select" name="role">
-                <?php foreach ([ROLE_CUSTOMER, ROLE_EDITOR, ROLE_ENGINEER, ROLE_SALES, ROLE_ADMIN, ROLE_SUPER_ADMIN] as $r): ?>
-                    <option value="<?= $r ?>" <?= ($row['role'] ?? ROLE_CUSTOMER) === $r ? 'selected' : '' ?>><?= vp_role_label($r) ?></option>
-                <?php endforeach; ?>
-            </select>
+        <div class="vp-form-row"><label>Account type</label>
+            <input class="vp-input bg-gray-50" type="text" value="Customer" disabled>
+            <p class="vp-help">Staff roles are assigned by the Super Admin under
+                <a class="text-brand-700 hover:underline" href="<?= base_url('admin/admins') ?>">Administrators</a>.</p>
         </div>
         <div class="vp-form-row">
             <label><?= $is_create ? 'Password *' : 'New password (leave blank to keep)' ?></label>

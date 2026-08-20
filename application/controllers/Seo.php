@@ -73,6 +73,11 @@ class Seo extends MY_Controller
         $this->_add_slugs($urls, 'news', '/news/', '0.5', $base, ['isActive' => 1]);
         $this->_add_slugs($urls, 'careers', '/careers/', '0.5', $base, ['isActive' => 1]);
 
+        // CMS pages published from the dashboard (Website → Pages)
+        if ($this->db->table_exists('pages')) {
+            $this->_add_slugs($urls, 'pages', '/', '0.6', $base, ['status' => 'PUBLISHED', 'visibility' => 'PUBLIC']);
+        }
+
         $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         foreach ($urls as $u) {

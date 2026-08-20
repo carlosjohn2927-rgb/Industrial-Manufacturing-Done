@@ -2,7 +2,9 @@
 
 class News extends Admin_Controller
 {
-    protected $allowed_roles = [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_EDITOR];
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'news.manage';
+
 
     public function __construct()
     {

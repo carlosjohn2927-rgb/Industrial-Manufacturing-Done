@@ -1,8 +1,17 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
+/**
+ * Halyk Petroleum — customer accounts.
+ *
+ * This screen manages CUSTOMER accounts only. Staff accounts (Super Admin,
+ * Admin, Sales, Engineer, Editor) are managed exclusively by the Super Admin
+ * in Dashboard → People → Administrators, which is how self-promotion is made
+ * impossible: no role field here can ever produce a staff account.
+ */
 class Users extends Admin_Controller
 {
-    protected $allowed_roles = [ROLE_SUPER_ADMIN, ROLE_ADMIN];
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'customers.manage';
 
     public function __construct()
     {
@@ -14,38 +23,36 @@ class Users extends Admin_Controller
 
     public function index()
     {
-        $this->page_title = 'Users';
+        $this->page_title = 'Customers';
         $search = $this->input->get('q');
-        $role = $this->input->get('role');
-        $page = max(1, (int) $this->input->get('page'));
-        $per = 25;
-        $where = [];
-        if ($role) $where['role'] = $role;
-        $result = $this->User_model->paginate($where, $per, $page, ['createdAt' => 'DESC'], $search, ['email','firstName','lastName','company']);
+        $page   = max(1, (int) $this->input->get('page'));
+        $per    = 25;
+
+        $result = $this->User_model->paginate(['role' => ROLE_CUSTOMER], $per, $page, ['createdAt' => 'DESC'],
+            $search, ['email', 'firstName', 'lastName', 'company']);
+
         $this->render('admin/users/index', [
-            'rows' => $result['rows'],
-            'total' => $result['total'],
+            'rows'        => $result['rows'],
+            'total'       => $result['total'],
             'total_pages' => $result['total_pages'],
-            'page' => $result['page'],
-            'search' => $search,
-            'role' => $role,
-            'base_url' => base_url('admin/users') . '?' . http_build_query(array_filter(['q' => $search, 'role' => $role])) . '&page={page}',
+            'page'        => $result['page'],
+            'search'      => $search,
+            'role'        => ROLE_CUSTOMER,
+            'base_url'    => base_url('admin/users') . '?' . http_build_query(array_filter(['q' => $search])) . '&page={page}',
         ]);
     }
 
     public function create()
     {
-        $this->page_title = 'New user';
-        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('password', 'Password', 'required|min_length[8]');
+        $this->page_title = 'New customer';
         $this->render('admin/users/form', ['row' => null]);
     }
 
     public function edit($id = null)
     {
-        if (!$id) show_404();
-        $row = $this->User_model->find($id);
+        $row = $id ? $this->User_model->find($id) : null;
         if (!$row) show_404();
+        $this->_assert_customer($row);
         $this->page_title = 'Edit: ' . trim($row['firstName'] . ' ' . $row['lastName']);
         $this->render('admin/users/form', ['row' => $row]);
     }
@@ -53,84 +60,80 @@ class Users extends Admin_Controller
     public function save()
     {
         if ($this->input->method() !== 'post') show_404();
-        $id = $this->input->post('id');
+        $id  = $this->input->post('id');
+        $row = $id ? $this->User_model->find($id) : null;
+        if ($id && !$row) show_404();
+        if ($row) $this->_assert_customer($row);
+
+        $this->form_validation->set_data($this->input->post());
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
         $this->form_validation->set_rules('firstName', 'First name', 'required|max_length[100]');
         $this->form_validation->set_rules('lastName',  'Last name',  'required|max_length[100]');
-        $pwd_post = (string) $this->input->post('password');
-        if ($pwd_post !== '') {
-            $this->form_validation->set_rules('password', 'Password', 'min_length[8]');
-        }
+        $pwd = (string) $this->input->post('password');
+        if ($pwd !== '') $this->form_validation->set_rules('password', 'Password', 'min_length[8]');
+
         if ($this->form_validation->run() === false) {
             $this->flash('error', trim(validation_errors(' ', ' ')) ?: 'Please correct the errors.');
             return $id ? redirect('admin/users/edit/' . $id) : redirect('admin/users/create');
         }
-        $email = strtolower(trim($this->input->post('email')));
-        // Uniqueness
+
+        $email    = strtolower(trim((string) $this->input->post('email')));
         $existing = $this->User_model->find_by_email($email);
         if ($existing && (!$id || $existing['id'] !== $id)) {
             $this->flash('error', 'Email already in use.');
             return $id ? redirect('admin/users/edit/' . $id) : redirect('admin/users/create');
         }
-        // If the role field was not posted (e.g. a trimmed-down profile form),
-        // keep the existing role instead of silently demoting to CUSTOMER -
-        // a demoted staff account is locked out of /admin entirely.
-        $role = $this->input->post('role');
-        if (($role === null || $role === '') && $id) {
-            $current = $this->User_model->find($id);
-            $role = $current ? $current['role'] : ROLE_CUSTOMER;
-        }
+
         $data = [
             'email'     => $email,
-            'firstName' => $this->input->post('firstName'),
-            'lastName'  => $this->input->post('lastName'),
-            'phone'     => $this->input->post('phone'),
-            'company'   => $this->input->post('company'),
-            'role'      => ($role === null || $role === '') ? ROLE_CUSTOMER : $role,
-            'isActive'  => (int) $this->input->post('isActive', 1),
+            'firstName' => trim((string) $this->input->post('firstName')),
+            'lastName'  => trim((string) $this->input->post('lastName')),
+            'phone'     => trim((string) $this->input->post('phone')) ?: null,
+            'company'   => trim((string) $this->input->post('company')) ?: null,
+            // Hard-coded: this screen can only ever produce customer accounts.
+            'role'      => ROLE_CUSTOMER,
+            'isActive'  => $this->input->post('isActive') ? 1 : 0,
         ];
-        $pwd = $pwd_post;
         if ($pwd !== '' && strlen($pwd) >= 8) {
             $data['password'] = password_hash($pwd, PASSWORD_BCRYPT);
-            // Changing your own password clears the "must change" flag.
-            if ($id && $id === $this->vp_auth->id()) {
-                $data['mustChangePassword'] = 0;
-            }
         }
+
         if ($id) {
             $this->User_model->update($id, $data);
-            $this->audit->log(AUDIT_UPDATE, 'user', $id, ['email' => $email]);
-            $this->flash('success', 'Updated.');
-            // When you have just changed your own password (which also
-            // completes the forced temp-password change), leave the profile
-            // form and go to the dashboard instead of looping back onto it.
-            if ($id === $this->vp_auth->id() && isset($data['password'])) {
-                redirect('admin');
-            }
+            $this->audit->log(AUDIT_UPDATE, 'customer', $id, ['email' => $email]);
+            $this->flash('success', 'Customer updated.');
         } else {
-            $data['password'] = password_hash($pwd ?: bin2hex(random_bytes(8)), PASSWORD_BCRYPT);
+            $data['password'] = $data['password'] ?? password_hash(bin2hex(random_bytes(9)), PASSWORD_BCRYPT);
             $id = $this->User_model->insert($data);
-            $this->audit->log(AUDIT_CREATE, 'user', $id, ['email' => $email]);
-            $this->flash('success', 'User created.');
+            $this->audit->log(AUDIT_CREATE, 'customer', $id, ['email' => $email]);
+            $this->flash('success', 'Customer created.');
         }
         redirect('admin/users/edit/' . $id);
     }
 
     public function delete($id = null)
     {
-        if (!$this->vp_auth->has_role(ROLE_SUPER_ADMIN)) {
-            show_error('Only Super Admin can delete users.', 403);
-        }
-        if (!$id) show_404();
-        $row = $this->User_model->find($id);
+        if ($this->input->method() !== 'post') show_404();
+        $row = $id ? $this->User_model->find($id) : null;
         if (!$row) show_404();
-        if ($row['id'] === $this->vp_auth->id()) {
-            $this->flash('error', 'You cannot delete your own account.');
-            return redirect('admin/users');
-        }
+        $this->_assert_customer($row);
+
         $this->User_model->delete($id);
-        $this->audit->log(AUDIT_DELETE, 'user', $id, ['email' => $row['email']]);
-        $this->flash('success', 'Deleted.');
+        $this->audit->log(AUDIT_DELETE, 'customer', $id, ['email' => $row['email']]);
+        $this->flash('success', 'Customer deleted.');
         redirect('admin/users');
+    }
+
+    /**
+     * Staff accounts are out of bounds here — including the Super Admin.
+     * This is what stops an Admin from editing/promoting anybody via /admin/users.
+     */
+    private function _assert_customer(array $row)
+    {
+        if (($row['role'] ?? ROLE_CUSTOMER) !== ROLE_CUSTOMER) {
+            $this->audit->log('ACCESS_DENIED', 'user', $row['id'], ['reason' => 'staff account via customers screen']);
+            $this->_deny('Staff accounts are managed by the Super Admin under Administrators.');
+        }
+        return true;
     }
 }

@@ -2,6 +2,9 @@
 
 class Contacts extends Admin_Controller
 {
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'contacts.manage';
+
     public function __construct()
     {
         parent::__construct();

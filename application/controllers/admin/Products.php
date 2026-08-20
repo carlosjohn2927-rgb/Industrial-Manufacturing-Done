@@ -6,7 +6,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Products extends Admin_Controller
 {
-    protected $allowed_roles = [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ENGINEER, ROLE_EDITOR];
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'products.manage';
+
 
     public function __construct()
     {

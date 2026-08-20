@@ -140,3 +140,76 @@ $route['admin/seo/save']                  = 'admin/seo/save';
 $route['admin/audit']                     = 'admin/audit';
 $route['admin/notifications']             = 'admin/notifications';
 $route['admin/notifications/read/(:any)'] = 'admin/notifications/read/$1';
+
+/* ---------- Admin: Super Admin — administrator management ---------- */
+$route['admin/admins']                            = 'admin/admins/index';
+$route['admin/admins/create']                     = 'admin/admins/create';
+$route['admin/admins/save']                       = 'admin/admins/save';
+$route['admin/admins/edit/(:any)']                = 'admin/admins/edit/$1';
+$route['admin/admins/permissions/(:any)']         = 'admin/admins/permissions/$1';
+$route['admin/admins/permissions_save/(:any)']    = 'admin/admins/permissions_save/$1';
+$route['admin/admins/permissions_reset/(:any)']   = 'admin/admins/permissions_reset/$1';
+$route['admin/admins/toggle/(:any)']              = 'admin/admins/toggle/$1';
+$route['admin/admins/reset_password/(:any)']      = 'admin/admins/reset_password/$1';
+$route['admin/admins/delete/(:any)']              = 'admin/admins/delete/$1';
+$route['admin/admins/activity/(:any)']            = 'admin/admins/activity/$1';
+
+/* ---------- Admin: website content management ---------- */
+$route['admin/homepage']                          = 'admin/homepage/index';
+$route['admin/homepage/index/(:any)']             = 'admin/homepage/index/$1';
+$route['admin/homepage/create/(:any)']            = 'admin/homepage/create/$1';
+$route['admin/homepage/edit/(:any)']              = 'admin/homepage/edit/$1';
+$route['admin/homepage/save']                     = 'admin/homepage/save';
+$route['admin/homepage/toggle/(:any)']            = 'admin/homepage/toggle/$1';
+$route['admin/homepage/move/(:any)/(:any)']       = 'admin/homepage/move/$1/$2';
+$route['admin/homepage/reorder']                  = 'admin/homepage/reorder';
+$route['admin/homepage/delete/(:any)']            = 'admin/homepage/delete/$1';
+
+$route['admin/pages']                             = 'admin/pages/index';
+$route['admin/pages/create']                      = 'admin/pages/create';
+$route['admin/pages/save']                        = 'admin/pages/save';
+$route['admin/pages/edit/(:any)']                 = 'admin/pages/edit/$1';
+$route['admin/pages/toggle/(:any)']               = 'admin/pages/toggle/$1';
+$route['admin/pages/delete/(:any)']               = 'admin/pages/delete/$1';
+
+$route['admin/menus']                             = 'admin/menus/index';
+$route['admin/menus/index/(:any)']                = 'admin/menus/index/$1';
+$route['admin/menus/save']                        = 'admin/menus/save';
+$route['admin/menus/toggle/(:any)']               = 'admin/menus/toggle/$1';
+$route['admin/menus/move/(:any)/(:any)']          = 'admin/menus/move/$1/$2';
+$route['admin/menus/delete/(:any)']               = 'admin/menus/delete/$1';
+
+$route['admin/appearance']                        = 'admin/appearance/index';
+$route['admin/appearance/save_branding']          = 'admin/appearance/save_branding';
+$route['admin/appearance/upload']                 = 'admin/appearance/upload';
+$route['admin/appearance/remove']                 = 'admin/appearance/remove';
+$route['admin/appearance/header']                 = 'admin/appearance/header';
+$route['admin/appearance/save_header']            = 'admin/appearance/save_header';
+
+$route['admin/media/browse']                      = 'admin/media/browse';
+$route['admin/media/replace/(:any)']              = 'admin/media/replace/$1';
+$route['admin/media/update/(:any)']               = 'admin/media/update/$1';
+
+$route['admin/settings/contact']                  = 'admin/settings/contact';
+$route['admin/settings/save_contact']             = 'admin/settings/save_contact';
+$route['admin/settings/social']                   = 'admin/settings/social';
+$route['admin/settings/save_social']              = 'admin/settings/save_social';
+$route['admin/settings/system']                   = 'admin/settings/system';
+$route['admin/settings/save_system']              = 'admin/settings/save_system';
+$route['admin/settings/advanced']                 = 'admin/settings/advanced';
+$route['admin/settings/save_advanced']            = 'admin/settings/save_advanced';
+$route['admin/settings/add']                      = 'admin/settings/add';
+$route['admin/settings/delete']                   = 'admin/settings/delete';
+
+$route['admin/profile']                           = 'admin/profile/index';
+$route['admin/profile/save']                      = 'admin/profile/save';
+$route['admin/profile/password']                  = 'admin/profile/password';
+
+$route['admin/reports']                           = 'admin/reports/index';
+$route['admin/reports/export']                    = 'admin/reports/export';
+
+/* ---------- Public: CMS pages (must stay last) ---------- */
+$route['page/(:any)']                             = 'page/view/$1';
+$route['admin/notifications/read_all']            = 'admin/notifications/read_all';
+$route['admin/notifications/clear']               = 'admin/notifications/clear';
+$route['admin/notifications/delete/(:any)']       = 'admin/notifications/delete/$1';

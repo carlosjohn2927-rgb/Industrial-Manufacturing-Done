@@ -14,7 +14,7 @@ class Mailer
     {
         $this->CI =& get_instance();
         $this->CI->load->database();
-        $this->CI->load->library('audit');
+        
         $this->CI->load->helper('security_helper');
     }
 

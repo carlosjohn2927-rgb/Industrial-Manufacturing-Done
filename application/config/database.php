@@ -40,7 +40,17 @@ $db_name = vp_db_env('name', 'vortex_precision');
 $db_user = vp_db_env('user', 'vortex_user');
 $db_pass = vp_db_env('pass', '');
 
-if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
+/**
+ * Driver. Production (cPanel) uses mysqli. `sqlite3` is supported for local
+ * development / demos where no MySQL server is available: set
+ *   VP_DB_DRIVER=sqlite3
+ *   VP_DB_NAME=/absolute/path/to/site.sqlite
+ * and run `php install/dev-sqlite.php` to build the schema.
+ */
+$db_driver  = strtolower((string) vp_db_env('driver', 'mysqli'));
+$is_sqlite  = ($db_driver === 'sqlite3' || $db_driver === 'sqlite');
+
+if (!$is_sqlite && defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
     $missing = [];
     if ($db_host === 'localhost' && vp_db_env('host') === '') $missing[] = 'VP_DB_HOST';
     if (vp_db_env('name') === '') $missing[] = 'VP_DB_NAME';
@@ -64,18 +74,18 @@ $query_builder = TRUE;
 
 $db['default'] = [
     'dsn'      => '',
-    'hostname' => $db_host . (vp_db_env('port') !== '' ? ':' . vp_db_env('port') : ''),
-    'username' => $db_user,
-    'password' => $db_pass,
+    'hostname' => $is_sqlite ? '' : $db_host . (vp_db_env('port') !== '' ? ':' . vp_db_env('port') : ''),
+    'username' => $is_sqlite ? '' : $db_user,
+    'password' => $is_sqlite ? '' : $db_pass,
     'database' => $db_name,
-    'dbdriver' => 'mysqli',
+    'dbdriver' => $is_sqlite ? 'sqlite3' : 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,        // shared hosting: persistent conns cause issues
     'db_debug' => (ENVIRONMENT === 'development'),
     'cache_on' => FALSE,
     'cachedir' => APPPATH . '../assets/logs/cache/',
-    'char_set' => 'utf8mb4',
-    'dbcollat' => 'utf8mb4_unicode_ci',
+    'char_set' => $is_sqlite ? 'utf8' : 'utf8mb4',
+    'dbcollat' => $is_sqlite ? 'utf8_general_ci' : 'utf8mb4_unicode_ci',
     'swap_pre' => '',
     // TLS is OFF by default: typical cPanel MySQL runs on localhost without
     // SSL. Set VP_DB_SSL=1 (and optionally ssl_key/ssl_cert/ssl_ca) only if

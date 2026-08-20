@@ -1,4 +1,3 @@
-<?php $this->page_title = $this->page_title ?: 'Reset password'; ?>
 <section class="container mx-auto px-4 py-12">
     <div class="max-w-md mx-auto vp-card overflow-hidden">
         <img src="<?= IMG_URL ?>customer-portal.jpg" alt="Secure customer account access" class="w-full h-40 object-cover" loading="eager" decoding="async">
