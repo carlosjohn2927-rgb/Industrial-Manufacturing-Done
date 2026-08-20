@@ -1,11 +1,13 @@
 <?php /** @var array $grouped */ ?>
-<section class="relative bg-ink-900 text-white overflow-hidden min-h-[360px] flex items-end">
+<section class="relative bg-ink-900 overflow-hidden min-h-[360px] flex items-end">
     <img src="<?= IMG_URL ?>downloads-library.jpg" alt="Industrial engineering guides and technical resources" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" decoding="async">
-    <div class="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/85 to-transparent"></div>
+    <div class="absolute inset-0 bg-black/25"></div>
     <div class="container mx-auto px-4 py-14 relative">
-        <span class="text-xs font-semibold tracking-widest uppercase text-brand-200">Engineering resources</span>
-        <?= vp_inline_text('downloads_hero_title', 'Downloads', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
-        <?= vp_inline_text('downloads_hero_subtitle', 'Brochures, selection guides, datasheets and engineering tools.', 'p', 'text-white mt-3 max-w-2xl text-lg') ?>
+        <div class="vp-writeup-band max-w-2xl rounded-2xl shadow-xl p-6 md:p-8">
+            <span class="text-xs font-semibold tracking-widest uppercase text-brand-700">Engineering resources</span>
+            <?= vp_inline_text('downloads_hero_title', 'Downloads', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
+            <?= vp_inline_text('downloads_hero_subtitle', 'Brochures, selection guides, datasheets and engineering tools.', 'p', 'mt-3 max-w-2xl text-lg') ?>
+        </div>
     </div>
 </section>
 <section class="container mx-auto px-4 py-10 max-w-4xl">

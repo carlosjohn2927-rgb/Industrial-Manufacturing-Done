@@ -1,7 +1,7 @@
 <?php /** @var array $row */ ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-12 max-w-3xl">
-        <div class="text-xs text-brand-200 uppercase tracking-widest"><?= vp_human_date($row['publishedAt']) ?></div>
+        <div class="text-xs text-brand-700 uppercase tracking-widest"><?= vp_human_date($row['publishedAt']) ?></div>
         <h1 class="text-3xl md:text-4xl font-extrabold mt-2"><?= vp_safe_html($row['title']) ?></h1>
     </div>
 </section>

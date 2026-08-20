@@ -1,8 +1,8 @@
 <?php /** @var array $industries */ ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-12">
         <?= vp_inline_text('industries_hero_title', 'Industries we serve', 'h1', 'text-4xl font-extrabold') ?>
-        <?= vp_inline_text('industries_hero_subtitle', "Engineered for the requirements of the world's most demanding sectors.", 'p', 'text-white mt-2 max-w-2xl') ?>
+        <?= vp_inline_text('industries_hero_subtitle', "Engineered for the requirements of the world's most demanding sectors.", 'p', 'mt-2 max-w-2xl') ?>
     </div>
 </section>
 <section class="container mx-auto px-4 py-12">

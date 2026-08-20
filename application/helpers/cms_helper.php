@@ -118,7 +118,27 @@ if (!function_exists('vp_map_embed_url')) {
         $q = trim((string) $query);
         if ($q === '') $q = trim((string) $fallback);
         if ($q === '') $q = 'Houston, TX';
-        return 'https://www.google.com/maps?q=' . rawurlencode($q) . '&output=embed';
+        return 'https://maps.google.com/maps?q=' . rawurlencode($q) . '&hl=en&z=15&output=embed';
+    }
+}
+
+if (!function_exists('vp_map_query')) {
+    /** Normalise an address used by the contact map. */
+    function vp_map_query($query = '', $fallback = 'Houston, TX')
+    {
+        $q = trim((string) $query);
+        if ($q === '') $q = trim((string) $fallback);
+        if ($q === '') $q = 'Houston, TX';
+        return $q;
+    }
+}
+
+if (!function_exists('vp_maps_search_url')) {
+    /** Google Maps search URL that opens in a new tab. */
+    function vp_maps_search_url($query = '', $fallback = 'Houston, TX')
+    {
+        $q = vp_map_query($query, $fallback);
+        return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($q);
     }
 }
 
@@ -557,6 +577,15 @@ if (!function_exists('vp_theme_style_tag')) {
             . '.bg-ink-900 h1,.bg-ink-900 h2,.bg-ink-900 h3,.bg-ink-900 h4,'
             . '.from-ink-900 h1,.from-ink-900 h2,.from-ink-900 h3,.from-ink-900 h4,'
             . 'footer h1,footer h2,footer h3,footer h4{color:#ffffff!important;}'
+            . '.vp-writeup-band,.vp-writeup-band h1,.vp-writeup-band h2,.vp-writeup-band h3,.vp-writeup-band h4,'
+            . '.vp-writeup-band p,.vp-writeup-band span,.vp-writeup-band li,.vp-writeup-band div,'
+            . '.bg-ink-900 .vp-writeup-band,.bg-ink-900 .vp-writeup-band h1,.bg-ink-900 .vp-writeup-band h2,'
+            . '.bg-ink-900 .vp-writeup-band h3,.bg-ink-900 .vp-writeup-band p,'
+            . '.from-ink-900 .vp-writeup-band,.from-ink-900 .vp-writeup-band h1,.from-ink-900 .vp-writeup-band p,'
+            . '.from-brand-600.vp-writeup-band,.from-brand-600.vp-writeup-band h2,.from-brand-600.vp-writeup-band p,'
+            . '.vp-writeup-band .text-white{color:var(--vp-writeup,#000000)!important;}'
+            . '.vp-writeup-band .vp-btn-primary,.vp-writeup-band a.bg-brand-500,'
+            . '.vp-writeup-band a.bg-brand-600,.vp-writeup-band a.bg-brand-700{color:#ffffff!important;}'
             . 'aside.vp-admin-sidebar{background-color:var(--vp-sidebar-bg)!important;color:var(--vp-sidebar-writeup)!important;}'
             . 'aside.vp-admin-sidebar,aside.vp-admin-sidebar a,aside.vp-admin-sidebar span,'
             . 'aside.vp-admin-sidebar div,aside.vp-admin-sidebar nav,aside.vp-admin-sidebar p,'

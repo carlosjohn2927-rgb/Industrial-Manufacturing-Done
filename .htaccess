@@ -60,7 +60,7 @@ RewriteRule ^(.*)$ index.php/$1 [L]
     # styles (Tailwind CDN injects <style> blocks at runtime and a handful
     # of templates use inline style="" attributes). Scripts are external
     # files only - inline script is blocked.
-    Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; script-src 'self' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://code.jquery.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; connect-src 'self' https:; frame-src https://www.youtube.com"
+    Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; script-src 'self' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://code.jquery.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; connect-src 'self' https:; frame-src https://www.youtube.com https://player.vimeo.com https://www.google.com https://maps.google.com https://www.openstreetmap.org"
     <If "%{HTTPS} == 'on'">
         Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
     </If>

@@ -151,6 +151,13 @@ section('1. Authentication');
 $r = get('', null);
 check('Public homepage responds 200', $r['code'] === 200, 'HTTP ' . $r['code']);
 
+$r = get('contact', null);
+check('Contact page includes a map', $r['code'] === 200 && strpos($r['body'], 'vp-contact-map') !== false && strpos($r['body'], 'Find us') !== false, 'HTTP ' . $r['code']);
+check('Contact page top write-up is black', strpos($r['body'], 'vp-writeup-band') !== false);
+
+$r = get('products', null);
+check('Products page top write-up is black', $r['code'] === 200 && strpos($r['body'], 'vp-writeup-band') !== false, 'HTTP ' . $r['code']);
+
 $r = login($SUPER['email'], $SUPER['pass'], $superJar);
 check('Super Admin can log in', $r['code'] === 200 && strpos($r['body'], 'Super Admin') !== false, 'HTTP ' . $r['code']);
 

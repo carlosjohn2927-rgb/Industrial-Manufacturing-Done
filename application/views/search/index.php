@@ -1,5 +1,5 @@
 <?php /** @var string $q */ /** @var array $products */ /** @var array $posts */ /** @var array $faqs */ ?>
-<section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
+<section class="vp-writeup-band bg-white border-b">
     <div class="container mx-auto px-4 py-12">
         <h1 class="text-4xl font-extrabold">Search</h1>
         <form method="get" action="<?= base_url('search') ?>" class="mt-3 flex max-w-xl">
