@@ -157,7 +157,14 @@ if (!function_exists('vp_social_links')) {
             $val = $CI->settings->get('social_' . $n, null);
             if ($val === null || $val === '') $val = $stored[$n] ?? ($cfg[$n] ?? '');
             $val = trim((string) $val);
-            if ($val !== '') $out[$n] = $val;
+            if ($val !== '') {
+                // Accept admin entries such as facebook.com/company as well as
+                // full URLs. Footer links should always open as valid URLs.
+                if (!preg_match('~^(https?:)?//~i', $val) && strpos($val, 'mailto:') !== 0 && strpos($val, 'tel:') !== 0) {
+                    $val = 'https://' . ltrim($val, '/');
+                }
+                $out[$n] = $val;
+            }
         }
         return $out;
     }

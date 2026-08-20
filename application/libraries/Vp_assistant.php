@@ -36,6 +36,9 @@ class Vp_assistant
         $message = trim((string) $message);
         if ($message === '') return 'I did not catch that — could you rephrase your question?';
 
+        $smalltalk = $this->smalltalk_reply($message);
+        if ($smalltalk !== null) return $smalltalk;
+
         $config = vp_chat_config();
 
         // External LLM first when configured; fall back to local on any failure.
@@ -55,16 +58,7 @@ class Vp_assistant
     {
         $msg = $this->normalize($message);
 
-        // Greetings / small talk
-        if (preg_match('/^(hi|hello|hey|hiya|howdy|good\s*(morning|afternoon|evening)|greetings)[\s!.?]*$/', $msg)) {
-            return $this->greeting();
-        }
-        if (preg_match('/(thank|thanks|cheers|appreciate)/', $msg)) {
-            return "You're very welcome! If you need anything else — a product detail, a quote, or delivery information — just ask.";
-        }
-        if (preg_match('/(bye|goodbye|see you|good night)/', $msg)) {
-            return 'Thanks for stopping by! Feel free to message again anytime, or reach our sales team by email. Have a great day!';
-        }
+        // Greetings / small talk are handled before optional remote AI in reply().
 
         // Exact-ish FAQ match is the strongest, most accurate source.
         $faq = $this->match_faq($msg);
@@ -116,6 +110,26 @@ class Vp_assistant
 
         // Fallback: helpful + escalation path
         return "I'm not sure I have a precise answer to that, but I can definitely help with our products, industries, pricing, quotes, delivery and contact details. You can also email our team at " . $this->email() . ' or call ' . $this->phone() . " — a real engineer will get back to you promptly.";
+    }
+
+
+    /** Quick conversational replies that should work in local and remote modes. */
+    protected function smalltalk_reply($message)
+    {
+        $msg = $this->normalize($message);
+        if (preg_match('/^(hi|hello|hey|hiya|howdy|good\s*(morning|afternoon|evening)|greetings)[\s!.?]*$/', $msg)) {
+            return $this->greeting();
+        }
+        if (preg_match('/(thank|thanks|cheers|appreciate)/', $msg)) {
+            return "You're very welcome! If you need anything else — a product detail, a quote, or delivery information — just ask.";
+        }
+        if (preg_match('/^(ok|okay|alright|all right|fine|great|good|nice|cool|sure|yes|yeah|yep|that s good|thats good|that is good|that is fine|sounds good)[\s!.?]*$/', $msg)) {
+            return "Great — glad that helps. If you need anything else, you can ask about products, pricing, delivery, quotes, or contact details.";
+        }
+        if (preg_match('/(bye|goodbye|see you|good night)/', $msg)) {
+            return 'Thanks for stopping by! Feel free to message again anytime, or reach our sales team by email. Have a great day!';
+        }
+        return null;
     }
 
     /* ---------------------- local answer builders ---------------------- */

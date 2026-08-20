@@ -31,7 +31,7 @@
             <tr>
                 <td>
                     <div class="flex items-center gap-3">
-                        <img class="w-9 h-9 rounded-full bg-gray-200" src="<?= vp_avatar_url($r['email'], 72) ?>" alt="">
+                        <img class="w-9 h-9 rounded-full bg-gray-200" src="<?= vp_safe_html(vp_avatar_url($r, 72)) ?>" alt="">
                         <div>
                             <div class="font-semibold text-ink-900">
                                 <?php if ($r['is_super']): ?>

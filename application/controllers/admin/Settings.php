@@ -8,15 +8,22 @@
  * the source code. Values are stored in `settings` and read by the public
  * theme through the CMS helper.
  *
- * The System tab (email transport, maintenance mode, security) is Super
- * Admin only and enforced per-method, not just hidden.
+ * The System tab includes outgoing SMTP and is available to Admin/Super Admin
+ * accounts with settings access. Raw advanced settings remain Super Admin only.
  */
 class Settings extends Admin_Controller
 {
     protected $required_permission = 'settings.manage';
     protected $method_permissions  = [
-        'system'      => 'system.manage',
-        'save_system' => 'system.manage',
+        // Admins may manage email/SMTP from the System tab; raw key/value and
+        // destructive settings actions remain Super Admin only.
+        'system'        => 'settings.manage',
+        'save_system'   => 'settings.manage',
+        'test_email'    => 'settings.manage',
+        'advanced'      => 'system.manage',
+        'save_advanced' => 'system.manage',
+        'add'           => 'system.manage',
+        'delete'        => 'system.manage',
     ];
 
     /** Tabs rendered by the settings screen. */
@@ -121,7 +128,7 @@ class Settings extends Admin_Controller
             if ($val !== '') $combined[$n] = $val;
         }
         // Keep the legacy JSON blob in sync for anything still reading it.
-        $this->settings->set('social', json_encode($combined, JSON_UNESCAPED_SLASHES), 'JSON', 'CONTACT');
+        $this->settings->set('social', json_encode($combined, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'JSON', 'SOCIAL');
 
         $this->settings->clear_cache();
         $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'SOCIAL']);
@@ -129,7 +136,7 @@ class Settings extends Admin_Controller
         redirect('admin/settings/social');
     }
 
-    /* ---------------- System (Super Admin) ------------------------------ */
+    /* ---------------- System / SMTP -------------------------------------- */
 
     public function system()
     {
@@ -156,6 +163,11 @@ class Settings extends Admin_Controller
                 'mail_from_email'     => (string) $this->settings->get('mail_from_email', ''),
                 'mail_from_name'      => (string) $this->settings->get('mail_from_name', ''),
                 'mail_reply_to'       => (string) $this->settings->get('mail_reply_to', ''),
+                'smtp_host'           => (string) $this->settings->get('smtp_host', (string) $this->config->item('smtp_host')),
+                'smtp_port'           => (string) $this->settings->get('smtp_port', (string) ($this->config->item('smtp_port') ?: '465')),
+                'smtp_user'           => (string) $this->settings->get('smtp_user', (string) $this->config->item('smtp_user')),
+                'smtp_crypto'         => (string) $this->settings->get('smtp_crypto', (string) ($this->config->item('smtp_crypto') ?: 'ssl')),
+                'smtp_has_password'   => (trim((string) $this->settings->get('smtp_pass', '')) !== '' || trim((string) $this->config->item('smtp_pass')) !== '') ? '1' : '0',
             ],
         ]);
     }
@@ -178,14 +190,51 @@ class Settings extends Admin_Controller
         $this->settings->set('rfq_admin_email', trim((string) $this->input->post('rfq_admin_email')), 'STRING', 'RFQ');
         $this->settings->set('rfq_rate_limit_per_hour', (int) $this->input->post('rfq_rate_limit_per_hour'), 'INT', 'RFQ');
 
-        // Outgoing email identity (credentials stay in .env)
+        // Outgoing email identity + SMTP server. SMTP password is write-only:
+        // blank keeps the existing setting/env value, unless Clear is checked.
         $this->settings->set('mail_from_email', trim((string) $this->input->post('mail_from_email')), 'STRING', 'EMAIL');
         $this->settings->set('mail_from_name', trim((string) $this->input->post('mail_from_name')), 'STRING', 'EMAIL');
         $this->settings->set('mail_reply_to', trim((string) $this->input->post('mail_reply_to')), 'STRING', 'EMAIL');
 
+        $port = (int) $this->input->post('smtp_port');
+        if ($port <= 0 || $port > 65535) $port = 465;
+        $crypto = (string) $this->input->post('smtp_crypto');
+        if (!in_array($crypto, ['ssl', 'tls'], true)) $crypto = 'ssl';
+        $this->settings->set('smtp_host', trim((string) $this->input->post('smtp_host')), 'STRING', 'EMAIL');
+        $this->settings->set('smtp_port', (string) $port, 'INT', 'EMAIL');
+        $this->settings->set('smtp_user', trim((string) $this->input->post('smtp_user')), 'STRING', 'EMAIL');
+        $this->settings->set('smtp_crypto', $crypto, 'STRING', 'EMAIL');
+        $postedPass = (string) $this->input->post('smtp_pass');
+        if ($this->input->post('smtp_clear_password')) {
+            $this->settings->set('smtp_pass', '', 'STRING', 'EMAIL');
+        } elseif ($postedPass !== '') {
+            $this->settings->set('smtp_pass', $postedPass, 'STRING', 'EMAIL');
+        }
+
         $this->settings->clear_cache();
         $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'SYSTEM']);
         $this->flash('success', 'System settings saved.');
+        redirect('admin/settings/system');
+    }
+
+    public function test_email()
+    {
+        if ($this->input->method() !== 'post') show_404();
+        $to = strtolower(trim((string) $this->input->post('test_email')));
+        if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            $this->flash('error', 'Enter a valid email address for the SMTP test.');
+            return redirect('admin/settings/system');
+        }
+
+        $site = vp_site('name', 'Website');
+        $html = '<p>This is a test email from ' . htmlspecialchars($site, ENT_QUOTES, 'UTF-8') . '.</p>'
+              . '<p>If you received it, your outgoing mail settings are working.</p>';
+        $result = $this->mailer->send($to, $site . ' SMTP test', $html, 'smtp_test', 'smtp_test:' . $to . ':' . time(), ['source' => 'admin_settings']);
+        if (($result['status'] ?? '') === EMAIL_SENT) {
+            $this->flash('success', 'Test email sent to ' . $to . '.');
+        } else {
+            $this->flash('error', 'Test email failed. Check the email health detail and application logs.');
+        }
         redirect('admin/settings/system');
     }
 
@@ -271,7 +320,7 @@ class Settings extends Admin_Controller
     {
         $out = [];
         foreach ($this->tabs as $key => $def) {
-            if ($key === 'system' && !$this->has_permission('system.manage')) continue;
+            if ($key === 'advanced' && !$this->has_permission('system.manage')) continue;
             $out[$key] = [
                 'label' => $def[0],
                 'icon'  => $def[1],

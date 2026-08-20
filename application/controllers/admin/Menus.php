@@ -24,7 +24,8 @@ class Menus extends Admin_Controller
     {
         parent::__construct();
         $this->load->model(['Menu_item_model', 'Page_model']);
-        $this->load->helper(['form', 'url', 'security_helper']);
+        $this->load->helper(['form', 'url', 'security_helper', 'cms_schema_helper']);
+        vp_ensure_cms_tables();
     }
 
     public function index($menu = 'header')

@@ -13,9 +13,10 @@ class Profile extends Admin_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('User_model');
-        $this->load->library('form_validation');
-        $this->load->helper(['form', 'url', 'security_helper']);
+        $this->load->model(['User_model', 'Media_model']);
+        $this->load->library(['form_validation', 'vp_upload']);
+        $this->load->helper(['form', 'url', 'security_helper', 'cms_schema_helper']);
+        vp_ensure_user_avatar_column();
     }
 
     public function index()
@@ -50,17 +51,42 @@ class Profile extends Admin_Controller
             return redirect('admin/profile');
         }
 
-        // Note: role and isActive are deliberately NOT editable here — an
-        // administrator can never promote themselves.
-        $this->db->update('users', [
+        $updates = [
             'email'     => $email,
             'firstName' => trim((string) $this->input->post('firstName')),
             'lastName'  => trim((string) $this->input->post('lastName')),
             'phone'     => trim((string) $this->input->post('phone')) ?: null,
             'updatedAt' => date('Y-m-d H:i:s'),
-        ], ['id' => $user['id']]);
+        ];
 
-        $this->audit->log(AUDIT_UPDATE, 'profile', $user['id'], ['email' => $email]);
+        // Optional profile picture upload. Role and isActive are deliberately
+        // NOT editable here — an administrator can never promote themselves.
+        $upload = $this->vp_upload->handle('avatar', 'avatars', 'jpg|jpeg|png|webp|gif', 2048);
+        if (is_array($upload) && !empty($upload['error'])) {
+            $this->flash('error', $upload['error']);
+            return redirect('admin/profile');
+        }
+        if (is_array($upload) && !empty($upload['url'])) {
+            $updates['avatar'] = $upload['url'];
+            if ($this->db->table_exists('media')) {
+                $this->Media_model->insert([
+                    'filename'     => $upload['filename'],
+                    'originalName' => $upload['name'],
+                    'url'          => $upload['url'],
+                    'mimeType'     => $upload['mime'],
+                    'size'         => $upload['size'],
+                    'folder'       => 'avatars',
+                    'alt'          => trim($updates['firstName'] . ' ' . $updates['lastName']) . ' profile picture',
+                ]);
+            }
+        }
+        if ($this->input->post('remove_avatar')) {
+            $updates['avatar'] = null;
+        }
+
+        $this->db->update('users', $updates, ['id' => $user['id']]);
+
+        $this->audit->log(AUDIT_UPDATE, 'profile', $user['id'], ['email' => $email, 'avatar' => array_key_exists('avatar', $updates)]);
         $this->flash('success', 'Profile updated.');
         redirect('admin/profile');
     }

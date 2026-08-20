@@ -141,9 +141,15 @@ class Appearance extends Admin_Controller
         $this->settings->set('contact_hours', trim((string) $this->input->post('contact_hours')), 'STRING', 'CONTACT');
 
         // Social links
+        $social = [];
         foreach (['linkedin', 'twitter', 'facebook', 'youtube', 'instagram', 'telegram', 'whatsapp'] as $n) {
-            $this->settings->set('social_' . $n, trim((string) $this->input->post('social_' . $n)), 'STRING', 'SOCIAL');
+            $val = trim((string) $this->input->post('social_' . $n));
+            $this->settings->set('social_' . $n, $val, 'STRING', 'SOCIAL');
+            if ($val !== '') $social[$n] = $val;
         }
+        // Keep the legacy JSON blob in sync too, so every footer/social reader
+        // sees the same values no matter which admin screen saved them.
+        $this->settings->set('social', json_encode($social, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'JSON', 'SOCIAL');
 
         $this->settings->clear_cache();
         $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'HEADER_FOOTER']);

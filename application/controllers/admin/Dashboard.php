@@ -76,10 +76,13 @@ class Dashboard extends Admin_Controller
             $data['content']['sections_active'] = (int) $this->db->where(['pageKey' => 'home', 'isActive' => 1])->count_all_results('page_sections');
         }
 
+        if ($this->has_permission('settings.manage')) {
+            $data['email_health'] = vp_email_health();
+        }
+
         if ($this->is_super_admin()) {
             $data['admins'] = $this->db->where_in('role', [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_SALES, ROLE_ENGINEER, ROLE_EDITOR])
                                        ->order_by('lastLoginAt', 'DESC')->limit(6)->get('users')->result_array();
-            $data['email_health'] = vp_email_health();
             $data['failed_logins'] = (int) $this->db->where('action', AUDIT_LOGIN_FAILED)
                                                     ->where('createdAt >=', date('Y-m-d H:i:s', strtotime('-7 days')))
                                                     ->count_all_results('audit_logs');

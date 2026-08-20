@@ -9,7 +9,7 @@ $name = trim($row['firstName'] . ' ' . $row['lastName']);
 ?>
 <div class="max-w-5xl space-y-6">
     <div class="bg-white border rounded-2xl p-5 flex flex-wrap items-center gap-4">
-        <img class="w-12 h-12 rounded-full bg-gray-200" src="<?= vp_avatar_url($row['email'], 96) ?>" alt="">
+        <img class="w-12 h-12 rounded-full bg-gray-200" src="<?= vp_safe_html(vp_avatar_url($row, 96)) ?>" alt="">
         <div>
             <div class="font-bold text-lg text-ink-900"><?= vp_safe_html($name) ?></div>
             <div class="text-sm text-ink-800/70"><?= vp_safe_html($row['email']) ?> · <?= vp_role_label($row['role']) ?></div>

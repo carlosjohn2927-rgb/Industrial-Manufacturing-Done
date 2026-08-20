@@ -24,7 +24,8 @@ class Homepage extends Admin_Controller
         parent::__construct();
         $this->load->model('Page_section_model');
         $this->load->library('form_validation');
-        $this->load->helper(['form', 'url', 'security_helper']);
+        $this->load->helper(['form', 'url', 'security_helper', 'cms_schema_helper']);
+        vp_ensure_cms_tables();
     }
 
     /* ------------------------------------------------------------------ */
