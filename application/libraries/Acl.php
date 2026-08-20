@@ -258,6 +258,18 @@ class Acl
         return $out;
     }
 
+    /** Permissions every ADMIN receives as part of the website-editor role. */
+    private function admin_website_permissions()
+    {
+        return [
+            'products.manage', 'categories.manage', 'industries.manage', 'downloads.manage',
+            'blog.manage', 'news.manage', 'faqs.manage', 'careers.manage',
+            'testimonials.manage', 'partners.manage',
+            'homepage.manage', 'pages.manage', 'menus.manage', 'appearance.manage',
+            'media.manage', 'seo.manage', 'settings.manage',
+        ];
+    }
+
     /**
      * Effective permission keys for a user row.
      */
@@ -280,6 +292,18 @@ class Acl
             if ($granted) $keys[$key] = true;
             else unset($keys[$key]);
         }
+
+        // ADMIN is a full website-editor role. Keep these grants mandatory so
+        // accounts created before this policy change (whose permission rows
+        // contain explicit denials) can still edit every public-facing page.
+        // Operational areas such as customers, audit and administrator
+        // management remain independently controlled.
+        if ($role === ROLE_ADMIN) {
+            foreach ($this->admin_website_permissions() as $key) {
+                if ($this->exists($key) && !$this->is_super_only($key)) $keys[$key] = true;
+            }
+        }
+
         // Super-only permissions can never leak to a non super admin.
         foreach ($this->catalog() as $key => $def) {
             if ($def['super_only']) unset($keys[$key]);
@@ -308,7 +332,14 @@ class Acl
      */
     public function set_user_permissions($user_id, array $keys, $actor_id = null)
     {
-        $keys = array_values(array_filter($keys, function ($k) {
+        // Website-editing grants are part of the ADMIN role contract and must
+        // not be removed by the per-account permission form.
+        $account = $this->CI->db->select('role')->get_where('users', ['id' => $user_id], 1)->row_array();
+        if (($account['role'] ?? '') === ROLE_ADMIN) {
+            $keys = array_merge($keys, $this->admin_website_permissions());
+        }
+
+        $keys = array_values(array_filter(array_unique($keys), function ($k) {
             return $this->exists($k) && !$this->is_super_only($k);
         }));
         $now = date('Y-m-d H:i:s');

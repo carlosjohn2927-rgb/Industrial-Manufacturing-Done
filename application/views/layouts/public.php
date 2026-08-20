@@ -33,6 +33,27 @@
 
 <?php $this->load->view('partials/header', get_defined_vars()); ?>
 
+<?php if (!empty($admin_edit)): ?>
+<div class="bg-ink-900 text-white border-b border-white/10" role="region" aria-label="Administrator page tools">
+    <div class="container mx-auto px-4 py-2 flex flex-wrap items-center gap-3 text-sm">
+        <span class="inline-flex items-center gap-2 text-white/90">
+            <i class="ri-shield-user-line text-amber-400"></i>
+            You are viewing the live website as <?= vp_is_super_admin() ? 'Super Admin' : 'Admin' ?>.
+        </span>
+        <div class="ml-auto flex items-center gap-2">
+            <a href="<?= vp_safe_html($admin_edit['url']) ?>"
+               class="inline-flex items-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-500 px-3 py-1.5 font-semibold text-white">
+                <i class="ri-edit-line"></i> <?= vp_safe_html($admin_edit['label']) ?>
+            </a>
+            <a href="<?= base_url('admin') ?>"
+               class="inline-flex items-center gap-2 rounded-lg border border-white/30 hover:bg-white/10 px-3 py-1.5 font-semibold text-white">
+                <i class="ri-dashboard-line"></i> Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <?php if ($flash): ?>
 <div class="container mx-auto px-4 mt-4">
     <div class="rounded-lg px-4 py-3 border <?= $flash['type']==='error'?'bg-red-50 border-red-200 text-red-800':($flash['type']==='success'?'bg-green-50 border-green-200 text-green-800':'bg-blue-50 border-blue-200 text-blue-800') ?>">
