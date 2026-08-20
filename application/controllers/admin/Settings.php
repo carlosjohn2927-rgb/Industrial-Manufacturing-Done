@@ -143,6 +143,13 @@ class Settings extends Admin_Controller
                 'maintenance_mode'    => (string) $this->settings->get('maintenance_mode', '0'),
                 'maintenance_message' => (string) $this->settings->get('maintenance_message', ''),
                 'chat_enabled'        => (string) $this->settings->get('chat_enabled', '0'),
+                'chat_title'          => (string) $this->settings->get('chat_title', ''),
+                'chat_bot_name'       => (string) $this->settings->get('chat_bot_name', ''),
+                'chat_welcome'        => (string) $this->settings->get('chat_welcome', ''),
+                'chat_quick_replies'  => is_array($q = $this->settings->get('chat_quick_replies', []))
+                                            ? implode(', ', $q)
+                                            : trim((string) $q, '[]"'),
+                'chat_rate_limit_per_hour' => (string) $this->settings->get('chat_rate_limit_per_hour', '60'),
                 'rfq_enabled'         => (string) $this->settings->get('rfq_enabled', '1'),
                 'rfq_admin_email'     => (string) $this->settings->get('rfq_admin_email', ''),
                 'rfq_rate_limit_per_hour' => (string) $this->settings->get('rfq_rate_limit_per_hour', '5'),
@@ -160,6 +167,13 @@ class Settings extends Admin_Controller
         $this->settings->set('maintenance_mode', $this->input->post('maintenance_mode') ? '1' : '0', 'BOOL', 'SYSTEM');
         $this->settings->set('maintenance_message', trim((string) $this->input->post('maintenance_message')), 'TEXT', 'SYSTEM');
         $this->settings->set('chat_enabled', $this->input->post('chat_enabled') ? '1' : '0', 'BOOL', 'CHAT');
+        $this->settings->set('chat_title', trim((string) $this->input->post('chat_title')), 'STRING', 'CHAT');
+        $this->settings->set('chat_bot_name', trim((string) $this->input->post('chat_bot_name')), 'STRING', 'CHAT');
+        $this->settings->set('chat_welcome', trim((string) $this->input->post('chat_welcome')), 'TEXT', 'CHAT');
+        $quick = array_values(array_filter(array_map('trim', explode(',', (string) $this->input->post('chat_quick_replies')))));
+        $this->settings->set('chat_quick_replies', json_encode($quick, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 'JSON', 'CHAT');
+        $rate = (int) $this->input->post('chat_rate_limit_per_hour');
+        $this->settings->set('chat_rate_limit_per_hour', $rate >= 5 ? $rate : 60, 'INT', 'CHAT');
         $this->settings->set('rfq_enabled', $this->input->post('rfq_enabled') ? '1' : '0', 'BOOL', 'RFQ');
         $this->settings->set('rfq_admin_email', trim((string) $this->input->post('rfq_admin_email')), 'STRING', 'RFQ');
         $this->settings->set('rfq_rate_limit_per_hour', (int) $this->input->post('rfq_rate_limit_per_hour'), 'INT', 'RFQ');

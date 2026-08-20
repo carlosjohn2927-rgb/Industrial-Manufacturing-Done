@@ -406,6 +406,102 @@ if ($sectionId) {
     check('Showing it again restores it', strpos($pub['body'], $marker) !== false);
 }
 
+/* ---------- 7b. Catalogue: adding products ------------------------- */
+section('7b. Products can be added and edited from the dashboard');
+
+$sku = 'ACC-' . mt_rand(1000, 9999);
+$r = post('admin/products/save', [
+    'name' => 'Acceptance Test Valve', 'sku' => $sku,
+    'description' => 'Created by the acceptance suite to prove product creation works.',
+    'shortDescription' => 'Acceptance valve', 'price' => '999',
+    'availability' => 'IN_STOCK', 'isActive' => '1', 'featured' => '1',
+], $superJar, 'admin/products/create');
+check('Super Admin can create a product', $r['code'] === 200 && strpos($r['body'], 'Acceptance Test Valve') !== false, 'HTTP ' . $r['code']);
+
+$pub = get('products/acceptance-test-valve', null);
+check('The new product is live on the public website', $pub['code'] === 200 && strpos($pub['body'], 'Acceptance Test Valve') !== false, 'HTTP ' . $pub['code']);
+
+$list = get('admin/products?q=' . urlencode($sku), $superJar);
+preg_match('~admin/products/edit/([0-9a-f\-]{36})~', $list['body'], $pm);
+$productId = $pm[1] ?? null;
+if ($productId) {
+    $r = post('admin/products/save', [
+        'id' => $productId, 'name' => 'Acceptance Test Valve v2', 'sku' => $sku,
+        'slug' => 'acceptance-test-valve',
+        'description' => 'Updated by the acceptance suite.', 'shortDescription' => 'Updated',
+        'price' => '1099', 'availability' => 'IN_STOCK', 'isActive' => '1',
+    ], $superJar, 'admin/products/edit/' . $productId);
+    $pub = get('products/acceptance-test-valve', null);
+    check('Editing a product updates the public page', strpos($pub['body'], 'Acceptance Test Valve v2') !== false);
+
+    $dupe = post('admin/products/save', [
+        'name' => 'Duplicate', 'sku' => $sku, 'description' => 'Duplicate SKU attempt',
+    ], $superJar, 'admin/products/create');
+    check('Duplicate SKU is refused with a message, not a database error',
+        strpos($dupe['body'], 'already uses that SKU') !== false || strpos($dupe['body'], 'New product') !== false);
+}
+
+// A normal Admin with products.manage must be able to add products too.
+if ($adminId) {
+    post('admin/admins/permissions_save/' . $adminId, [
+        'permissions' => ['dashboard.view', 'products.manage', 'quotes.manage'],
+    ], $superJar, 'admin/admins/permissions/' . $adminId);
+    $sku2 = 'ACC-ADM-' . mt_rand(100, 999);
+    $r = post('admin/products/save', [
+        'name' => 'Admin Added Product', 'sku' => $sku2,
+        'description' => 'Added by a normal administrator account.',
+        'availability' => 'IN_STOCK', 'isActive' => '1',
+    ], $adminJar, 'admin/products/create');
+    check('An Admin with products.manage can add a product', $r['code'] === 200 && strpos($r['body'], 'Admin Added Product') !== false, 'HTTP ' . $r['code']);
+}
+
+if ($productId) {
+    post('admin/products/delete/' . $productId, [], $superJar, 'admin/products');
+}
+
+/* ---------- 7c. Public chat assistant ------------------------------ */
+section('7c. Chat assistant');
+
+$home = get('', null);
+preg_match('/data-csrf="([^"]*)"/', $home['body'], $cm);
+$chatToken = $cm[1] ?? '';
+$chatJar = jar('chat');
+@unlink($chatJar);
+get('', $chatJar);                       // establish the visitor session/cookies
+
+$questions = ['hello', 'what products do you have', 'do you sell pumps', 'how much is a valve', 'contact details'];
+$ok = true; $bad = [];
+foreach ($questions as $i => $q) {
+    $res = http('POST', $BASE . '/chat/message', [
+        'jar'  => $chatJar,
+        'body' => http_build_query(['csrf_token' => $chatToken, 'message' => $q]),
+    ]);
+    $data = json_decode($res['body'], true);
+    if (!is_array($data) || empty($data['reply'])) {
+        $ok = false;
+        $bad[] = '#' . ($i + 1) . ' "' . $q . '" (HTTP ' . $res['code'] . ')';
+    }
+}
+check('Every chat message gets a JSON reply — including the 2nd and later ones', $ok, implode(', ', $bad));
+
+$res = http('POST', $BASE . '/chat/message', [
+    'jar'  => $chatJar,
+    'body' => http_build_query(['csrf_token' => 'totally-stale-token', 'message' => 'and one more question']),
+]);
+$data = json_decode($res['body'], true);
+check('A stale CSRF token no longer breaks the conversation', is_array($data) && !empty($data['reply']), 'HTTP ' . $res['code']);
+
+$res = http('POST', $BASE . '/chat/message', [
+    'jar'  => $chatJar,
+    'body' => http_build_query(['message' => 'hi']),
+]);
+check('Chat endpoint always answers with JSON (never an HTML error page)',
+    json_decode($res['body'], true) !== null);
+
+$res = get('chat/token', $chatJar);
+$data = json_decode($res['body'], true);
+check('Chat token endpoint lets the widget re-synchronise', is_array($data) && !empty($data['csrf_token']));
+
 /* ---------- 8. Dashboard ↔ website navigation ---------------------- */
 section('8. Dashboard ↔ public website');
 

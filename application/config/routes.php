@@ -213,3 +213,6 @@ $route['page/(:any)']                             = 'page/view/$1';
 $route['admin/notifications/read_all']            = 'admin/notifications/read_all';
 $route['admin/notifications/clear']               = 'admin/notifications/clear';
 $route['admin/notifications/delete/(:any)']       = 'admin/notifications/delete/$1';
+
+/* ---------- AI chat (public widget) ---------- */
+$route['chat/token']           = 'chat/token';

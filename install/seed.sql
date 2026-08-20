@@ -240,8 +240,8 @@ INSERT INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VALUES
 
 -- ----- AI Chat -----
 (UUID(),'chat_enabled','1','BOOL','CHAT',1),
-(UUID(),'chat_title','Vortex Assistant','STRING','CHAT',2),
-(UUID(),'chat_bot_name','Vortex','STRING','CHAT',3),
+(UUID(),'chat_title','Halyk Petroleum Assistant','STRING','CHAT',2),
+(UUID(),'chat_bot_name','Halyk','STRING','CHAT',3),
 (UUID(),'chat_avatar','/assets/img/chat-bot-avatar.png','STRING','CHAT',8),
 (UUID(),'chat_welcome','Hi there! 👋 I can help you with our products, industries, pricing, delivery times and quotes. What would you like to know?','TEXT','CHAT',4),
 (UUID(),'chat_ai_provider','local','STRING','CHAT',5),

@@ -36,8 +36,18 @@
             </div>
         <?= vp_admin_card_close() ?>
 
+        <?= vp_admin_card_open('Chat assistant', 'The floating helper on the public website', 'ri-robot-line') ?>
+            <?= vp_toggle_field('chat_enabled', $values['chat_enabled'] === '1', 'Show the chat assistant on the website') ?>
+            <div class="grid md:grid-cols-3 gap-4">
+                <?= vp_text_field('chat_title', $values['chat_title'], 'Window title', ['placeholder' => vp_site('name') . ' Assistant']) ?>
+                <?= vp_text_field('chat_bot_name', $values['chat_bot_name'], 'Assistant name', ['placeholder' => 'Assistant']) ?>
+                <?= vp_text_field('chat_rate_limit_per_hour', $values['chat_rate_limit_per_hour'], 'Messages allowed per hour / visitor', ['type' => 'number']) ?>
+            </div>
+            <?= vp_textarea_field('chat_welcome', $values['chat_welcome'], 'Welcome message', 2) ?>
+            <?= vp_text_field('chat_quick_replies', $values['chat_quick_replies'], 'Quick reply buttons', ['help' => 'Comma separated, e.g. Products, Request a quote, Delivery times, Contact']) ?>
+        <?= vp_admin_card_close() ?>
+
         <?= vp_admin_card_open('Features', '', 'ri-toggle-line') ?>
-            <?= vp_toggle_field('chat_enabled', $values['chat_enabled'] === '1', 'Enable the website chat assistant') ?>
             <?= vp_toggle_field('rfq_enabled', $values['rfq_enabled'] === '1', 'Accept quote requests (RFQ form)') ?>
             <div class="grid md:grid-cols-2 gap-4">
                 <?= vp_text_field('rfq_admin_email', $values['rfq_admin_email'], 'Send new quote alerts to', ['type' => 'email']) ?>

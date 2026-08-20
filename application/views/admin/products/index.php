@@ -12,9 +12,18 @@ foreach ($categories as $c) $categories_by_id[$c['id']] = $c;
                 <option value="<?= $c['slug'] ?>" <?= $current_category === $c['slug'] ? 'selected' : '' ?>><?= vp_safe_html($c['name']) ?></option>
             <?php endforeach; ?>
         </select>
+        <select class="vp-select w-auto" name="industry">
+            <option value="">All industries</option>
+            <?php foreach (($industries ?? []) as $i): ?>
+                <option value="<?= $i['slug'] ?>" <?= ($current_industry ?? '') === $i['slug'] ? 'selected' : '' ?>><?= vp_safe_html($i['name']) ?></option>
+            <?php endforeach; ?>
+        </select>
         <button class="vp-btn vp-btn-secondary" type="submit">Filter</button>
     </form>
-    <a href="<?= base_url('admin/products/create') ?>" class="vp-btn vp-btn-primary"><i class="ri-add-line"></i> New product</a>
+    <a href="<?= base_url('admin/products/create' . (!empty($current_category) || !empty($current_industry)
+            ? '?' . http_build_query(array_filter(['category' => $current_category ?? '', 'industry' => $current_industry ?? '']))
+            : '')) ?>"
+       class="vp-btn vp-btn-primary"><i class="ri-add-line"></i> New product</a>
 </div>
 
 <div class="overflow-x-auto">

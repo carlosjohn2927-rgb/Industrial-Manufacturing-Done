@@ -38,10 +38,18 @@ Click any quote to see:
 
 ## Products
 
-- Search by name, SKU, description
-- Filter by category
-- Create / edit / delete
-- Form supports: primary image upload (auto-resized to 1600px), dynamic specifications, related products, industries, SEO meta, featured flag, active/draft
+Create products with **Products → New product**: name, SKU, slug, descriptions,
+price, availability, category, industries, certifications, specifications and
+one or many photos (drag several files in at once — the first becomes the
+primary image). The list can be filtered by category *and* by industry, and the
+**New product** button keeps the current filter so "add another product to this
+industry" is one click. Duplicate SKUs/slugs are refused with a clear message.
+
+
+- Search by name, SKU or description
+- Filter by category and by industry
+- Create / edit / delete (needs the `products.manage` permission)
+- Form supports: multi-image upload (auto-resized to 1600px), dynamic specifications, related products, industries, SEO meta, featured flag, active/draft
 
 ## Categories
 
@@ -138,7 +146,9 @@ A `robots.txt` and `sitemap.xml` are generated automatically at those URLs and i
 
 ## AI chat
 
-The floating chat widget on the public site is configured under **Settings → CHAT group** (see `docs/AI_CHAT.md`). By default it answers locally from FAQs, products, industries and contact info with no external service. To use a real LLM, set `chat_ai_provider` to `openai`/`custom` and provide `chat_ai_api_key` (or set `VP_AI_API_KEY` in the environment).
+The floating chat widget is configured under **Settings → System → Chat
+assistant** (on/off, title, assistant name, welcome message, quick replies,
+hourly message limit per visitor). Advanced keys stay under **Settings → All values → CHAT group** (see `docs/AI_CHAT.md`). By default it answers locally from FAQs, products, industries and contact info with no external service. To use a real LLM, set `chat_ai_provider` to `openai`/`custom` and provide `chat_ai_api_key` (or set `VP_AI_API_KEY` in the environment).
 
 ## Audit log
 

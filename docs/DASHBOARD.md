@@ -136,7 +136,8 @@ Everything the public site shows is stored in the database and edited here.
 | Logo & branding | `/admin/appearance` | website name/title/description, primary logo, dark logo, footer logo, favicon, alt text, logo height |
 | Header & footer | `/admin/appearance/header` | announcement bar, CTA button, contact block, social links, footer about/copyright/note |
 | Media library | `/admin/media` | upload, replace, rename, alt text, copy URL, delete (files used as logo/favicon are protected) |
-| Settings | `/admin/settings` | identity, contact, social, system/maintenance, plus a raw key/value editor |
+| Settings | `/admin/settings` | identity, contact, social, system (maintenance, chat assistant, email identity), plus a raw key/value editor |
+| Products | `/admin/products` | full product catalogue: create/edit/delete, images, specifications, category and industry assignment, filters by category **and** industry |
 | SEO | `/admin/seo` | titles, descriptions, robots, Open Graph, JSON-LD |
 
 ### Homepage sections
@@ -219,6 +220,21 @@ phpMyAdmin (in order). They are idempotent — `CREATE TABLE IF NOT EXISTS` /
 "duplicate column" if they have already been applied, which is safe to ignore.
 
 ---
+
+## 6b. Chat assistant
+
+`Dashboard → Settings → System → Chat assistant` (Super Admin) controls the
+floating helper on the public site: on/off, window title, assistant name,
+welcome message, quick-reply buttons and the per-visitor hourly message limit.
+
+The endpoint (`POST /chat/message`) is deliberately excluded from the global
+CSRF filter and protected in the controller instead (same-origin check + rate
+limit), because CodeIgniter rotates the CSRF cookie on every POST: when a proxy
+or CDN dropped the rotated cookie, the **second** message of a conversation was
+rejected with an HTML 403 that the widget could not parse ("Sorry, something
+went wrong"). The endpoint now always answers JSON, exposes `GET /chat/token`
+so the widget can re-synchronise, and the widget retries once with a fresh
+token before showing any error.
 
 ## 7. Maintenance mode
 
