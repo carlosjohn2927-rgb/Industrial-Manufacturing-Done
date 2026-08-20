@@ -21,8 +21,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 if (!function_exists('vp_db_env')) {
     function vp_db_env($key, $default = '')
     {
-        $v = getenv('VP_DB_' . strtoupper($key));
-        return ($v === false || $v === '') ? $default : $v;
+        // Read from the real environment first, then fall back to the values
+        // that index.php's .env loader put into $_ENV / $_SERVER. Some shared
+        // hosts restrict putenv()/getenv() for PHP-FPM, which would otherwise
+        // make the .env values invisible here.
+        $name = 'VP_DB_' . strtoupper($key);
+        foreach ([getenv($name), isset($_ENV[$name]) ? $_ENV[$name] : null, isset($_SERVER[$name]) ? $_SERVER[$name] : null] as $v) {
+            if ($v !== false && $v !== null && $v !== '') {
+                return $v;
+            }
+        }
+        return $default;
     }
 }
 
@@ -39,13 +48,14 @@ if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
     if (vp_db_env('pass') === '') $missing[] = 'VP_DB_PASS';
     if ($db_pass === 'change_me') $missing[] = 'VP_DB_PASS';
     if (!empty($missing)) {
+        $missing = array_unique($missing);
         $msg = 'Vortex Precision: production database configuration is missing. '
             . 'Set the following environment variables (via app/.env or SetEnv in .htaccess): '
-            . implode(', ', array_unique($missing))
+            . implode(', ', $missing)
             . '. See .env.example and docs/INSTALLATION.md.';
         error_log($msg);
         header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
-        exit('The application is not configured (database environment variables missing).');
+        exit('The application is not configured (database environment variables missing): ' . implode(', ', $missing) . '.');
     }
 }
 
