@@ -847,7 +847,9 @@ INSERT INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VALUES
 (UUID(),'chat_welcome','Hi there! 👋 I can help you with our products, industries, pricing, delivery times and quotes. What would you like to know?','TEXT','CHAT',4),
 (UUID(),'chat_ai_provider','local','STRING','CHAT',5),
 (UUID(),'chat_rate_limit_per_hour','60','INT','CHAT',6),
-(UUID(),'chat_quick_replies','[\"Products\",\"Request a quote\",\"Delivery times\",\"Contact\"]','JSON','CHAT',7)
+(UUID(),'chat_quick_replies','[\"Products\",\"Request a quote\",\"Delivery times\",\"Contact\"]','JSON','CHAT',7),
+(UUID(),'theme_bg','#ffffff','STRING','THEME',1),
+(UUID(),'theme_writeup','#000000','STRING','THEME',2)
 ON DUPLICATE KEY UPDATE `value`=VALUES(`value`);
 
 -- #############################################################################

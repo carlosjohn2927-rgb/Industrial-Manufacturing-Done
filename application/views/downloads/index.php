@@ -4,8 +4,8 @@
     <div class="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/85 to-transparent"></div>
     <div class="container mx-auto px-4 py-14 relative">
         <span class="text-xs font-semibold tracking-widest uppercase text-brand-200">Engineering resources</span>
-        <h1 class="text-4xl lg:text-5xl font-extrabold mt-3">Downloads</h1>
-        <p class="text-white mt-3 max-w-2xl text-lg">Brochures, selection guides, datasheets and engineering tools.</p>
+        <?= vp_inline_text('downloads_hero_title', 'Downloads', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
+        <?= vp_inline_text('downloads_hero_subtitle', 'Brochures, selection guides, datasheets and engineering tools.', 'p', 'text-white mt-3 max-w-2xl text-lg') ?>
     </div>
 </section>
 <section class="container mx-auto px-4 py-10 max-w-4xl">

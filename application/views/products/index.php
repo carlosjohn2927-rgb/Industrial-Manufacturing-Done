@@ -12,8 +12,8 @@
 ?>
 <section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
     <div class="container mx-auto px-4 py-12">
-        <h1 class="text-4xl font-extrabold">Product catalog</h1>
-        <p class="text-white mt-2">Valves, pumps, heat exchangers, pressure vessels, filtration and instrumentation — engineered to the highest standards.</p>
+        <?= vp_inline_text('products_hero_title', 'Product catalog', 'h1', 'text-4xl font-extrabold') ?>
+        <?= vp_inline_text('products_hero_subtitle', 'Valves, pumps, heat exchangers, pressure vessels, filtration and instrumentation — engineered to the highest standards.', 'p', 'text-white mt-2') ?>
     </div>
 </section>
 

@@ -1,8 +1,8 @@
 <?php /** @var array $contact */ ?>
 <section class="bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 text-white">
     <div class="container mx-auto px-4 py-12">
-        <h1 class="text-4xl font-extrabold">Contact us</h1>
-        <p class="text-white mt-2 max-w-2xl">Sales, service, careers and general enquiries - we respond within 1 business day.</p>
+        <?= vp_inline_text('contact_hero_title', 'Contact us', 'h1', 'text-4xl font-extrabold') ?>
+        <?= vp_inline_text('contact_hero_subtitle', 'Sales, service, careers and general enquiries - we respond within 1 business day.', 'p', 'text-white mt-2 max-w-2xl') ?>
     </div>
 </section>
 <section class="container mx-auto px-4 py-12 grid lg:grid-cols-3 gap-8">
@@ -52,4 +52,18 @@
             <p class="text-sm text-ink-800">Use the <a class="text-brand-600 hover:underline" href="<?= base_url('rfq') ?>">Request a Quote</a> form for project enquiries.</p>
         </div>
     </aside>
+</section>
+
+<section class="container mx-auto px-4 pb-12">
+    <div class="vp-card vp-card-pad">
+        <h2 class="text-2xl font-bold mb-4">Find us</h2>
+        <div class="overflow-hidden rounded-xl border">
+            <iframe
+                src="<?= vp_safe_html(vp_map_embed_url($contact['address'] ?? '')) ?>"
+                width="100%" height="420" style="border:0; display:block;"
+                allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Map of our location"></iframe>
+        </div>
+    </div>
 </section>

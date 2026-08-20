@@ -1,7 +1,7 @@
 /* Vortex Precision - public site CSS */
 :root {
     --vp-bg: #ffffff;
-    --vp-writeup: #0b1424;
+    --vp-writeup: #000000;
     --vp-sidebar-bg: #000000;
     --vp-sidebar-writeup: #ffffff;
     --brand-50:  #eef5ff;
@@ -14,9 +14,9 @@
     --brand-700: #0f44b8;
     --brand-800: #0e3893;
     --brand-900: #0e3077;
-    --ink-900:   #0b1424;
-    --ink-800:   #101b2e;
-    --ink-700:   #1b2740;
+    --ink-900:   #000000;
+    --ink-800:   #000000;
+    --ink-700:   #000000;
 }
 html { scroll-behavior: smooth; }
 body { font-feature-settings: "cv11", "ss01"; }
@@ -88,7 +88,7 @@ form .vp-error { color: #b91c1c; font-size: 12px; margin-top: 4px; }
 html { -webkit-text-size-adjust: 100%; }
 body {
     font-weight: 500;
-    color: var(--vp-writeup, #0b1424);
+    color: var(--vp-writeup, #000000);
     background-color: var(--vp-bg, #ffffff);
     font-size: 17px;
     line-height: 1.7;
@@ -98,32 +98,32 @@ body {
 }
 
 /* Long-form content ("write-up"): bolder, darker, more leading. */
-.vp-prose { color: var(--vp-writeup, #111827); font-size: 1.0625rem; }
+.vp-prose { color: var(--vp-writeup, #000000); font-size: 1.0625rem; }
 .vp-prose p {
     font-weight: 500;
-    color: var(--vp-writeup, #1f2937);
+    color: var(--vp-writeup, #000000);
     line-height: 1.85;
     font-size: 1.0625rem;
     letter-spacing: .003em;
     margin-bottom: 1.15rem;
 }
-.vp-prose li { font-weight: 500; color: #1f2937; line-height: 1.8; }
-.vp-prose strong, .vp-prose b { font-weight: 700; color: #0b1424; }
+.vp-prose li { font-weight: 500; color: #000000; line-height: 1.8; }
+.vp-prose strong, .vp-prose b { font-weight: 700; color: #000000; }
 .vp-prose a { font-weight: 600; color: var(--brand-700); text-decoration: underline; text-underline-offset: 2px; }
-.vp-prose h1, .vp-prose h2, .vp-prose h3, .vp-prose h4 { color: #0b1424; font-weight: 800; }
+.vp-prose h1, .vp-prose h2, .vp-prose h3, .vp-prose h4 { color: #000000; font-weight: 800; }
 
-/* ---- Light backgrounds: write-up nearly black --------------------- */
-.text-gray-300 { color: #111827 !important; }
-.text-gray-400 { color: #0f172a !important; }
-.text-gray-500 { color: #0b1424 !important; }
-.text-gray-600 { color: #0b1424 !important; }
-.text-gray-700 { color: #050a14 !important; }
-.text-slate-400 { color: #0f172a !important; }
-.text-slate-500 { color: #0b1424 !important; }
-.text-slate-600 { color: #050a14 !important; }
+/* ---- Light backgrounds: write-up pure black ------------------------ */
+.text-gray-300 { color: #000000 !important; }
+.text-gray-400 { color: #000000 !important; }
+.text-gray-500 { color: #000000 !important; }
+.text-gray-600 { color: #000000 !important; }
+.text-gray-700 { color: #000000 !important; }
+.text-slate-400 { color: #000000 !important; }
+.text-slate-500 { color: #000000 !important; }
+.text-slate-600 { color: #000000 !important; }
 .bg-white p, .bg-gray-50 p, .bg-white li, .bg-gray-50 li,
 section.bg-white, section.bg-gray-50, header.bg-white {
-    color: #0b1424;
+    color: #000000;
 }
 
 /* ...but on the dark hero / footer panels those same greys must go
@@ -198,7 +198,7 @@ p { font-weight: 500; }
 .uppercase.text-xs, .text-xs.uppercase { letter-spacing: .06em; }
 
 /* Headings across the public site heavier for scannability. */
-h1, h2, h3, h4 { letter-spacing: -0.015em; color: #0b1424; }
+h1, h2, h3, h4 { letter-spacing: -0.015em; color: #000000; }
 h1 { font-weight: 800; }
 h2, h3 { font-weight: 700; }
 .bg-ink-900 h1, .bg-ink-800 h1, .from-ink-900 h1, .from-brand-600 h1,
@@ -212,16 +212,16 @@ footer h1, footer h2, footer h3, footer h4 { color: inherit; }
 .bg-ink-900 .text-lg, .bg-ink-900 .text-xl { font-weight: 500; }
 
 /* Cards: product blurbs and list descriptions. */
-.vp-card p, .vp-card li { font-weight: 500; color: #0b1424; }
+.vp-card p, .vp-card li { font-weight: 500; color: #000000; }
 
 /* Customer reviews: dark write-up next to the portrait. */
-.vp-review p { color: #0b1424; font-weight: 500; }
-.vp-review { color: #0b1424; }
+.vp-review p { color: #000000; font-weight: 500; }
+.vp-review { color: #000000; }
 
 /* Ink utilities in case Tailwind CDN is late or missing. */
-.text-ink-900 { color: #0b1424 !important; }
-.text-ink-800 { color: #101b2e !important; }
-.text-ink-700 { color: #1b2740 !important; }
+.text-ink-900 { color: #000000 !important; }
+.text-ink-800 { color: #000000 !important; }
+.text-ink-700 { color: #000000 !important; }
 .bg-ink-900 .text-ink-900,
 .bg-ink-800 .text-ink-900,
 .from-ink-900 .text-ink-900,
@@ -235,11 +235,11 @@ footer .text-ink-900 { color: #ffffff !important; }
 a.hover\:underline, a.underline { font-weight: 600; }
 
 /* Form labels/help text were 12-13px grey — nudge both up. */
-form label { font-size: 14px; font-weight: 700; color: #0b1424; }
+form label { font-size: 14px; font-weight: 700; color: #000000; }
 form .vp-help { font-size: 13px; color: #4b5563; font-weight: 500; }
-form .vp-input, form .vp-textarea, form .vp-select { font-size: 15px; font-weight: 500; color: #0b1424; }
+form .vp-input, form .vp-textarea, form .vp-select { font-size: 15px; font-weight: 500; color: #000000; }
 form .vp-input::placeholder, form .vp-textarea::placeholder { color: #6b7280; font-weight: 500; }
 
 /* Tables inside prose. */
-.vp-prose td { font-weight: 500; color: #1f2937; }
-.vp-prose th { font-weight: 700; color: #0b1424; }
+.vp-prose td { font-weight: 500; color: #000000; }
+.vp-prose th { font-weight: 700; color: #000000; }

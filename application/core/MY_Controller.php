@@ -71,6 +71,13 @@ class MY_Controller extends CI_Controller
             $this->data['recent_notifications'] = $this->_recent_notifications();
         }
 
+        // Toggle for the WordPress-style inline page editor (?vp_edit=1 to
+        // switch editing on, ?vp_edit=0 to switch it off). Kept in the session
+        // so the mode survives navigation between pages.
+        if ($this->input->get('vp_edit') !== null) {
+            $this->session->set_userdata('vp_inline_edit', $this->input->get('vp_edit') === '1' ? 1 : 0);
+        }
+
         $this->_maintenance_gate();
     }
 
@@ -120,7 +127,7 @@ class MY_Controller extends CI_Controller
              . "img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; "
              . "script-src 'self' 'nonce-{$nonce}' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://code.jquery.com; "
              . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-             . "connect-src 'self' https:; frame-src https://www.youtube.com https://player.vimeo.com";
+             . "connect-src 'self' https:; frame-src https://www.youtube.com https://player.vimeo.com https://www.google.com https://maps.google.com";
         $this->output->set_header('Content-Security-Policy: ' . $csp);
     }
 
@@ -143,6 +150,18 @@ class MY_Controller extends CI_Controller
         // that owns the current content (CMS page, product, post, settings,
         // etc.), rather than a misleading one-size-fits-all form.
         $data['admin_edit'] = $this->_admin_edit_target($data);
+
+        // WordPress-style inline page editor state.
+        $canInline = $this->_inline_can();
+        $capable   = $this->_inline_capable($data);
+        $editing   = $canInline && $capable && (int) $this->session->userdata('vp_inline_edit') === 1;
+        $data['inline_edit_can']     = $canInline && $capable;
+        $data['inline_edit_capable'] = $capable;
+        $data['inline_edit']         = $editing;
+        $data['inline_edit_url']     = vp_with_query('vp_edit', $editing ? '0' : '1');
+        $data['inline_builder_url']  = ($canInline && $capable) ? $this->_inline_builder_url($data) : null;
+        // Mirrored onto the controller so view helpers (vp_inline_editing) see it.
+        $this->data['inline_edit']   = $editing;
 
         $layout = $layout !== null ? $layout : $this->layout;
 
@@ -262,6 +281,57 @@ class MY_Controller extends CI_Controller
 
         if (!$target || !$permission || !$this->acl->user_can($user, $permission)) return null;
         return ['url' => base_url($target), 'label' => 'Edit this page'];
+    }
+
+    /**
+     * Whether the signed-in account may use the inline page editor at all
+     * (a staff account holding either the homepage or pages edit permission).
+     */
+    private function _inline_can()
+    {
+        if (!$this->vp_auth->check() || !$this->vp_auth->is_staff()) return false;
+        $user = $this->vp_auth->user();
+        return $this->acl->user_can($user, 'homepage.manage') || $this->acl->user_can($user, 'pages.manage');
+    }
+
+    /**
+     * Whether the current route renders page-builder sections that the inline
+     * editor can edit. Detail views (product/blog/career/industry/news) keep
+     * the normal deep-link editor instead.
+     */
+    private function _inline_capable(array $data)
+    {
+        $controller = strtolower((string) $this->router->fetch_class());
+        $method     = strtolower((string) $this->router->fetch_method());
+
+        if ($controller === 'page' && $method === 'view') return true;
+        if ($controller === 'errors' && $method === 'not_found') return !empty($data['page']['slug']);
+
+        $listing = ['home', 'about', 'services', 'products', 'industries', 'contact',
+                    'blog', 'news', 'careers', 'faq', 'downloads', 'rfq'];
+        return $method === 'index' && in_array($controller, $listing, true);
+    }
+
+    /**
+     * Dashboard page-builder URL for the current route (the "Manage sections"
+     * shortcut shown while inline editing).
+     */
+    private function _inline_builder_url(array $data)
+    {
+        $controller = strtolower((string) $this->router->fetch_class());
+
+        if ($controller === 'page' || $controller === 'errors') {
+            $slug = (string) ($data['page']['slug'] ?? '');
+            if ($slug === '') return null;
+            return base_url('admin/homepage/index/page:' . rawurlencode($slug));
+        }
+
+        $listing = ['home', 'about', 'services', 'products', 'industries', 'contact',
+                    'blog', 'news', 'careers', 'faq', 'downloads', 'rfq'];
+        if (in_array($controller, $listing, true)) {
+            return base_url('admin/homepage/index/' . $controller);
+        }
+        return null;
     }
 
     /**

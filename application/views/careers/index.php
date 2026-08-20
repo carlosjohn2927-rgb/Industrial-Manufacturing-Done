@@ -5,8 +5,8 @@
     <div class="absolute inset-0 bg-gradient-to-t from-ink-900/70 to-transparent"></div>
     <div class="container mx-auto px-4 py-14 relative">
         <span class="text-xs font-semibold tracking-widest uppercase text-brand-200">Build what matters</span>
-        <h1 class="text-4xl lg:text-5xl font-extrabold mt-3">Careers</h1>
-        <p class="text-white mt-3 max-w-2xl text-lg">Join a team that designs and builds the industrial equipment the world depends on.</p>
+        <?= vp_inline_text('careers_hero_title', 'Careers', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3') ?>
+        <?= vp_inline_text('careers_hero_subtitle', 'Join a team that designs and builds the industrial equipment the world depends on.', 'p', 'text-white mt-3 max-w-2xl text-lg') ?>
     </div>
 </section>
 <section class="container mx-auto px-4 py-12 max-w-3xl">
