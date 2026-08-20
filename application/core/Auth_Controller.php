@@ -14,7 +14,9 @@ class Auth_Controller extends MY_Controller
         parent::__construct();
         if (!$this->vp_auth->check()) {
             $this->flash('warning', 'Please sign in to continue.');
-            $back = urlencode(current_url());
+            // Relative path only: the login controllers refuse absolute URLs
+            // as an open-redirect guard.
+            $back = urlencode('/' . ltrim((string) $this->uri->uri_string(), '/'));
             $is_admin_area = strpos(strtolower((string) $this->uri->uri_string()), 'admin') === 0;
             redirect(($is_admin_area ? 'admin/login?next=' : 'login?next=') . $back);
         }

@@ -18,7 +18,7 @@
                 <tr><td class="py-1 font-semibold align-top">Detail</td><td class="text-ink-800/70"><?= vp_safe_html($email['message']) ?></td></tr>
             <?php endif; ?>
         </table>
-        <p class="text-xs text-ink-800/60">Mail credentials live in the server environment (.env) and are never editable from the browser.</p>
+        <p class="text-xs text-ink-800/60">Mail credentials (SMTP host/user/password, API keys) live in the server environment (.env) and are never editable from the browser.</p>
     <?= vp_admin_card_close() ?>
 
     <form method="post" action="<?= base_url('admin/settings/save_system') ?>" class="space-y-6">
@@ -26,6 +26,14 @@
         <?= vp_admin_card_open('Maintenance mode', 'Visitors see a maintenance page; signed-in staff still see the site', 'ri-tools-line') ?>
             <?= vp_toggle_field('maintenance_mode', $values['maintenance_mode'] === '1', 'Enable maintenance mode') ?>
             <?= vp_textarea_field('maintenance_message', $values['maintenance_message'], 'Message shown to visitors', 3) ?>
+        <?= vp_admin_card_close() ?>
+
+        <?= vp_admin_card_open('Email identity', 'Who outgoing messages come from — leave empty to use the .env defaults', 'ri-mail-line') ?>
+            <div class="grid md:grid-cols-3 gap-4">
+                <?= vp_text_field('mail_from_email', $values['mail_from_email'], 'From address', ['type' => 'email', 'placeholder' => 'no-reply@yourdomain.com']) ?>
+                <?= vp_text_field('mail_from_name', $values['mail_from_name'], 'From name') ?>
+                <?= vp_text_field('mail_reply_to', $values['mail_reply_to'], 'Reply-to address', ['type' => 'email']) ?>
+            </div>
         <?= vp_admin_card_close() ?>
 
         <?= vp_admin_card_open('Features', '', 'ri-toggle-line') ?>

@@ -146,6 +146,9 @@ class Settings extends Admin_Controller
                 'rfq_enabled'         => (string) $this->settings->get('rfq_enabled', '1'),
                 'rfq_admin_email'     => (string) $this->settings->get('rfq_admin_email', ''),
                 'rfq_rate_limit_per_hour' => (string) $this->settings->get('rfq_rate_limit_per_hour', '5'),
+                'mail_from_email'     => (string) $this->settings->get('mail_from_email', ''),
+                'mail_from_name'      => (string) $this->settings->get('mail_from_name', ''),
+                'mail_reply_to'       => (string) $this->settings->get('mail_reply_to', ''),
             ],
         ]);
     }
@@ -160,6 +163,11 @@ class Settings extends Admin_Controller
         $this->settings->set('rfq_enabled', $this->input->post('rfq_enabled') ? '1' : '0', 'BOOL', 'RFQ');
         $this->settings->set('rfq_admin_email', trim((string) $this->input->post('rfq_admin_email')), 'STRING', 'RFQ');
         $this->settings->set('rfq_rate_limit_per_hour', (int) $this->input->post('rfq_rate_limit_per_hour'), 'INT', 'RFQ');
+
+        // Outgoing email identity (credentials stay in .env)
+        $this->settings->set('mail_from_email', trim((string) $this->input->post('mail_from_email')), 'STRING', 'EMAIL');
+        $this->settings->set('mail_from_name', trim((string) $this->input->post('mail_from_name')), 'STRING', 'EMAIL');
+        $this->settings->set('mail_reply_to', trim((string) $this->input->post('mail_reply_to')), 'STRING', 'EMAIL');
 
         $this->settings->clear_cache();
         $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'SYSTEM']);

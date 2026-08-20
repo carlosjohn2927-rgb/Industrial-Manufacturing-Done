@@ -27,6 +27,7 @@
         <?php endif; ?>
         <form method="post" action="<?= base_url('admin/login') ?>" class="space-y-4">
             <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
+            <input type="hidden" name="next" value="<?= vp_safe_html((string) $this->input->get('next')) ?>">
             <div>
                 <label for="email">Email</label>
                 <input class="vp-input" type="email" id="email" name="email" required autofocus>
