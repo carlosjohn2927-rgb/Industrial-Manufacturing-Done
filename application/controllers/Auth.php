@@ -203,6 +203,12 @@ class Auth extends MY_Controller
             );
             if ($user && $this->vp_auth->is_staff()) {
                 $this->flash('success', 'Welcome back, ' . $user['firstName'] . '.');
+                // Return to the page that triggered the sign-in, when it is a
+                // safe relative admin path (never an absolute URL).
+                $next = (string) ($this->input->post('next') ?: $this->input->get('next'));
+                if ($next !== '' && strpos($next, '/') === 0 && strpos($next, '//') !== 0) {
+                    redirect($next);
+                }
                 redirect('admin');
             }
             $this->vp_auth->logout();

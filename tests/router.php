@@ -17,4 +17,11 @@ if ($uri !== '/' && $uri !== '/index.php' && is_file($file)) {
     return false; // let the built-in server serve this static file
 }
 
+// The built-in server points SCRIPT_NAME at the requested path when it looks
+// like a file (e.g. /sitemap.xml, /robots.txt), which makes CodeIgniter parse
+// an empty URI and fall back to the default controller. Apache always reports
+// /index.php here, so normalise it for parity with production.
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['PHP_SELF']    = '/index.php';
+
 require $docroot . '/index.php';

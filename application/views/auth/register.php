@@ -1,4 +1,3 @@
-<?php $this->page_title = $this->page_title ?: 'Create account'; ?>
 <section class="relative bg-ink-900 text-white overflow-hidden min-h-[300px] flex items-end">
     <img src="<?= IMG_URL ?>customer-portal.jpg" alt="Industrial equipment customer portal" class="absolute inset-0 w-full h-full object-cover object-center" fetchpriority="high" decoding="async">
     <div class="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/90 to-ink-900/20"></div>

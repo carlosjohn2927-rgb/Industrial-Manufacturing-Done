@@ -62,3 +62,31 @@ if (!function_exists('vp_get_client_ip')) {
         return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
     }
 }
+
+if (!function_exists('vp_sanitize_html')) {
+    /**
+     * Sanitise administrator-authored HTML before it is stored.
+     *
+     * Content editors legitimately need formatting markup (headings, lists,
+     * links, images, tables), but never scripting: <script>, <iframe>,
+     * <object>, inline event handlers and javascript: URLs are stripped.
+     */
+    function vp_sanitize_html($html)
+    {
+        $html = (string) $html;
+        if (trim($html) === '') return '';
+
+        // Remove dangerous elements together with their content.
+        $html = preg_replace('#<\s*(script|style|iframe|object|embed|form|base|meta|link)\b[^>]*>.*?<\s*/\s*\1\s*>#is', '', $html);
+        // …and any self-closing/unclosed variants.
+        $html = preg_replace('#<\s*/?\s*(script|style|iframe|object|embed|base|meta|link)\b[^>]*>#i', '', $html);
+        // Inline event handlers: onclick="…", onerror='…', onload=…
+        $html = preg_replace('#\son[a-z]+\s*=\s*"[^"]*"#i', '', $html);
+        $html = preg_replace("#\son[a-z]+\s*=\s*'[^']*'#i", '', $html);
+        $html = preg_replace('#\son[a-z]+\s*=\s*[^\s>]+#i', '', $html);
+        // javascript:/vbscript:/data: URLs in href/src attributes.
+        $html = preg_replace('#(href|src|xlink:href)\s*=\s*(["\']?)\s*(javascript|vbscript|data)\s*:#i', '$1=$2#', $html);
+
+        return trim($html);
+    }
+}

@@ -169,6 +169,18 @@ $config['csrf_token_name'] = 'csrf_token';
 $config['csrf_cookie_name'] = 'vp_csrf';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
+
+/**
+ * URIs excluded from the global CSRF filter.
+ *
+ * `chat/message` is a public, read-only, rate-limited JSON endpoint posted to
+ * repeatedly from a single page view. Because CodeIgniter rotates the CSRF
+ * cookie on every POST, a proxy/CDN that strips the rotated Set-Cookie made the
+ * second chat message fail with an HTML 403 the widget could not parse. The
+ * controller enforces its own same-origin + rate-limit protection instead and
+ * always answers with JSON (see application/controllers/Chat.php).
+ */
+$config['csrf_exclude_uris'] = ['chat/message'];
 $config['csrf_use_ssl'] = $vp_is_https;
 
 // Encryption key - NEVER hard-code a production value. See header comment.

@@ -1,14 +1,11 @@
-<?php $this->page_title = 'Admin sign in'; ?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Admin sign in | <?= vp_safe_html($site_name) ?></title>
-    <link rel="icon" href="<?= IMG_URL ?>favicon.ico" sizes="any">
-    <link rel="icon" href="<?= IMG_URL ?>favicon-32.png" type="image/png" sizes="32x32">
-    <link rel="icon" href="<?= IMG_URL ?>favicon-16.png" type="image/png" sizes="16x16">
-    <link rel="apple-touch-icon" href="<?= IMG_URL ?>apple-touch-icon.png" sizes="180x180">
+    <link rel="icon" href="<?= vp_safe_html(vp_favicon_url()) ?>">
+    <link rel="apple-touch-icon" href="<?= vp_safe_html(vp_logo_url('light')) ?>">
     <link rel="manifest" href="<?= base_url('site.webmanifest') ?>">
     <meta name="theme-color" content="#0b1424">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +15,9 @@
 <body class="font-sans bg-ink-900 min-h-screen flex items-center justify-center p-6">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         <div class="mb-7">
-            <img src="<?= IMG_URL ?>logo-header.png" alt="<?= vp_safe_html($site_name) ?>" class="h-12 w-auto max-w-full object-contain" width="900" height="258">
+            <a href="<?= base_url() ?>" title="Go to the public website">
+                <img src="<?= vp_safe_html(vp_logo_url('light')) ?>" alt="<?= vp_safe_html(vp_site('logo_alt', $site_name)) ?>" class="h-12 w-auto max-w-full object-contain">
+            </a>
             <div class="text-xs uppercase tracking-widest text-gray-500 mt-3">Admin sign in</div>
         </div>
         <?php if ($flash): ?>
@@ -28,6 +27,7 @@
         <?php endif; ?>
         <form method="post" action="<?= base_url('admin/login') ?>" class="space-y-4">
             <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
+            <input type="hidden" name="next" value="<?= vp_safe_html((string) $this->input->get('next')) ?>">
             <div>
                 <label for="email">Email</label>
                 <input class="vp-input" type="email" id="email" name="email" required autofocus>

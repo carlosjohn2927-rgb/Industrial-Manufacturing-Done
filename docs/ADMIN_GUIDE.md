@@ -1,13 +1,23 @@
-# Admin Guide — Vortex Precision
+# Admin Guide — Halyk Petroleum
 
 Sign in at `/admin/login` with your staff account. A fresh installation has no seeded passwords: `install/install.php` creates the first Super Admin with the password you provide via `VP_ADMIN_PASSWORD` — or a randomly generated temporary password printed by the installer. Temporary passwords are flagged in the database, and the account's first login is redirected to its edit screen so the password must be changed before using the rest of the admin area. The sidebar then gives you access to all admin areas.
 
+> **Super Admin / Admin dashboards, roles and permissions, and the whole CMS
+> (homepage, pages, navigation, logo, header/footer, settings) are documented in
+> [`DASHBOARD.md`](DASHBOARD.md).** This guide covers the day-to-day screens.
+
 ## Dashboard
 
-- Counts: new RFQs, products, open contacts, users
-- Doughnut chart of quotes by status
-- Recent RFQs (last 10)
-- Recent activity (last 15 audit log entries)
+- Header: clickable logo and **Homepage / View Website** buttons (open the public
+  site in a new tab), notifications bell, profile menu
+- Counts you are allowed to see (RFQs, products, messages, customers, pages, media)
+- Quick links into the website-management screens you have permission for
+- Latest quote requests, recent administrator activity
+- Super Admin only: administrator overview, email transport health, failed
+  sign-ins (7 days), maintenance-mode state
+
+Every panel and sidebar entry is filtered by your permissions — and the same
+permission is checked again on the server for each request.
 
 ## Quotes
 
@@ -28,10 +38,18 @@ Click any quote to see:
 
 ## Products
 
-- Search by name, SKU, description
-- Filter by category
-- Create / edit / delete
-- Form supports: primary image upload (auto-resized to 1600px), dynamic specifications, related products, industries, SEO meta, featured flag, active/draft
+Create products with **Products → New product**: name, SKU, slug, descriptions,
+price, availability, category, industries, certifications, specifications and
+one or many photos (drag several files in at once — the first becomes the
+primary image). The list can be filtered by category *and* by industry, and the
+**New product** button keeps the current filter so "add another product to this
+industry" is one click. Duplicate SKUs/slugs are refused with a clear message.
+
+
+- Search by name, SKU or description
+- Filter by category and by industry
+- Create / edit / delete (needs the `products.manage` permission)
+- Form supports: multi-image upload (auto-resized to 1600px), dynamic specifications, related products, industries, SEO meta, featured flag, active/draft
 
 ## Categories
 
@@ -71,16 +89,48 @@ Editable lists used on the home page.
 
 Upload images and files to a chosen folder. Images are auto-resized to 1600px max width. The media list is paginated; click "View" to open.
 
-## Users
+## Customers (`/admin/users`)
 
-- List, search, filter by role
-- Create new user (password required, 8+ chars)
-- Edit (change role, status; password is optional on edit)
-- Delete (Super Admin only; can't delete yourself)
+Customer accounts only — staff accounts are managed by the Super Admin under
+**People → Administrators**, which is why no role selector exists here.
+
+- List, search, create, edit, deactivate, delete
+- Requires the `customers.manage` permission
+
+## Administrators (`/admin/admins`, Super Admin only)
+
+- Create / edit / enable / disable / delete administrators
+- Reset passwords (typed or auto-generated, optionally forcing a change at next login)
+- Assign or remove permissions per account, section by section
+- Review each administrator's activity trail
+
+The Super Admin account itself cannot be edited, disabled, deleted or
+re-permissioned by anybody else, and no administrator can ever be promoted to
+Super Admin from the dashboard.
+
+## Website content
+
+| Screen | What it controls |
+|---|---|
+| **Homepage** (`/admin/homepage`) | every block of the homepage (and the About / Services pages): add, edit, reorder, hide, delete |
+| **Pages** (`/admin/pages`) | CMS pages served at `/{slug}` with SEO fields, status, visibility, publish date |
+| **Navigation** (`/admin/menus`) | header menu, footer columns and legal links |
+| **Header & Footer** (`/admin/appearance/header`) | announcement bar, CTA button, contact block, social links, footer text |
+| **Logo & Branding** (`/admin/appearance`) | website name/title/description, logo (light/dark/footer), favicon, alt text, logo size |
+
+Changes are live on the public website as soon as you save.
 
 ## Settings
 
-Group by group: GENERAL, HERO, STATS, CONTACT, RFQ, ABOUT, SEO, CHAT, etc. Each row has a key, type (STRING / TEXT / INT / BOOL / JSON), and value. Edit inline, click "Save all settings". Settings are cached in-request; no need to clear any cache.
+Tabbed screen at `/admin/settings`:
+
+- **General** — website name, title, tagline, description, URL, default language
+- **Contact** — email addresses, phone, address, opening hours (used in the footer, contact page and emails)
+- **Social** — social profile URLs (empty ones are hidden on the site)
+- **System** *(Super Admin)* — maintenance mode + message, chat/RFQ switches, email transport health
+- **All values** — the raw key/value editor (every setting row, add or delete keys)
+
+Settings are cached per request; there is no cache to clear.
 
 ## SEO
 
@@ -96,7 +146,9 @@ A `robots.txt` and `sitemap.xml` are generated automatically at those URLs and i
 
 ## AI chat
 
-The floating chat widget on the public site is configured under **Settings → CHAT group** (see `docs/AI_CHAT.md`). By default it answers locally from FAQs, products, industries and contact info with no external service. To use a real LLM, set `chat_ai_provider` to `openai`/`custom` and provide `chat_ai_api_key` (or set `VP_AI_API_KEY` in the environment).
+The floating chat widget is configured under **Settings → System → Chat
+assistant** (on/off, title, assistant name, welcome message, quick replies,
+hourly message limit per visitor). Advanced keys stay under **Settings → All values → CHAT group** (see `docs/AI_CHAT.md`). By default it answers locally from FAQs, products, industries and contact info with no external service. To use a real LLM, set `chat_ai_provider` to `openai`/`custom` and provide `chat_ai_api_key` (or set `VP_AI_API_KEY` in the environment).
 
 ## Audit log
 
@@ -106,11 +158,20 @@ Append-only log of every admin mutation. Filter by user, action, resource. Usefu
 
 In-app notifications. Mark individual items as read. Currently populated by the system; can be extended to push notifications (WebSockets out of scope).
 
+## Media
+
+Upload images and files to a chosen folder (images are auto-resized to 1600px
+max width), edit names and alt text, replace a file everywhere it is used, copy
+its URL, or delete it. Files currently used as the logo, favicon or social
+share image are protected from deletion until the setting points elsewhere.
+The same library opens as a picker inside every content editor.
+
 ## Common admin actions
 
-- **Log out**: top-right of any admin page, or `GET /admin/logout`.
-- **Switch back to public site**: any "View public site" link in the footer.
-- **Change your password**: `/admin/users/edit/<your-id>`.
+- **Log out**: profile menu, top-right of any admin page, or `GET /admin/logout`.
+- **Open the public website**: click the logo, the **Homepage** button or
+  **View Website** in the header — all open a new tab and keep your session.
+- **Change your password**: `/admin/profile` → *Change password*.
 
 ## Keyboard tips
 

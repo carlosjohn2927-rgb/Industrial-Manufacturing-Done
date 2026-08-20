@@ -2,6 +2,9 @@
 
 class Faqs extends Admin_Crud
 {
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'faqs.manage';
+
     protected $model_name   = 'Faq_model';
     protected $redirect_url = 'admin/faqs';
     protected $order_by     = ['category' => 'ASC', 'sortOrder' => 'ASC'];

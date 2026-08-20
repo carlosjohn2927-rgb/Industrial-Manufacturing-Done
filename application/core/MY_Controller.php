@@ -35,16 +35,20 @@ class MY_Controller extends CI_Controller
         $csp_nonce = bin2hex(random_bytes(16));
         $this->_set_security_headers($csp_nonce);
 
-        // Global view data
+        // Global view data. Site identity/contact/social all come from the
+        // dashboard-managed settings (with config/.env as the fallback), so
+        // nothing user-facing is hard-coded in the views.
+        $site = vp_site();
         $this->data = [
-            'site_name'        => $this->config->item('site_name') ?: 'Halyk Petroleum',
-            'site_tagline'     => $this->config->item('site_tagline'),
+            'site_name'        => $site['name'],
+            'site_tagline'     => $site['tagline'],
+            'site'             => $site,
             'contact'          => [
-                'email'   => $this->config->item('contact_email'),
-                'phone'   => $this->config->item('phone'),
-                'address' => $this->config->item('address'),
+                'email'   => $site['email'],
+                'phone'   => $site['phone'],
+                'address' => $site['address'],
             ],
-            'social'           => $this->config->item('social'),
+            'social'           => vp_social_links(),
             'current_user'     => $this->vp_auth->user(),
             'is_admin'         => $this->vp_auth->check() && $this->vp_auth->is_staff(),
             'page_title'       => '',
@@ -61,9 +65,48 @@ class MY_Controller extends CI_Controller
             'unread_notifications' => 0,
         ];
 
+        $this->data['recent_notifications'] = [];
         if ($this->vp_auth->check() && $this->vp_auth->is_staff()) {
             $this->data['unread_notifications'] = $this->_count_unread();
+            $this->data['recent_notifications'] = $this->_recent_notifications();
         }
+
+        $this->_maintenance_gate();
+    }
+
+    /**
+     * Maintenance mode (Dashboard → Settings → System).
+     * Visitors get a 503 maintenance page; staff keep browsing the live site,
+     * and the admin area / auth routes always stay reachable.
+     */
+    private function _maintenance_gate()
+    {
+        if (!vp_maintenance_active()) return;
+        if ($this->vp_auth->check() && $this->vp_auth->is_staff()) return;
+
+        $uri = strtolower((string) $this->uri->uri_string());
+        foreach (['admin', 'login', 'logout', 'auth', 'forgot', 'reset', 'assets'] as $allowed) {
+            if (strpos($uri, $allowed) === 0) return;
+        }
+
+        $this->output->set_status_header(503);
+        $this->output->set_header('Retry-After: 3600');
+        $this->load->view('errors/maintenance', [
+            'site'    => vp_site(),
+            'message' => vp_site('maintenance_message', 'We are performing scheduled maintenance.'),
+        ]);
+        $this->output->_display();
+        exit;
+    }
+
+    /** Latest notifications for the dashboard bell. */
+    private function _recent_notifications()
+    {
+        if (!$this->db->table_exists('notifications')) return [];
+        return $this->db->where('userId', $this->vp_auth->id())
+                        ->order_by('createdAt', 'DESC')
+                        ->limit(6)
+                        ->get('notifications')->result_array();
     }
 
     /**

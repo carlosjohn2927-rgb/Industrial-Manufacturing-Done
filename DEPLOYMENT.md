@@ -125,7 +125,32 @@ https://yourdomain.com/admin/login
 | Email    | `admin@halykpetroleum-kz.com` |
 | Password | `Nigeria1234@`                |
 
-**Change this password immediately** after first login via **Admin → Users → Edit your account**.
+**Change this password immediately** after first login via
+**Dashboard → My profile → Change password**.
+
+That account is the **Super Admin**: it owns the administration system and can
+create further administrators and decide, per account, which dashboard sections
+they may use (**Dashboard → People → Administrators**). See
+[`docs/DASHBOARD.md`](docs/DASHBOARD.md).
+
+---
+
+## Upgrading an Existing Installation (dashboard / CMS release)
+
+If your database was imported **before** this release, add the new tables by
+importing two more files in phpMyAdmin — no CLI, no data loss:
+
+1. phpMyAdmin → your database → **Import**
+2. `database/migrations/001_cms_and_permissions.sql` → **Go**
+3. `database/migrations/002_cms_seed.sql` → **Go**
+
+Both files are safe to import more than once (`CREATE TABLE IF NOT EXISTS`,
+`INSERT IGNORE`). The three `ALTER TABLE media …` statements in the first file
+report *"Duplicate column name"* if they were already applied — that message can
+be ignored.
+
+After the import, sign in and open **Dashboard → Website → Homepage** to start
+editing the public site.
 
 ---
 
@@ -157,7 +182,11 @@ The file `database/production.sql` contains:
 | **FAQs** | 8 frequently asked questions |
 | **Testimonials** | 4 customer testimonials |
 | **Partners** | 6 partner logos |
-| **Settings** | 30+ application settings (SEO, Chat, Contact, Stats, Hero, etc.) |
+| **Settings** | 60+ application settings (identity, branding, contact, social, header/footer, SEO, chat, system) |
+| **Permissions** | Permission catalogue + role defaults for every staff role |
+| **Homepage sections** | 8 editable homepage blocks (hero, stats, categories, products, industries, testimonials, partners, CTA) |
+| **Navigation** | Header menu, two footer columns and legal links |
+| **CMS pages** | Privacy Policy and Terms of Service starter pages |
 | **Careers** | 4 job openings |
 | **News** | 3 news articles |
 | **Downloads** | 4 downloadable resources |
@@ -300,7 +329,8 @@ Check permissions on `assets/uploads/` — must be writable by the web server (7
 │   └── logs/               # Writable: logs, cache, ratelimit
 ├── system/                 # CodeIgniter 3 framework
 ├── database/               # Database files
-│   └── production.sql      # Complete production database
+│   ├── production.sql      # Complete production database
+│   └── migrations/         # Idempotent SQL upgrades for existing databases
 ├── install/                # Optional CLI tools (not needed for deployment)
 ├── docs/                   # Documentation
 └── DEPLOYMENT.md           # This file

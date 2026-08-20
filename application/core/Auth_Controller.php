@@ -2,7 +2,10 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Vortex Precision - requires the user to be logged in.
+ * Halyk Petroleum — requires the user to be signed in.
+ *
+ * Admin-area URLs bounce to the admin sign-in screen (and back again after a
+ * successful login); everything else uses the public sign-in page.
  */
 class Auth_Controller extends MY_Controller
 {
@@ -10,9 +13,12 @@ class Auth_Controller extends MY_Controller
     {
         parent::__construct();
         if (!$this->vp_auth->check()) {
-            $this->flash('warning', 'Please log in to continue.');
-            $back = urlencode(current_url());
-            redirect('login?next=' . $back);
+            $this->flash('warning', 'Please sign in to continue.');
+            // Relative path only: the login controllers refuse absolute URLs
+            // as an open-redirect guard.
+            $back = urlencode('/' . ltrim((string) $this->uri->uri_string(), '/'));
+            $is_admin_area = strpos(strtolower((string) $this->uri->uri_string()), 'admin') === 0;
+            redirect(($is_admin_area ? 'admin/login?next=' : 'login?next=') . $back);
         }
     }
 }

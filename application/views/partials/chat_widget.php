@@ -17,6 +17,7 @@ $csrfVal  = $csrf_token ?? '';
 ?>
 <div id="vp-chat" class="vp-chat"
      data-endpoint="<?= vp_safe_html(base_url('chat/message')) ?>"
+     data-token-endpoint="<?= vp_safe_html(base_url('chat/token')) ?>"
      data-title="<?= vp_safe_html($title) ?>"
      data-bot="<?= vp_safe_html($bot) ?>"
      data-welcome="<?= vp_safe_html($welcome) ?>"

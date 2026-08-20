@@ -2,9 +2,12 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Vortex Precision - Audit log.
+ * Halyk Petroleum - Audit / activity log.
+ *
+ * Loaded as $this->audit (see application/config/autoload.php). Prefixed Vp_ so
+ * it cannot collide with the admin `Audit` controller class.
  */
-class Audit
+class Vp_audit
 {
     protected $CI;
     public function __construct()

@@ -2,6 +2,9 @@
 
 class Categories extends Admin_Crud
 {
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'categories.manage';
+
     protected $model_name   = 'Category_model';
     protected $view_prefix  = 'categories';
     protected $redirect_url = 'admin/categories';

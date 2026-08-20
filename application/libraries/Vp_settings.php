@@ -2,9 +2,13 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Vortex Precision - Settings (key-value store) with in-request cache.
+ * Halyk Petroleum - Settings (key-value store) with in-request cache.
+ *
+ * Loaded as $this->settings (see application/config/autoload.php). The class is
+ * prefixed Vp_ so it cannot collide with the admin `Settings` controller —
+ * CodeIgniter resolves libraries and controllers in the same class namespace.
  */
-class Settings
+class Vp_settings
 {
     protected $CI;
     protected $cache = null;

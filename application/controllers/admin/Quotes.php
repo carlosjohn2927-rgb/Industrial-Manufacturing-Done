@@ -13,7 +13,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Quotes extends Admin_Controller
 {
-    protected $allowed_roles = [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_SALES, ROLE_ENGINEER];
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'quotes.manage';
+
 
     public function __construct()
     {

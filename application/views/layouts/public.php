@@ -6,16 +6,15 @@
  *           $csrf_token, $vp_settings, $unread_notifications
  */
 ?><!doctype html>
-<html lang="en">
+<html lang="<?= vp_safe_html(vp_site('language', 'en')) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <?= vp_seo_head($page_title, $page_description, null, $csp_nonce ?? '') ?>
 
-    <link rel="icon" href="<?= IMG_URL ?>favicon.ico" sizes="any">
-    <link rel="icon" href="<?= IMG_URL ?>favicon-32.png" type="image/png" sizes="32x32">
-    <link rel="icon" href="<?= IMG_URL ?>favicon-16.png" type="image/png" sizes="16x16">
-    <link rel="apple-touch-icon" href="<?= IMG_URL ?>apple-touch-icon.png" sizes="180x180">
+    <!-- Favicon + touch icon come from Dashboard → Website → Logo & branding -->
+    <link rel="icon" href="<?= vp_safe_html(vp_favicon_url()) ?>">
+    <link rel="apple-touch-icon" href="<?= vp_safe_html(vp_logo_url('light')) ?>">
     <link rel="manifest" href="<?= base_url('site.webmanifest') ?>">
     <meta name="theme-color" content="#0b1424">
 

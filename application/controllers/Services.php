@@ -10,6 +10,16 @@ class Services extends MY_Controller
 
     public function index()
     {
+        $sections = vp_sections('services');
+        if (!empty($sections)) {
+            $this->page_title       = vp_cms_setting('services_title', 'Services');
+            $this->page_description = vp_cms_setting('services_description', vp_site('description', ''));
+            return $this->render('home/index', [
+                'sections' => $sections,
+                'blocks'   => vp_section_blocks($sections),
+            ]);
+        }
+
         $this->page_title = 'Services';
         $this->page_description = 'Custom engineering, manufacturing, installation, commissioning and aftermarket service from Vortex Precision.';
 

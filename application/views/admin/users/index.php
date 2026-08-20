@@ -2,15 +2,9 @@
 <div class="flex items-center justify-between mb-4">
     <form method="get" class="flex items-center gap-2">
         <input class="vp-input" type="search" name="q" value="<?= vp_safe_html($search) ?>" placeholder="Search…">
-        <select class="vp-select w-auto" name="role">
-            <option value="">All roles</option>
-            <?php foreach ([ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_SALES, ROLE_ENGINEER, ROLE_EDITOR, ROLE_CUSTOMER] as $r): ?>
-                <option value="<?= $r ?>" <?= $role === $r ? 'selected' : '' ?>><?= vp_role_label($r) ?></option>
-            <?php endforeach; ?>
-        </select>
         <button class="vp-btn vp-btn-secondary" type="submit">Filter</button>
     </form>
-    <a class="vp-btn vp-btn-primary" href="<?= base_url('admin/users/create') ?>"><i class="ri-add-line"></i> New user</a>
+    <a class="vp-btn vp-btn-primary" href="<?= base_url('admin/users/create') ?>"><i class="ri-user-add-line"></i> New customer</a>
 </div>
 <div class="overflow-x-auto">
     <table class="vp-admin-table">
@@ -26,8 +20,8 @@
                 <td class="text-xs text-gray-500"><?= $r['lastLoginAt'] ? vp_time_ago($r['lastLoginAt']) : '—' ?></td>
                 <td class="text-right">
                     <a class="text-gray-600 hover:underline text-xs" href="<?= base_url('admin/users/edit/' . $r['id']) ?>">Edit</a>
-                    <?php if ($this->vp_auth->has_role(ROLE_SUPER_ADMIN) && $r['id'] !== $this->vp_auth->id()): ?>
-                        <form action="<?= base_url('admin/users/delete/' . $r['id']) ?>" method="post" class="inline" data-confirm="Delete this user?">
+                    <?php if ($r['id'] !== $this->vp_auth->id()): ?>
+                        <form action="<?= base_url('admin/users/delete/' . $r['id']) ?>" method="post" class="inline" data-confirm="Delete this customer account?">
                             <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
                             <button class="text-red-600 hover:underline text-xs ml-2" type="submit">Delete</button>
                         </form>

@@ -81,6 +81,46 @@
             return wrap;
         }
 
+        var tokenUrl = root.getAttribute('data-token-endpoint') || '';
+
+        // Ask the server for a fresh CSRF token. Used to recover automatically
+        // when a rotated token/cookie got out of sync (proxies and CDNs can
+        // strip the rotated Set-Cookie), instead of breaking the conversation.
+        function refreshToken() {
+            if (!tokenUrl) return Promise.resolve(false);
+            return fetch(tokenUrl, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data && data.csrf_token) { csrf = data.csrf_token; return true; }
+                    return false;
+                })
+                .catch(function () { return false; });
+        }
+
+        function postMessage(text) {
+            var body = new URLSearchParams();
+            body.set(csrfName, csrf);
+            body.set('message', text);
+
+            return fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: body.toString(),
+                credentials: 'same-origin',
+                cache: 'no-store'
+            }).then(function (res) {
+                return res.text().then(function (raw) {
+                    var data = null;
+                    try { data = JSON.parse(raw); } catch (e) { data = null; }
+                    return { status: res.status, data: data };
+                });
+            });
+        }
+
         function send(text) {
             text = (text || '').trim();
             if (!text || busy) return;
@@ -92,31 +132,50 @@
 
             var typing = addTyping();
 
-            var body = new URLSearchParams();
-            body.set(csrfName, csrf);
-            body.set('message', text);
+            var finish = function (reply) {
+                typing.remove();
+                addMessage('bot', reply);
+                busy = false;
+            };
 
-            fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' },
-                body: body.toString(),
-                credentials: 'same-origin'
-            })
-                .then(function (res) {
-                    return res.json().catch(function () {
-                        throw new Error('unexpected response');
+            postMessage(text)
+                .then(function (r) {
+                    // Keep the token in sync for the next message.
+                    if (r.data && r.data.csrf_token) csrf = r.data.csrf_token;
+
+                    if (r.data && r.data.reply) {
+                        finish(r.data.reply);
+                        return;
+                    }
+
+                    // No usable JSON (expired token, 403/419/500 HTML page…):
+                    // refresh the token and try exactly once more.
+                    return refreshToken().then(function () {
+                        return postMessage(text).then(function (r2) {
+                            if (r2.data && r2.data.csrf_token) csrf = r2.data.csrf_token;
+                            if (r2.data && r2.data.reply) {
+                                finish(r2.data.reply);
+                            } else {
+                                finish('Sorry, I could not reach the assistant just now. Please try again in a moment, or contact our team directly.');
+                            }
+                        });
                     });
                 })
-                .then(function (data) {
-                    // Rotate the CSRF token for the next request.
-                    if (data && data.csrf_token) csrf = data.csrf_token;
-                    var reply = (data && data.reply) ? data.reply : 'Sorry, I could not process that right now. Please try again.';
-                    typing.remove();
-                    addMessage('bot', reply);
-                })
                 .catch(function () {
-                    typing.remove();
-                    addMessage('bot', 'Sorry, something went wrong. Please try again or contact our team directly.');
+                    // Network error: one silent retry, then a friendly message.
+                    return refreshToken()
+                        .then(function () { return postMessage(text); })
+                        .then(function (r2) {
+                            if (r2 && r2.data && r2.data.csrf_token) csrf = r2.data.csrf_token;
+                            if (r2 && r2.data && r2.data.reply) {
+                                finish(r2.data.reply);
+                            } else {
+                                finish('Sorry, something went wrong. Please try again or contact our team directly.');
+                            }
+                        })
+                        .catch(function () {
+                            finish('Sorry, something went wrong. Please try again or contact our team directly.');
+                        });
                 })
                 .finally(function () {
                     busy = false;

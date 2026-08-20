@@ -2,6 +2,9 @@
 
 class Downloads extends Admin_Crud
 {
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'downloads.manage';
+
     protected $model_name   = 'Download_model';
     protected $redirect_url = 'admin/downloads';
     protected $order_by     = ['category' => 'ASC', 'createdAt' => 'DESC'];

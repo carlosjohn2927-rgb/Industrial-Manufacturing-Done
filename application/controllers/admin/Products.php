@@ -6,13 +6,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Products extends Admin_Controller
 {
-    protected $allowed_roles = [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ENGINEER, ROLE_EDITOR];
+    /** Permission enforced server-side for every action (see Admin_Controller). */
+    protected $required_permission = 'products.manage';
+
 
     public function __construct()
     {
         parent::__construct();
         $this->load->model(['Product_model', 'Category_model', 'Industry_model', 'Product_image_model', 'Specification_model', 'Product_download_model', 'Related_product_model']);
-        $this->load->library('vp_upload');
+        // form_validation must be available to every action — save() used to
+        // rely on _form() having loaded it, which silently broke creating and
+        // editing products (fatal "Undefined property: $form_validation").
+        $this->load->library(['vp_upload', 'form_validation']);
         $this->load->helper(['form', 'url', 'security_helper']);
     }
 
@@ -21,6 +26,7 @@ class Products extends Admin_Controller
         $this->page_title = 'Products';
         $search = $this->input->get('q');
         $cat    = $this->input->get('category');
+        $ind    = $this->input->get('industry');
         $page   = max(1, (int) $this->input->get('page'));
         $per    = 25;
 
@@ -28,6 +34,11 @@ class Products extends Admin_Controller
         if ($cat) {
             $c = $this->Category_model->find_one(['slug' => $cat]);
             if ($c) $where['categoryId'] = $c['id'];
+        }
+        if ($ind) {
+            // industryIds is a JSON array column, so match on the id substring.
+            $i = $this->Industry_model->find_one(['slug' => $ind]);
+            if ($i) $where['industryIds LIKE'] = '%' . $i['id'] . '%';
         }
         $result = $this->Product_model->paginate($where, $per, $page, ['createdAt' => 'DESC'], $search, ['name','sku','shortDescription','description']);
 
@@ -38,8 +49,10 @@ class Products extends Admin_Controller
             'page' => $result['page'],
             'search' => $search,
             'categories' => $this->Category_model->find_all(['isActive' => 1], ['sortOrder' => 'ASC'], 50),
+            'industries' => $this->Industry_model->find_all([], ['sortOrder' => 'ASC'], 50),
             'current_category' => $cat,
-            'base_url' => base_url('admin/products') . '?' . http_build_query(array_filter(['q' => $search, 'category' => $cat])) . '&page={page}',
+            'current_industry' => $ind,
+            'base_url' => base_url('admin/products') . '?' . http_build_query(array_filter(['q' => $search, 'category' => $cat, 'industry' => $ind])) . '&page={page}',
         ]);
     }
 
@@ -47,12 +60,25 @@ class Products extends Admin_Controller
     {
         $this->page_title = 'New product';
         $this->_form();
+
+        // Allow "add a product to this category/industry" shortcuts.
+        $preset_industry = [];
+        if ($slug = $this->input->get('industry')) {
+            $i = $this->Industry_model->find_one(['slug' => $slug]) ?: $this->Industry_model->find($slug);
+            if ($i) $preset_industry[] = $i['id'];
+        }
+        $preset_category = null;
+        if ($slug = $this->input->get('category')) {
+            $c = $this->Category_model->find_one(['slug' => $slug]) ?: $this->Category_model->find($slug);
+            if ($c) $preset_category = $c['id'];
+        }
+
         $this->render('admin/products/form', [
-            'product' => null,
+            'product' => $preset_category ? ['categoryId' => $preset_category] : null,
             'industries' => $this->Industry_model->find_all(['isActive' => 1], ['sortOrder' => 'ASC'], 50),
             'categories' => $this->Category_model->find_all(['isActive' => 1], ['sortOrder' => 'ASC'], 50),
             'all_products' => $this->Product_model->find_all(['isActive' => 1], ['name' => 'ASC'], 200),
-            'selected_industries' => [],
+            'selected_industries' => $preset_industry,
             'selected_related' => [],
             'certifications_csv' => '',
             'specs_rows' => [],
@@ -175,7 +201,6 @@ class Products extends Admin_Controller
 
     private function _form()
     {
-        $this->load->library('form_validation');
         $this->form_validation->set_rules('name', 'Name', 'required|max_length[255]');
         $this->form_validation->set_rules('sku',  'SKU',  'required|max_length[100]');
         $this->form_validation->set_rules('description', 'Description', 'required');
@@ -183,21 +208,37 @@ class Products extends Admin_Controller
 
     public function save()
     {
+        if ($this->input->method() !== 'post') show_404();
+
         $id = $this->input->post('id');
         $is_create = empty($id);
-        if ($is_create) {
-            $this->form_validation->set_rules('name', 'Name', 'required|max_length[255]');
-            $this->form_validation->set_rules('sku',  'SKU',  'required|max_length[100]');
-            $this->form_validation->set_rules('description', 'Description', 'required');
-        }
+        if (!$is_create && !$this->Product_model->find($id)) show_404();
+
+        // Same rules for create and edit.
+        $this->form_validation->set_data($this->input->post());
+        $this->_form();
+
         if ($this->form_validation->run() === false) {
-            $this->flash('error', 'Please fix the highlighted errors.');
+            $this->flash('error', trim(strip_tags(validation_errors(' ', ' '))) ?: 'Please fix the highlighted errors.');
             return $is_create ? redirect('admin/products/create') : redirect('admin/products/edit/' . $id);
+        }
+
+        // A duplicate SKU or slug would violate the unique indexes and abort
+        // the request with a database error, so check them first.
+        $slug = vp_slugify($this->input->post('slug') ?: $this->input->post('name'));
+        foreach ([['sku', trim((string) $this->input->post('sku'))], ['slug', $slug]] as $pair) {
+            [$col, $val] = $pair;
+            $this->db->where($col, $val);
+            if (!$is_create) $this->db->where('id !=', $id);
+            if ($this->db->count_all_results('products') > 0) {
+                $this->flash('error', 'Another product already uses that ' . strtoupper($col) . ' ("' . $val . '"). Choose a different one.');
+                return $is_create ? redirect('admin/products/create') : redirect('admin/products/edit/' . $id);
+            }
         }
 
         $data = [
             'name'             => $this->input->post('name'),
-            'slug'             => $this->input->post('slug') ?: vp_slugify($this->input->post('name')),
+            'slug'             => $slug,
             'sku'              => $this->input->post('sku'),
             'description'      => $this->input->post('description'),
             'shortDescription' => $this->input->post('shortDescription'),

@@ -422,8 +422,10 @@ if (!function_exists('vp_seo_config')) {
     function vp_seo_config()
     {
         $CI   =& get_instance();
-        $site = $CI->config->item('site_name') ?: 'Halyk Petroleum';
-        $tagline = $CI->config->item('site_tagline') ?: 'Industrial Manufacturing Excellence';
+        // Dashboard-managed identity wins over the config defaults.
+        $site    = $CI->settings->get('site_name') ?: ($CI->config->item('site_name') ?: 'Halyk Petroleum');
+        $tagline = $CI->settings->get('site_description')
+                    ?: ($CI->settings->get('site_tagline') ?: ($CI->config->item('site_tagline') ?: 'Industrial Manufacturing Excellence'));
 
         // Fall back to $default when the stored value is missing OR empty,
         // so clearing a field in admin restores the sensible default.
@@ -454,7 +456,7 @@ if (!function_exists('vp_seo_config')) {
             'enable_jsonld'       => $bool('seo_enable_jsonld', true),
             'schema_type'         => (string) $val('seo_schema_type', 'Organization'),
             'schema_name'         => (string) $val('seo_schema_name', $site),
-            'schema_logo'         => (string) $val('seo_schema_logo', IMG_URL . 'logo-vortex-precision.png'),
+            'schema_logo'         => (string) $val('seo_schema_logo', function_exists('vp_logo_url') ? vp_logo_url('light') : IMG_URL . 'logo-header.png'),
             'schema_json'         => trim((string) $val('seo_schema_json', '')),
         ];
     }
@@ -536,10 +538,13 @@ if (!function_exists('vp_seo_head')) {
     {
         $CI   =& get_instance();
         $seo  = vp_seo_config();
-        $site = $CI->config->item('site_name') ?: 'Halyk Petroleum';
+        $site = function_exists('vp_site') ? vp_site('name') : ($CI->config->item('site_name') ?: 'Halyk Petroleum');
 
         $title = trim((string) $page_title) !== '' ? $page_title : $seo['default_title'];
-        $title = $title . $seo['title_suffix'];
+        // Do not repeat the site name when the page title already carries it.
+        if (stripos($title, trim((string) $site)) === false) {
+            $title .= $seo['title_suffix'];
+        }
         $desc  = trim((string) $page_description) !== '' ? $page_description : $seo['default_description'];
         $canonical = vp_seo_canonical_url($url);
 

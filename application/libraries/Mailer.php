@@ -14,7 +14,7 @@ class Mailer
     {
         $this->CI =& get_instance();
         $this->CI->load->database();
-        $this->CI->load->library('audit');
+        
         $this->CI->load->helper('security_helper');
     }
 
@@ -151,6 +151,25 @@ class Mailer
      * Email health snapshot for the admin dashboard.
      * @return array{transport:array, sent_7d:int, failed_7d:int, last_error:?string, last_error_at:?string}
      */
+    /**
+     * Sender identity: dashboard-managed (Settings → System → Email) with the
+     * environment/config value as the fallback. Credentials themselves stay in
+     * .env and are never editable from the browser.
+     */
+    public function sender($key)
+    {
+        static $map = [
+            'from_email' => 'mail_from_email',
+            'from_name'  => 'mail_from_name',
+            'reply_to'   => 'mail_reply_to',
+        ];
+        if (isset($map[$key]) && isset($this->CI->settings)) {
+            $v = trim((string) $this->CI->settings->get($map[$key], ''));
+            if ($v !== '') return $v;
+        }
+        return $this->CI->config->item($key);
+    }
+
     public function health()
     {
         $out = [
@@ -236,9 +255,9 @@ class Mailer
 
     private function send_via_mail($to, $subject, $html, &$errorMessage = '')
     {
-        $fromEmail = $this->CI->config->item('from_email');
-        $fromName  = $this->CI->config->item('from_name');
-        $replyTo   = $this->CI->config->item('reply_to');
+        $fromEmail = $this->sender('from_email');
+        $fromName  = $this->sender('from_name');
+        $replyTo   = $this->sender('reply_to');
         $headers   = [];
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/html; charset=utf-8';
@@ -266,9 +285,9 @@ class Mailer
     {
         $apiKey = $this->CI->config->item('resend_api_key');
         $apiUrl = $this->CI->config->item('resend_api_url') ?: 'https://api.resend.com/emails';
-        $fromEmail = $this->CI->config->item('from_email');
-        $fromName  = $this->CI->config->item('from_name');
-        $replyTo   = $this->CI->config->item('reply_to');
+        $fromEmail = $this->sender('from_email');
+        $fromName  = $this->sender('from_name');
+        $replyTo   = $this->sender('reply_to');
         $payload = [
             'from'    => ($fromName ? $fromName . ' <' . $fromEmail . '>' : $fromEmail),
             'to'      => [$to],
@@ -316,9 +335,9 @@ class Mailer
         $pass   = $this->CI->config->item('smtp_pass');
         $crypto = $this->CI->config->item('smtp_crypto') ?: 'ssl';
 
-        $fromEmail = $this->CI->config->item('from_email');
-        $fromName  = $this->CI->config->item('from_name');
-        $replyTo   = $this->CI->config->item('reply_to');
+        $fromEmail = $this->sender('from_email');
+        $fromName  = $this->sender('from_name');
+        $replyTo   = $this->sender('reply_to');
 
         $this->CI->load->library('email');
         $this->CI->email->clear(TRUE);

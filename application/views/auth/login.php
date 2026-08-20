@@ -1,9 +1,8 @@
-<?php $this->page_title = $this->page_title ?: 'Sign in'; ?>
 <section class="relative bg-ink-900 text-white overflow-hidden min-h-[300px] flex items-end">
     <img src="<?= IMG_URL ?>customer-portal.jpg" alt="Secure industrial customer portal" class="absolute inset-0 w-full h-full object-cover object-center" fetchpriority="high" decoding="async">
     <div class="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/90 to-ink-900/20"></div>
     <div class="container mx-auto px-4 py-12 relative">
-        <h1 class="text-3xl font-extrabold"><?= vp_safe_html($this->page_title) ?></h1>
+        <h1 class="text-3xl font-extrabold"><?= vp_safe_html($page_title ?: "Sign in") ?></h1>
         <p class="text-white mt-1">Sign in to access quotes, downloads and personalised content.</p>
     </div>
 </section>

@@ -120,6 +120,42 @@ if (!$usersOnly) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 1b. Upgrade migrations (database/migrations/*.sql)                   */
+/*                                                                      */
+/* Idempotent: CREATE TABLE IF NOT EXISTS / INSERT IGNORE. Duplicate    */
+/* column + duplicate key errors are expected when a migration has      */
+/* already been applied and are reported, not fatal.                    */
+/* ------------------------------------------------------------------ */
+if (!$usersOnly) {
+    $migrationDir = dirname(__DIR__) . '/database/migrations';
+    $migrations = is_dir($migrationDir) ? glob($migrationDir . '/*.sql') : [];
+    sort($migrations);
+    foreach ($migrations as $file) {
+        fwrite(STDOUT, 'Applying migration ' . basename($file) . " ...\n");
+        $sql = (string) file_get_contents($file);
+        $sql = preg_replace('/^\s*--.*$/m', '', $sql);
+        $applied = $skipped = 0;
+        foreach (preg_split('/;\s*\r?\n/', $sql) as $stmt) {
+            $stmt = trim($stmt);
+            if ($stmt === '') continue;
+            if ($mysqli->query($stmt)) {
+                $applied++;
+                continue;
+            }
+            // 1060 duplicate column, 1061 duplicate key, 1050 table exists
+            if (in_array($mysqli->errno, [1050, 1060, 1061, 1062], true)) {
+                $skipped++;
+                continue;
+            }
+            fwrite(STDERR, 'SQL error in ' . basename($file) . ": {$mysqli->error}\nStatement: "
+                . substr(preg_replace('/\s+/', ' ', $stmt), 0, 300) . "\n");
+            exit(1);
+        }
+        fwrite(STDOUT, "  OK - {$applied} applied, {$skipped} already present.\n");
+    }
+}
+
+/* ------------------------------------------------------------------ */
 /* 2. Initial SUPER_ADMIN account                                      */
 /* ------------------------------------------------------------------ */
 $adminEmail = strtolower(trim(vp_install_env('VP_ADMIN_EMAIL', 'admin@vortexprecision.com')));

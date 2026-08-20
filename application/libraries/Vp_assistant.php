@@ -74,6 +74,10 @@ class Vp_assistant
         $product = $this->match_product($msg);
         if ($product !== null) return $product;
 
+        // Category lookup (e.g. "pumps", "what filtration do you have?")
+        $category = $this->match_category($msg);
+        if ($category !== null) return $category;
+
         // Price / quote / buying intent
         if ($this->has_any($msg, ['price', 'pricing', 'cost', 'how much', 'quote', 'quotation', 'rfq', 'buy', 'purchase', 'order', 'payment', 'discount', 'offer'])) {
             return $this->quote_answer();
@@ -99,14 +103,15 @@ class Vp_assistant
             return "We're always looking for talented engineers, sales and operations professionals. Browse open roles and apply online: " . $this->link('careers', 'Careers') . '.';
         }
 
-        // About the company
-        if ($this->has_any($msg, ['about', 'who are you', 'company', 'history', 'founded', 'experience', 'headquarters', 'certified', 'certification', 'iso', 'quality'])) {
-            return $this->about_answer();
-        }
-
-        // Generic product/catalogue intent (catch-all after specific checks)
+        // Generic product/catalogue intent (before the company catch-all, so
+        // "tell me about your pumps" answers with the catalogue, not the bio)
         if ($this->has_any($msg, ['product', 'products', 'catalogue', 'catalog', 'range', 'manufacture', 'make', 'sell', 'offer', 'solutions', 'equipment', 'valve', 'pump', 'exchanger', 'vessel', 'filter', 'instrument'])) {
             return $this->catalog_answer();
+        }
+
+        // About the company
+        if ($this->has_any($msg, ['about us', 'about you', 'about your', 'who are you', 'your company', 'the company', 'history', 'founded', 'experience', 'headquarters', 'certified', 'certification', 'iso', 'quality'])) {
+            return $this->about_answer();
         }
 
         // Fallback: helpful + escalation path
@@ -149,7 +154,7 @@ class Vp_assistant
 
     protected function about_answer()
     {
-        return "We're " . ($this->CI->config->item('site_name') ?: 'an industrial manufacturer') . " — a manufacturer of precision-engineered industrial valves, pumps, heat exchangers, pressure vessels and filtration systems. We've been a trusted partner to operators worldwide for over three decades. Learn more: " . $this->link('about', 'About us') . '.';
+        return "We're " . (function_exists('vp_site') ? vp_site('name') : ($this->CI->config->item('site_name') ?: 'an industrial manufacturer')) . " — a manufacturer of precision-engineered industrial valves, pumps, heat exchangers, pressure vessels and filtration systems. We've been a trusted partner to operators worldwide for over three decades. Learn more: " . $this->link('about', 'About us') . '.';
     }
 
     protected function catalog_answer()
@@ -207,8 +212,17 @@ class Vp_assistant
         $tokens = $this->tokenize($msg);
         $matches = [];
         foreach ($rows as $p) {
-            $hay = $this->tokenize($p['name'] . ' ' . $p['shortDescription'] . ' ' . $p['sku']);
+            $nameTokens = $this->tokenize($p['name'] . ' ' . $p['sku']);
+            $hay   = array_merge($nameTokens, $this->tokenize((string) $p['shortDescription']));
             $score = count(array_intersect($tokens, $hay));
+
+            // A single distinctive word from the product name ("actuator",
+            // "AAP-500") is a match too — visitors rarely type full names.
+            if ($score < 2) {
+                foreach (array_intersect($tokens, $nameTokens) as $hit) {
+                    if (mb_strlen($hit) >= 4) { $score = 2; break; }
+                }
+            }
             if ($score >= 2) $matches[] = ['score' => $score, 'row' => $p];
         }
         if (empty($matches)) return null;
@@ -222,6 +236,52 @@ class Vp_assistant
             $lines[] = "• " . $p['name'] . ($p['shortDescription'] ? ' — ' . $p['shortDescription'] : '') . ' ' . $this->link('products/' . $p['slug'], 'View');
         }
         $lines[] = "For a firm price and delivery schedule, submit an RFQ: " . $this->link('rfq', 'Request a Quote') . '.';
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Answer "what pumps do you have?" style questions by listing the products
+     * inside the matching catalogue category.
+     */
+    protected function match_category($msg)
+    {
+        if (!$this->CI->db->table_exists('categories') || !$this->CI->db->table_exists('products')) return null;
+
+        $tokens = $this->tokenize($msg);
+        if (empty($tokens)) return null;
+
+        $cats = $this->CI->db->where('isActive', 1)->order_by('sortOrder', 'ASC')->get('categories')->result_array();
+        $best = null;
+        $bestScore = 0;
+        foreach ($cats as $c) {
+            $catTokens = $this->tokenize($c['name']);
+            // Singular/plural tolerance: valves ↔ valve
+            $expanded = [];
+            foreach ($catTokens as $t) {
+                $expanded[] = $t;
+                $expanded[] = rtrim($t, 's');
+                $expanded[] = $t . 's';
+            }
+            $score = count(array_intersect($tokens, array_unique($expanded)));
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $best = $c;
+            }
+        }
+        if (!$best || $bestScore < 1) return null;
+
+        $products = $this->CI->db->where(['categoryId' => $best['id'], 'isActive' => 1])
+                                 ->order_by('featured', 'DESC')->order_by('views', 'DESC')
+                                 ->limit(4)->get('products')->result_array();
+
+        $lines = ['Yes — ' . strtolower($best['name']) . ' are part of our range.'];
+        foreach ($products as $p) {
+            $lines[] = '• ' . $p['name'] . ($p['shortDescription'] ? ' — ' . $p['shortDescription'] : '')
+                . ' ' . $this->link('products/' . $p['slug'], 'View');
+        }
+        $lines[] = 'See the whole category: ' . $this->link('products?category=' . rawurlencode($best['slug']), $best['name'])
+            . '. For pricing and delivery, submit an RFQ: ' . $this->link('rfq', 'Request a Quote') . '.';
+
         return implode("\n", $lines);
     }
 
@@ -325,16 +385,20 @@ class Vp_assistant
 
     protected function email()
     {
-        return $this->CI->config->item('contact_email') ?: vp_setting('contact_email', '');
+        // Dashboard-managed values win over the .env/config defaults.
+        return function_exists('vp_site') ? (string) vp_site('email', (string) $this->CI->config->item('contact_email'))
+            : (string) $this->CI->config->item('contact_email');
     }
 
     protected function phone()
     {
-        return $this->CI->config->item('phone') ?: vp_setting('phone', '');
+        return function_exists('vp_site') ? (string) vp_site('phone', (string) $this->CI->config->item('phone'))
+            : (string) $this->CI->config->item('phone');
     }
 
     protected function address()
     {
-        return $this->CI->config->item('address') ?: vp_setting('address', '');
+        return function_exists('vp_site') ? (string) vp_site('address', (string) $this->CI->config->item('address'))
+            : (string) $this->CI->config->item('address');
     }
 }
