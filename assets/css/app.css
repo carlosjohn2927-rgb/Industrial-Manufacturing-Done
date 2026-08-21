@@ -23,6 +23,48 @@ body { font-feature-settings: "cv11", "ss01"; }
 .container { max-width: 1200px; }
 a { transition: color .15s ease; }
 
+/* Moving announcement bar ------------------------------------------- */
+.vp-announcement-viewport {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+.vp-announcement-track {
+    display: flex;
+    width: max-content;
+    animation: vp-announcement-scroll 24s linear infinite;
+    will-change: transform;
+}
+.vp-announcement-item {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-width: max(18rem, 32vw);
+    padding-right: 3rem;
+    white-space: nowrap;
+}
+.vp-announcement-phone {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+@keyframes vp-announcement-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+.vp-announcement-bar:hover .vp-announcement-track,
+.vp-announcement-bar:focus-within .vp-announcement-track {
+    animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+    .vp-announcement-track {
+        animation: none;
+        transform: none;
+    }
+    .vp-announcement-item[aria-hidden="true"] {
+        display: none;
+    }
+}
+
 /* Simple Prose styles for blog / about content */
 .vp-prose h1 { font-size: 2.25rem; font-weight: 800; margin: 0 0 1rem; color: var(--ink-900); }
 .vp-prose h2 { font-size: 1.75rem; font-weight: 700; margin: 2rem 0 .75rem; color: var(--ink-900); }
