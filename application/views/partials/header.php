@@ -20,11 +20,20 @@ if (empty($menu)) {
 }
 ?>
 <?php if ($site['topbar_enabled'] && $site['topbar_text']): ?>
-    <div class="bg-white text-black text-sm border-b border-gray-200">
-        <div class="container mx-auto px-4 py-2 flex flex-wrap items-center gap-3">
-            <span class="text-black font-medium"><?= vp_safe_html($site['topbar_text']) ?></span>
+    <div class="vp-announcement-bar bg-white text-black text-sm border-b border-gray-200" role="region" aria-label="Announcement">
+        <div class="container mx-auto px-4 py-2 flex items-center gap-3">
+            <div class="vp-announcement-viewport">
+                <div class="vp-announcement-track">
+                    <div class="vp-announcement-item">
+                        <span class="text-black font-medium"><?= vp_safe_html($site['topbar_text']) ?></span>
+                    </div>
+                    <div class="vp-announcement-item" aria-hidden="true">
+                        <span class="text-black font-medium"><?= vp_safe_html($site['topbar_text']) ?></span>
+                    </div>
+                </div>
+            </div>
             <?php if ($site['phone']): ?>
-                <a class="ml-auto text-black hover:underline" href="tel:<?= vp_safe_html(preg_replace('/[^0-9+]/', '', $site['phone'])) ?>"><i class="ri-phone-line"></i> <?= vp_safe_html($site['phone']) ?></a>
+                <a class="vp-announcement-phone text-black hover:underline" href="tel:<?= vp_safe_html(preg_replace('/[^0-9+]/', '', $site['phone'])) ?>"><i class="ri-phone-line"></i> <?= vp_safe_html($site['phone']) ?></a>
             <?php endif; ?>
         </div>
     </div>
