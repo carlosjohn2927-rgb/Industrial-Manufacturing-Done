@@ -20,11 +20,11 @@ if (empty($menu)) {
 }
 ?>
 <?php if ($site['topbar_enabled'] && $site['topbar_text']): ?>
-    <div class="bg-ink-900 text-white text-sm">
+    <div class="bg-white text-black text-sm border-b border-gray-200">
         <div class="container mx-auto px-4 py-2 flex flex-wrap items-center gap-3">
-            <span><?= vp_safe_html($site['topbar_text']) ?></span>
+            <span class="text-black font-medium"><?= vp_safe_html($site['topbar_text']) ?></span>
             <?php if ($site['phone']): ?>
-                <a class="ml-auto hover:underline" href="tel:<?= vp_safe_html(preg_replace('/[^0-9+]/', '', $site['phone'])) ?>"><i class="ri-phone-line"></i> <?= vp_safe_html($site['phone']) ?></a>
+                <a class="ml-auto text-black hover:underline" href="tel:<?= vp_safe_html(preg_replace('/[^0-9+]/', '', $site['phone'])) ?>"><i class="ri-phone-line"></i> <?= vp_safe_html($site['phone']) ?></a>
             <?php endif; ?>
         </div>
     </div>
