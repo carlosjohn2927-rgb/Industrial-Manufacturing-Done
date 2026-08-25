@@ -45,4 +45,59 @@ class Search extends MY_Controller
             'faqs' => $faqs,
         ]);
     }
+
+    /**
+     * AJAX endpoint: return up to 8 matching products as JSON for the header
+     * search overlay live suggestions.
+     *
+     * GET /search/ajax?q=term
+     */
+    public function ajax()
+    {
+        // Only respond to AJAX requests.
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        $q = trim((string) $this->input->get('q'));
+        $results = [];
+
+        if ($q !== '' && mb_strlen($q) >= 2) {
+            $rows = $this->db->group_start()
+                             ->like('name', $q)
+                             ->or_like('shortDescription', $q)
+                             ->or_like('description', $q)
+                             ->or_like('sku', $q)
+                             ->or_like('material', $q)
+                             ->group_end()
+                             ->where('isActive', 1)
+                             ->order_by('featured', 'DESC')
+                             ->order_by('createdAt', 'DESC')
+                             ->limit(8)
+                             ->get('products')
+                             ->result_array();
+
+            $rows = $this->Product_model->attach_images($rows);
+
+            foreach ($rows as $r) {
+                $img = function_exists('vp_product_image') ? vp_product_image($r) : '';
+                $results[] = [
+                    'name'  => $r['name'],
+                    'sku'   => $r['sku'] ?? '',
+                    'slug'  => $r['slug'],
+                    'desc'  => function_exists('vp_truncate') ? vp_truncate($r['shortDescription'] ?? $r['description'] ?? '', 90) : '',
+                    'image' => $img,
+                    'url'   => base_url('products/' . $r['slug']),
+                ];
+            }
+        }
+
+        $this->output
+             ->set_content_type('application/json')
+             ->set_output(json_encode([
+                 'q'       => $q,
+                 'results' => $results,
+                 'count'   => count($results),
+             ]));
+    }
 }

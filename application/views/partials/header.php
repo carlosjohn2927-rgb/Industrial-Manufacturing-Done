@@ -58,6 +58,12 @@ if (empty($menu)) {
         </nav>
 
         <div class="ml-auto flex items-center gap-3">
+            <!-- Product search button -->
+            <button type="button" id="vp-search-toggle" class="inline-flex items-center gap-1 text-sm font-medium text-ink-900 hover:text-brand-600 p-2 rounded-lg hover:bg-gray-100 transition" aria-label="Search products" title="Search products">
+                <i class="ri-search-line text-lg"></i>
+                <span class="hidden md:inline">Search</span>
+            </button>
+
             <?php if ($site['header_cta_enabled'] && $site['header_cta_label']): ?>
                 <a href="<?= vp_safe_html(preg_match('~^https?://~i', (string) $site['header_cta_url']) ? $site['header_cta_url'] : base_url(ltrim((string) $site['header_cta_url'], '/'))) ?>"
                    class="hidden sm:inline-flex items-center gap-1 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-lg">
@@ -89,3 +95,26 @@ if (empty($menu)) {
         </nav>
     </div>
 </header>
+
+<!-- Product search overlay -->
+<div id="vp-search-overlay" class="vp-search-overlay" role="dialog" aria-label="Product search" aria-modal="true" hidden>
+    <div class="vp-search-backdrop" data-vp-search-close></div>
+    <div class="vp-search-dialog">
+        <form id="vp-search-form" method="get" action="<?= base_url('products') ?>" class="vp-search-input-row" role="search">
+            <i class="ri-search-line vp-search-icon"></i>
+            <input id="vp-search-input" type="search" name="q" class="vp-search-input"
+                   placeholder="Search products by name, SKU, or keyword…"
+                   autocomplete="off" aria-label="Search products">
+            <button type="button" class="vp-search-close-btn" data-vp-search-close aria-label="Close search">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+            <button type="submit" class="vp-btn vp-btn-primary vp-search-submit">
+                <i class="ri-search-line"></i> Search
+            </button>
+        </form>
+        <div id="vp-search-results" class="vp-search-results" aria-live="polite"></div>
+        <div class="vp-search-footer">
+            <span class="vp-search-hint"><kbd>/</kbd> to open &middot; <kbd>Esc</kbd> to close &middot; <kbd>Enter</kbd> to search all products</span>
+        </div>
+    </div>
+</div>

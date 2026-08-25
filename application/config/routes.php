@@ -37,6 +37,7 @@ $route['downloads/file/(:any)']= 'downloads/file/$1';
 $route['news']                 = 'news';
 $route['news/(:any)']          = 'news/view/$1';
 $route['search']               = 'search';
+$route['search/ajax']          = 'search/ajax';
 
 /* ---------- SEO ---------- */
 $route['robots.txt']           = 'seo/robots';
