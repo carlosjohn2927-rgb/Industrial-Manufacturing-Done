@@ -1,10 +1,12 @@
 <?php
 /**
- * Public site header — logo, navigation, contact CTA.
+ * Public site header — logo, product-search button, navigation, contact CTA.
  * Every element is managed from the dashboard:
  *   logo      → Website → Logo & branding
  *   menu      → Website → Navigation (header)
  *   CTA/topbar→ Website → Header & footer
+ * The search button sits immediately after the logo, before the first menu
+ * item; the overlay it opens lives at the bottom of this partial.
  */
 $site  = vp_site();
 $user  = $current_user ?? null;
@@ -47,7 +49,13 @@ if (empty($menu)) {
                  style="height: <?= (int) $site['logo_height'] ?>px" decoding="async">
         </a>
 
-        <nav class="hidden lg:flex items-center gap-5 text-sm font-medium text-ink-900 ml-4">
+        <!-- Product search button — placed immediately after the logo, before the menu -->
+        <button type="button" id="vp-search-toggle" class="inline-flex items-center gap-1 text-sm font-medium text-ink-900 hover:text-brand-600 p-2 rounded-lg hover:bg-gray-100 transition flex-shrink-0" aria-label="Search products" aria-haspopup="dialog" title="Search products">
+            <i class="ri-search-line text-lg"></i>
+            <span class="hidden md:inline">Search</span>
+        </button>
+
+        <nav class="hidden lg:flex items-center gap-5 text-sm font-medium text-ink-900">
             <?php foreach ($menu as $item): ?>
                 <a class="hover:text-brand-600 <?= vp_menu_is_active($item) ? 'text-brand-600' : '' ?>"
                    href="<?= vp_safe_html($item['href']) ?>" <?= ($item['target'] ?? '_self') === '_blank' ? 'target="_blank" rel="noopener"' : '' ?>>
@@ -58,12 +66,6 @@ if (empty($menu)) {
         </nav>
 
         <div class="ml-auto flex items-center gap-3">
-            <!-- Product search button -->
-            <button type="button" id="vp-search-toggle" class="inline-flex items-center gap-1 text-sm font-medium text-ink-900 hover:text-brand-600 p-2 rounded-lg hover:bg-gray-100 transition" aria-label="Search products" title="Search products">
-                <i class="ri-search-line text-lg"></i>
-                <span class="hidden md:inline">Search</span>
-            </button>
-
             <?php if ($site['header_cta_enabled'] && $site['header_cta_label']): ?>
                 <a href="<?= vp_safe_html(preg_match('~^https?://~i', (string) $site['header_cta_url']) ? $site['header_cta_url'] : base_url(ltrim((string) $site['header_cta_url'], '/'))) ?>"
                    class="hidden sm:inline-flex items-center gap-1 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-lg">

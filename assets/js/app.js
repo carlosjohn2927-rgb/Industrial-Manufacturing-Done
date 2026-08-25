@@ -51,12 +51,11 @@
     'use strict';
 
     document.addEventListener('DOMContentLoaded', function () {
-        var toggle   = document.getElementById('vp-search-toggle');
         var overlay  = document.getElementById('vp-search-overlay');
         var input    = document.getElementById('vp-search-input');
         var form     = document.getElementById('vp-search-form');
         var results  = document.getElementById('vp-search-results');
-        if (!toggle || !overlay || !input || !results) return;
+        if (!overlay || !input || !results) return;
 
         var debounceTimer = null;
         var lastQuery     = '';
@@ -87,8 +86,13 @@
             lastQuery = '';
         }
 
-        // Open button
-        toggle.addEventListener('click', function (e) {
+        // Open button. The click handler is delegated to the document so the
+        // toggle keeps working wherever it sits in the header (it lives right
+        // after the logo, before the menu) and even if the header markup is
+        // re-rendered after this script loads.
+        document.addEventListener('click', function (e) {
+            var target = e.target && e.target.closest ? e.target.closest('#vp-search-toggle') : null;
+            if (!target) return;
             e.preventDefault();
             openSearch();
         });
