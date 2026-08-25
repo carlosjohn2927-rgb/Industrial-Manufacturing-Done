@@ -1,4 +1,4 @@
-# Admin Guide — Halyk Petroleum
+# Admin Guide — Vortex Precision IT
 
 Sign in at `/admin/login` with your staff account. A fresh installation has no seeded passwords: `install/install.php` creates the first Super Admin with the password you provide via `VP_ADMIN_PASSWORD` — or a randomly generated temporary password printed by the installer. Temporary passwords are flagged in the database, and the account's first login is redirected to its edit screen so the password must be changed before using the rest of the admin area. The sidebar then gives you access to all admin areas.
 
@@ -86,7 +86,11 @@ Title, description, file URL (or relative path under `/assets/files/`), type, ca
 
 ## Testimonials / Partners
 
-Editable lists used on the home page.
+Editable lists used on the home page. Open **Content → Testimonials** (or `/admin/testimonials`) to add, edit, hide, feature or delete a customer testimonial. Each entry includes the customer name, job title, company, quote, 1–5 star rating, optional industry and photo URL.
+
+### If Testimonials is missing from the dashboard
+
+The signed-in account needs the `testimonials.manage` permission. A Super Admin can grant it under **People → Administrators → Permissions**. For older cPanel installations whose database does not yet have that permission, run `database/migrations/005_testimonials_admin_access.sql` in **cPanel → phpMyAdmin → SQL**, then sign out and back in.
 
 ## Media
 
@@ -100,16 +104,17 @@ Customer accounts only — staff accounts are managed by the Super Admin under
 - List, search, create, edit, deactivate, delete
 - Requires the `customers.manage` permission
 
-## Administrators (`/admin/admins`, Super Admin only)
+## Administrators (`/admin/admins`)
 
-- Create / edit / enable / disable / delete administrators
+Administrators have full dashboard access and can:
+
+- Create / edit / enable / disable / delete normal administrator accounts
 - Reset passwords (typed or auto-generated, optionally forcing a change at next login)
-- Assign or remove permissions per account, section by section
-- Review each administrator's activity trail
+- Assign dashboard permissions per account
+- Review administrator activity trails and manage system settings
 
-The Super Admin account itself cannot be edited, disabled, deleted or
-re-permissioned by anybody else, and no administrator can ever be promoted to
-Super Admin from the dashboard.
+The Super Admin account itself remains protected from edits, disabling,
+deleting, re-permissioning or promotion by another administrator.
 
 ## Website content
 

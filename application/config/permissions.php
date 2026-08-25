@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — permission catalogue.
+ * Vortex Precision IT — permission catalogue.
  *
  * Single source of truth for every grantable permission in the admin area.
  * The `permissions` database table mirrors this list (synced automatically by
@@ -53,7 +53,7 @@ $config['permissions'] = [
     'seo.manage'          => ['Manage SEO settings',                     'Website',  false],
 
     'customers.manage'    => ['Manage customer accounts',                'People',   false],
-    'admins.manage'       => ['Manage administrators and permissions',   'People',   true],
+    'admins.manage'       => ['Manage administrators and permissions',   'People',   false],
 
     'settings.manage'     => ['Manage website settings',                 'System',   false],
     'audit.view'          => ['View the activity / audit log',           'System',   false],
@@ -68,9 +68,8 @@ $config['role_default_permissions'] = [
     'ADMIN' => [
         'dashboard.view', 'reports.view',
         'quotes.manage', 'contacts.manage',
-        // Administrators are full website editors. These content permissions
-        // are also protected in Acl::effective(), so an old per-user override
-        // cannot accidentally leave an ADMIN unable to edit a public page.
+        // Administrators receive the complete dashboard. Acl::effective()
+        // also enforces this for older accounts with stale per-user overrides.
         'products.manage', 'categories.manage', 'industries.manage', 'downloads.manage',
         'blog.manage', 'news.manage', 'faqs.manage', 'careers.manage',
         'testimonials.manage', 'partners.manage',

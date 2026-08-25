@@ -20,7 +20,7 @@ If cPanel gives you PHP 7.x by default, call the 8.x binary explicitly:
 
 ## 1. Admin login
 
-Sign in at **https://halykpetroleum-kz.com/admin/login**
+Sign in at **https://vortexprecisionit.com/admin/login**
 
 | | |
 |---|---|
@@ -116,8 +116,8 @@ The tool checks all three causes:
   exactly the schema in `install/install.sql` (including the `primary_key`
   column CI3 needs when `sess_match_ip` is on).
 - **`VP_COOKIE_DOMAIN` does not match `VP_BASE_URL`.** The browser silently
-  discards the cookie. Ours is `.halykpetroleum-kz.com` against
-  `https://halykpetroleum-kz.com/` — the leading dot covers both the apex and
+  discards the cookie. Ours is `.vortexprecisionit.com` against
+  `https://vortexprecisionit.com/` — the leading dot covers both the apex and
   `www`, so that pair is correct. If you ever move the site to a subdomain,
   update both together.
 - **`http://` base URL with secure cookies.** `VP_FORCE_HTTPS=1` marks cookies
@@ -164,7 +164,7 @@ single most common cause of "SMTP doesn't work", and it is the current state of
 
 ### 2.2 Finishing the setup
 
-1. cPanel → **Email Accounts** → find or **Create** `no-reply@halykpetroleum-kz.com`.
+1. cPanel → **Email Accounts** → find or **Create** `no-reply@vortexprecisionit.com`.
 2. **Manage** → set a password → copy it exactly.
 3. Put it in `app/.env`:
 
@@ -187,9 +187,9 @@ message — printing every server reply, so a failure names the exact step.
 ### 2.3 Current values
 
 ```
-VP_SMTP_HOST=mail.halykpetroleum-kz.com
+VP_SMTP_HOST=mail.vortexprecisionit.com
 VP_SMTP_PORT=465
-VP_SMTP_USER=no-reply@halykpetroleum-kz.com
+VP_SMTP_USER=no-reply@vortexprecisionit.com
 VP_SMTP_PASS=            <-- fill this in
 VP_SMTP_CRYPTO=ssl
 ```
@@ -203,7 +203,7 @@ authentication:
 ```
 VP_SMTP_HOST=localhost
 VP_SMTP_PORT=25
-VP_SMTP_USER=no-reply@halykpetroleum-kz.com
+VP_SMTP_USER=no-reply@vortexprecisionit.com
 VP_SMTP_PASS=anything-non-empty
 VP_SMTP_CRYPTO=
 ```
@@ -215,7 +215,7 @@ Port 587 with `VP_SMTP_CRYPTO=tls` is the other thing worth trying.
 
 ### 2.5 Mail arrives but lands in spam
 
-cPanel → **Email Deliverability** → `halykpetroleum-kz.com` → install the
+cPanel → **Email Deliverability** → `vortexprecisionit.com` → install the
 suggested **SPF** and **DKIM** records. Sending as `no-reply@` at your own
 domain without those two is what triggers spam filters.
 

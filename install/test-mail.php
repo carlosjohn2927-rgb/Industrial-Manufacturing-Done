@@ -1,6 +1,6 @@
 <?php
 /**
- * Halyk Petroleum — cPanel SMTP diagnostic (CLI only).
+ * Vortex Precision IT — cPanel SMTP diagnostic (CLI only).
  *
  *   php install/test-mail.php                       (connectivity + auth only)
  *   php install/test-mail.php --to=you@gmail.com    (also sends a real test email)
@@ -62,17 +62,17 @@ foreach (($argv ?? []) as $a) {
 
 $host   = e('VP_SMTP_HOST');
 $port   = (int) e('VP_SMTP_PORT', '465');
-$from   = e('VP_FROM_EMAIL', 'no-reply@halykpetroleum-kz.com');
+$from   = e('VP_FROM_EMAIL', 'no-reply@vortexprecisionit.com');
 $user   = e('VP_SMTP_USER', $from);
 $pass   = e('VP_SMTP_PASS');
 $crypto = e('VP_SMTP_CRYPTO', ($port === 587 || $port === 25) ? 'tls' : 'ssl');
-$name   = e('VP_FROM_NAME', 'Halyk Petroleum');
+$name   = e('VP_FROM_NAME', 'Vortex Precision IT');
 
 $ok   = function ($m) { echo "  [ok]    $m\n"; };
 $bad  = function ($m) { echo "  [FAIL]  $m\n"; };
 $warn = function ($m) { echo "  [warn]  $m\n"; };
 
-echo "Halyk Petroleum - SMTP diagnostic\n" . str_repeat('-', 60) . "\n";
+echo "Vortex Precision IT - SMTP diagnostic\n" . str_repeat('-', 60) . "\n";
 
 /* ---------------------------------------------------------------- */
 /* 1. Which transport will the Mailer actually use?                  */
@@ -124,7 +124,7 @@ if (!$sock) {
     echo "            VP_SMTP_PORT=25 and VP_SMTP_CRYPTO= (blank). On cPanel the\n";
     echo "            local MTA accepts unauthenticated mail from the server itself.\n";
     echo "          - Or try VP_SMTP_PORT=587 with VP_SMTP_CRYPTO=tls.\n";
-    echo "          - Confirm the mail subdomain exists: mail.halykpetroleum-kz.com\n";
+    echo "          - Confirm the mail subdomain exists: mail.vortexprecisionit.com\n";
     exit(1);
 }
 stream_set_timeout($sock, 15);
@@ -248,12 +248,12 @@ if (strpos($r, '354') !== 0) {
 $boundaryDate = date('r');
 $body = "From: {$name} <{$from}>\r\n"
       . "To: <{$to}>\r\n"
-      . "Subject: Halyk Petroleum SMTP test\r\n"
+      . "Subject: Vortex Precision IT SMTP test\r\n"
       . "Date: {$boundaryDate}\r\n"
       . "MIME-Version: 1.0\r\n"
       . "Content-Type: text/html; charset=utf-8\r\n"
       . "\r\n"
-      . "<p>This is a test message from the Halyk Petroleum website.</p>\r\n"
+      . "<p>This is a test message from the Vortex Precision IT website.</p>\r\n"
       . "<p>If you are reading this, cPanel SMTP is working: quote requests and\r\n"
       . "contact-form notifications will be delivered.</p>\r\n"
       . "<p>Host: {$host}:{$port} ({$crypto})<br>Sent: {$boundaryDate}</p>\r\n"
@@ -268,7 +268,7 @@ if (strpos($r, '250') === 0) {
     $ok('message accepted for delivery');
     echo "\nCheck the inbox (and the spam folder) of {$to}.\n";
     echo "If it lands in spam, add SPF and DKIM records in cPanel >\n";
-    echo "Email Deliverability for halykpetroleum-kz.com.\n";
+    echo "Email Deliverability for vortexprecisionit.com.\n";
 } else {
     $bad('server did not accept the message');
     exit(1);

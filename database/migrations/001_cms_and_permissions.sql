@@ -1,5 +1,5 @@
 -- =====================================================================
--- Halyk Petroleum — CMS + Role/Permission upgrade (migration 001)
+-- Vortex Precision IT — CMS + Role/Permission upgrade (migration 001)
 -- =====================================================================
 -- Adds the tables required by the Super Admin / Admin dashboards:
 --   permissions        catalogue of every grantable permission

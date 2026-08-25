@@ -1,6 +1,6 @@
 <?php
 /**
- * envcheck.php — one-time cPanel diagnostic for Vortex Precision / Halyk.
+ * envcheck.php — one-time cPanel diagnostic for Vortex Precision / Vortex Precision IT.
  *
  * HOW TO USE
  *   1. Upload this file to the SAME folder as index.php (your document root).

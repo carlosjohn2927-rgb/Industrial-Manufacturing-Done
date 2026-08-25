@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum - Audit / activity log.
+ * Vortex Precision IT - Audit / activity log.
  *
  * Loaded as $this->audit (see application/config/autoload.php). Prefixed Vp_ so
  * it cannot collide with the admin `Audit` controller class.

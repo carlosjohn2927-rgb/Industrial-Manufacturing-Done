@@ -1,4 +1,4 @@
-# Halyk Petroleum — Industrial Manufacturing Website
+# Vortex Precision IT — Industrial Manufacturing Website
 
 A CodeIgniter 3 PHP application for an industrial manufacturing company, featuring:
 
@@ -37,7 +37,7 @@ See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the complete step-by-step guide.
 
 | Field    | Value                          |
 |----------|--------------------------------|
-| Email    | `admin@halykpetroleum-kz.com` |
+| Email    | `admin@vortexprecisionit.com` |
 | Password | `Nigeria1234@`                |
 | Role     | `SUPER_ADMIN`                  |
 
@@ -110,8 +110,8 @@ EOF
 bash scripts/start.sh
 ```
 
-Accounts created by the script: `superadmin@halykpetroleum-kz.com / SuperAdmin123!`
-(SUPER_ADMIN) and `admin@halykpetroleum-kz.com / Admin123!` (ADMIN).
+Accounts created by the script: `superadmin@vortexprecisionit.com / SuperAdmin123!`
+(SUPER_ADMIN) and `admin@vortexprecisionit.com / Admin123!` (ADMIN).
 
 ### Tests
 

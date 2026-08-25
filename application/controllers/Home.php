@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — public homepage.
+ * Vortex Precision IT — public homepage.
  *
  * The page is assembled from the `page_sections` rows managed in
  * Dashboard → Website → Homepage. Nothing here is hard-coded: adding,

@@ -1,22 +1,21 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — website settings.
+ * Vortex Precision IT — website settings.
  *
  * One central place for every site-wide value (identity, contact details,
  * social links, email, system/maintenance) so nothing is scattered through
  * the source code. Values are stored in `settings` and read by the public
  * theme through the CMS helper.
  *
- * The System tab includes outgoing SMTP and is available to Admin/Super Admin
- * accounts with settings access. Raw advanced settings remain Super Admin only.
+ * The System tab, raw settings and maintenance controls are available to
+ * Administrator accounts with full dashboard access.
  */
 class Settings extends Admin_Controller
 {
     protected $required_permission = 'settings.manage';
     protected $method_permissions  = [
-        // Admins may manage email/SMTP from the System tab; raw key/value and
-        // destructive settings actions remain Super Admin only.
+        // The full-dashboard Administrator role includes system.manage.
         'system'        => 'settings.manage',
         'save_system'   => 'settings.manage',
         'test_email'    => 'settings.manage',

@@ -554,7 +554,7 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
 -- Mirrors database/migrations/001_cms_and_permissions.sql
 -- =====================================================================
 -- =====================================================================
--- Halyk Petroleum — CMS + Role/Permission upgrade (migration 001)
+-- Vortex Precision IT — CMS + Role/Permission upgrade (migration 001)
 -- =====================================================================
 -- Adds the tables required by the Super Admin / Admin dashboards:
 --   permissions        catalogue of every grantable permission

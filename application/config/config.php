@@ -202,11 +202,11 @@ $config['composer_autoload'] = FALSE;
 // IMPORTANT: these are exposed at the TOP LEVEL of $config because the
 // consumers use $this->config->item('key') - CI3 item() does not reach
 // into nested arrays.
-$config['site_name']       = vp_config_env('VP_SITE_NAME', 'Halyk Petroleum');
+$config['site_name']       = vp_config_env('VP_SITE_NAME', 'Vortex Precision IT');
 $config['site_tagline']    = vp_config_env('VP_SITE_TAGLINE', 'Industrial Manufacturing Excellence');
-$config['contact_email']   = vp_config_env('VP_CONTACT_EMAIL', 'sale@halykpetroleum-kz.com');
-$config['support_email']   = vp_config_env('VP_SUPPORT_EMAIL', 'support@halykpetroleum-kz.com');
-$config['rfq_email']       = vp_config_env('VP_RFQ_EMAIL', 'sale@halykpetroleum-kz.com');
+$config['contact_email']   = vp_config_env('VP_CONTACT_EMAIL', 'sale@vortexprecisionit.com');
+$config['support_email']   = vp_config_env('VP_SUPPORT_EMAIL', 'support@vortexprecisionit.com');
+$config['rfq_email']       = vp_config_env('VP_RFQ_EMAIL', 'sale@vortexprecisionit.com');
 $config['phone']           = vp_config_env('VP_PHONE', '+1 (555) 123-4567');
 $config['address']         = vp_config_env('VP_ADDRESS', '1234 Industrial Way, Houston, TX 77001, USA');
 // Social profiles. Empty values are simply not rendered by the footer, so
@@ -217,9 +217,9 @@ $config['social']          = [
     'facebook'   => vp_config_env('VP_SOCIAL_FACEBOOK'),
     'youtube'    => vp_config_env('VP_SOCIAL_YOUTUBE'),
 ];
-$config['from_email']      = vp_config_env('VP_FROM_EMAIL', 'no-reply@halykpetroleum-kz.com');
-$config['from_name']       = vp_config_env('VP_FROM_NAME', 'Halyk Petroleum');
-$config['reply_to']        = vp_config_env('VP_REPLY_TO', 'sale@halykpetroleum-kz.com');
+$config['from_email']      = vp_config_env('VP_FROM_EMAIL', 'no-reply@vortexprecisionit.com');
+$config['from_name']       = vp_config_env('VP_FROM_NAME', 'Vortex Precision IT');
+$config['reply_to']        = vp_config_env('VP_REPLY_TO', 'sale@vortexprecisionit.com');
 $config['resend_api_key']  = vp_config_env('RESEND_API_KEY');
 $config['resend_api_url']  = vp_config_env('VP_RESEND_API_URL', 'https://api.resend.com/emails');
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Halyk Petroleum — admin login repair tool (CLI only).
+ * Vortex Precision IT — admin login repair tool (CLI only).
  *
  *   php install/fix-admin.php
  *   php install/fix-admin.php --email=admin@example.com --password='your password'
@@ -85,7 +85,7 @@ foreach ($argvv as $a) {
     if (strpos($a, '--password=') === 0) $optPass  = substr($a, 11);
 }
 
-$email = strtolower(trim($optEmail !== '' ? $optEmail : vp_fix_env('VP_ADMIN_EMAIL', 'admin@halykpetroleum-kz.com')));
+$email = strtolower(trim($optEmail !== '' ? $optEmail : vp_fix_env('VP_ADMIN_EMAIL', 'admin@vortexprecisionit.com')));
 $pass  = $optPass !== '' ? $optPass : vp_fix_env('VP_ADMIN_PASSWORD', '');
 $first = vp_fix_env('VP_ADMIN_FIRSTNAME', 'Admin');
 $last  = vp_fix_env('VP_ADMIN_LASTNAME', 'User');
@@ -99,7 +99,7 @@ $ok   = function ($m) { fwrite(STDOUT, "  [ok]    $m\n"); };
 $fix  = function ($m) { fwrite(STDOUT, "  [FIXED] $m\n"); };
 $warn = function ($m) { fwrite(STDOUT, "  [warn]  $m\n"); };
 
-fwrite(STDOUT, "Halyk Petroleum - admin login repair\n");
+fwrite(STDOUT, "Vortex Precision IT - admin login repair\n");
 fwrite(STDOUT, str_repeat('-', 60) . "\n");
 fwrite(STDOUT, "Target account : {$email}\n");
 fwrite(STDOUT, "Mode           : " . ($checkOnly ? 'CHECK ONLY (no changes)' : 'REPAIR') . "\n\n");
