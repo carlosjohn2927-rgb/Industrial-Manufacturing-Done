@@ -60,6 +60,11 @@
             <?php endforeach; ?>
         </div>
 
+        <?php if ($product['price'] !== null && $product['price'] !== ''): ?>
+            <div class="mt-4 text-2xl font-extrabold text-ink-900">From <?= vp_money($product['price']) ?></div>
+            <p class="text-xs text-ink-800 mt-1">Starting price in USD. Final configuration, options and freight are quoted separately.</p>
+        <?php endif; ?>
+
         <div class="vp-prose mt-5">
             <?= $product['description'] ?>
         </div>

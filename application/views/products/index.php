@@ -63,9 +63,12 @@
                         <div class="text-xs text-ink-800 font-mono font-semibold"><?= vp_safe_html($p['sku']) ?></div>
                         <h3 class="font-bold text-ink-900 mt-1"><?= vp_safe_html($p['name']) ?></h3>
                         <p class="text-sm text-ink-900 mt-2 flex-1 leading-relaxed"><?= vp_safe_html(vp_truncate($p['shortDescription'] ?? $p['description'], 110)) ?></p>
-                        <div class="mt-3 flex items-center justify-between">
-                            <span class="vp-pill <?= ($p['availability'] === 'IN_STOCK' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') ?>"><?= vp_safe_html(str_replace('_', ' ', $p['availability'])) ?></span>
-                            <span class="text-brand-600 text-sm font-semibold">View details &rarr;</span>
+                        <div class="mt-3 flex items-center justify-between gap-2">
+                            <div>
+                                <span class="vp-pill <?= ($p['availability'] === 'IN_STOCK' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') ?>"><?= vp_safe_html(str_replace('_', ' ', $p['availability'])) ?></span>
+                                <?php if ($p['price'] !== null && $p['price'] !== ''): ?><div class="font-bold text-ink-900 mt-2">From <?= vp_money($p['price']) ?></div><?php endif; ?>
+                            </div>
+                            <span class="text-brand-600 text-sm font-semibold whitespace-nowrap">View details &rarr;</span>
                         </div>
                     </div>
                 </a>
