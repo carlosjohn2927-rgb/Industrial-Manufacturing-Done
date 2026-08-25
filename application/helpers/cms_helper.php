@@ -355,8 +355,9 @@ if (!function_exists('vp_section_types')) {
             'cta'          => ['Call to action',     'ri-cursor-line',       'Coloured band with heading and button.'],
             'image'        => ['Image',              'ri-image-add-line',    'Full-width or contained photo with optional caption.'],
             'gallery'      => ['Image gallery',      'ri-gallery-line',      'Grid of images visitors can browse.'],
-            'video'        => ['Video',              'ri-video-line',        'Uploaded video file or YouTube/Vimeo embed URL.'],
-            'file'         => ['File download',      'ri-file-upload-line',  'Downloadable document (PDF, Office, ZIP).'],
+            'video'         => ['Video',              'ri-video-line',        'Uploaded video file or YouTube/Vimeo embed URL.'],
+            'file'          => ['File download',      'ri-file-upload-line',  'Downloadable document (PDF, Office, ZIP).'],
+            'product_search'=> ['Product search',     'ri-search-line',       'Prominent search bar that lets visitors find products by name, SKU or keyword.'],
         ];
     }
 }
