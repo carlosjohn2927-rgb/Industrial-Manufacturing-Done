@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — Access Control List.
+ * Vortex Precision IT — Access Control List.
  *
  * Resolves the effective permissions of a staff account:
  *

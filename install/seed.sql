@@ -240,8 +240,8 @@ INSERT INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VALUES
 
 -- ----- AI Chat -----
 (UUID(),'chat_enabled','1','BOOL','CHAT',1),
-(UUID(),'chat_title','Halyk Petroleum Assistant','STRING','CHAT',2),
-(UUID(),'chat_bot_name','Halyk','STRING','CHAT',3),
+(UUID(),'chat_title','Vortex Precision IT Assistant','STRING','CHAT',2),
+(UUID(),'chat_bot_name','Vortex Precision IT','STRING','CHAT',3),
 (UUID(),'chat_avatar','/assets/img/chat-bot-avatar.png','STRING','CHAT',8),
 (UUID(),'chat_welcome','Hi there! 👋 I can help you with our products, industries, pricing, delivery times and quotes. What would you like to know?','TEXT','CHAT',4),
 (UUID(),'chat_ai_provider','local','STRING','CHAT',5),
@@ -306,7 +306,7 @@ WHERE EXISTS (SELECT 1 FROM `users`);
 -- Mirrors database/migrations/002_cms_seed.sql
 -- =====================================================================
 -- =====================================================================
--- Halyk Petroleum — CMS + permissions seed data (migration 002)
+-- Vortex Precision IT — CMS + permissions seed data (migration 002)
 -- =====================================================================
 -- Idempotent: uses INSERT IGNORE so re-running never overwrites content
 -- that an administrator has since edited in the dashboard.
@@ -374,15 +374,15 @@ ON DUPLICATE KEY UPDATE `actions`=VALUES(`actions`);
 -- Website settings managed from Dashboard → Settings / Appearance
 -- ---------------------------------------------------------------------
 INSERT IGNORE INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VALUES
-(UUID(),'site_title','Halyk Petroleum — Industrial Manufacturing','STRING','WEBSITE',1),
-(UUID(),'site_description','Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for demanding operators worldwide.','TEXT','WEBSITE',2),
+(UUID(),'site_title','Vortex Precision IT — Industrial Manufacturing','STRING','WEBSITE',1),
+(UUID(),'site_description','Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for demanding operators worldwide.','TEXT','WEBSITE',2),
 (UUID(),'site_url','','STRING','WEBSITE',3),
 (UUID(),'site_language','en','STRING','WEBSITE',4),
 
 (UUID(),'logo_light','/assets/img/logo-header.png','STRING','BRANDING',1),
 (UUID(),'logo_dark','/assets/img/logo-footer.png','STRING','BRANDING',2),
 (UUID(),'logo_footer','/assets/img/logo-footer.png','STRING','BRANDING',3),
-(UUID(),'logo_alt','Halyk Petroleum','STRING','BRANDING',4),
+(UUID(),'logo_alt','Vortex Precision IT','STRING','BRANDING',4),
 (UUID(),'logo_height','44','INT','BRANDING',5),
 (UUID(),'favicon','/assets/img/favicon.ico','STRING','BRANDING',6),
 
@@ -454,7 +454,7 @@ INSERT IGNORE INTO `page_sections`
 (`id`,`pageKey`,`type`,`name`,`title`,`subtitle`,`body`,`image`,`buttonText`,`buttonUrl`,`buttonText2`,`buttonUrl2`,`settings`,`sortOrder`,`isActive`,`isSystem`) VALUES
 (UUID(),'home','hero','Hero banner',
  'Precision-engineered for the most demanding industries',
- 'Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.',
+ 'Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.',
  NULL,'/assets/img/hero-industrial.jpg','Request a Quote','rfq','Explore Products','products',
  '{"eyebrow":"Industrial manufacturing","badges":["ASME certified","ISO 9001:2015","Global support"]}',10,1,1),
 

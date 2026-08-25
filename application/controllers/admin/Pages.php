@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — CMS pages.
+ * Vortex Precision IT — CMS pages.
  *
  * Pages created here are published on the public website at /{slug} and can
  * be linked from any navigation menu.

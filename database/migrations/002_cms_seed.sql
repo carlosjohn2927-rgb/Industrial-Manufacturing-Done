@@ -1,5 +1,5 @@
 -- =====================================================================
--- Halyk Petroleum — CMS + permissions seed data (migration 002)
+-- Vortex Precision IT — CMS + permissions seed data (migration 002)
 -- =====================================================================
 -- Idempotent: uses INSERT IGNORE so re-running never overwrites content
 -- that an administrator has since edited in the dashboard.
@@ -68,15 +68,15 @@ ON DUPLICATE KEY UPDATE `actions`=VALUES(`actions`);
 -- Website settings managed from Dashboard → Settings / Appearance
 -- ---------------------------------------------------------------------
 INSERT IGNORE INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VALUES
-(UUID(),'site_title','Halyk Petroleum — Industrial Manufacturing','STRING','WEBSITE',1),
-(UUID(),'site_description','Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for demanding operators worldwide.','TEXT','WEBSITE',2),
+(UUID(),'site_title','Vortex Precision IT — Industrial Manufacturing','STRING','WEBSITE',1),
+(UUID(),'site_description','Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for demanding operators worldwide.','TEXT','WEBSITE',2),
 (UUID(),'site_url','','STRING','WEBSITE',3),
 (UUID(),'site_language','en','STRING','WEBSITE',4),
 
 (UUID(),'logo_light','/assets/img/logo-header.png','STRING','BRANDING',1),
 (UUID(),'logo_dark','/assets/img/logo-footer.png','STRING','BRANDING',2),
 (UUID(),'logo_footer','/assets/img/logo-footer.png','STRING','BRANDING',3),
-(UUID(),'logo_alt','Halyk Petroleum','STRING','BRANDING',4),
+(UUID(),'logo_alt','Vortex Precision IT','STRING','BRANDING',4),
 (UUID(),'logo_height','44','INT','BRANDING',5),
 (UUID(),'favicon','/assets/img/favicon.ico','STRING','BRANDING',6),
 
@@ -148,7 +148,7 @@ INSERT IGNORE INTO `page_sections`
 (`id`,`pageKey`,`type`,`name`,`title`,`subtitle`,`body`,`image`,`buttonText`,`buttonUrl`,`buttonText2`,`buttonUrl2`,`settings`,`sortOrder`,`isActive`,`isSystem`) VALUES
 (UUID(),'home','hero','Hero banner',
  'Precision-engineered for the most demanding industries',
- 'Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.',
+ 'Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.',
  NULL,'/assets/img/hero-industrial.jpg','Request a Quote','rfq','Explore Products','products',
  '{"eyebrow":"Industrial manufacturing","badges":["ASME certified","ISO 9001:2015","Global support"]}',10,1,1),
 

@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum - Settings (key-value store) with in-request cache.
+ * Vortex Precision IT - Settings (key-value store) with in-request cache.
  *
  * Loaded as $this->settings (see application/config/autoload.php). The class is
  * prefixed Vp_ so it cannot collide with the admin `Settings` controller —

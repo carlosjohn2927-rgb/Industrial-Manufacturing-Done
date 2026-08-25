@@ -1,8 +1,8 @@
-# Halyk Petroleum — cPanel Deployment Guide
+# Vortex Precision IT — cPanel Deployment Guide
 
 ## Overview
 
-This guide covers **portable cPanel deployment** of the Halyk Petroleum website.
+This guide covers **portable cPanel deployment** of the Vortex Precision IT website.
 
 **No Terminal, SSH, Composer, Node.js, or any command-line tool is required.**
 
@@ -34,10 +34,10 @@ Upload Files → Create Database → Import SQL → Edit .env → Open Website
 
 1. In cPanel, open **MySQL Databases**.
 2. Under **Create New Database**:
-   - Enter a database name (e.g., `halyk_production`).
+   - Enter a database name (e.g., `vortexprecisionit_production`).
    - Click **Create Database**.
 3. Scroll to **Add New User**:
-   - Enter a username (e.g., `halyk_user`).
+   - Enter a username (e.g., `vortexprecisionit_user`).
    - Enter a strong password (use the **Password Generator**).
    - Click **Create User**.
 4. Scroll to **Add User to Database**:
@@ -122,7 +122,7 @@ https://yourdomain.com/admin/login
 
 | Field    | Value                          |
 |----------|--------------------------------|
-| Email    | `admin@halykpetroleum-kz.com` |
+| Email    | `admin@vortexprecisionit.com` |
 | Password | `Nigeria1234@`                |
 
 **Change this password immediately** after first login via
@@ -176,7 +176,7 @@ The file `database/production.sql` contains:
 | Item | Details |
 |------|---------|
 | **All tables** | 25+ tables with columns, indexes, and foreign keys |
-| **Admin account** | `admin@halykpetroleum-kz.com` / `Nigeria1234@` (bcrypt-hashed) |
+| **Admin account** | `admin@vortexprecisionit.com` / `Nigeria1234@` (bcrypt-hashed) |
 | **Role permissions** | SUPER_ADMIN, ADMIN, SALES, ENGINEER, EDITOR roles |
 | **Categories** | 6 product categories (Valves, Pumps, Heat Exchangers, etc.) |
 | **Industries** | 6 industries (Oil & Gas, Chemical, Power, Water, Pharma, Food) |
@@ -277,7 +277,7 @@ Make sure the `.htaccess` file exists in the root directory (alongside `index.ph
 
 ### Admin login: "Invalid credentials"
 
-1. Verify the admin credentials: `admin@halykpetroleum-kz.com` / `Nigeria1234@`
+1. Verify the admin credentials: `admin@vortexprecisionit.com` / `Nigeria1234@`
 2. Check that `database/production.sql` was fully imported — run this in phpMyAdmin:
    ```sql
    SELECT COUNT(*) FROM users;

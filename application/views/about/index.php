@@ -4,7 +4,7 @@
     'hero_alt'           => 'Engineers reviewing a pressure vessel in our fabrication facility',
     'hero_eyebrow'       => 'About us',
     'hero_title_html'    => vp_inline_text('about_hero_title', 'Built on engineering. Trusted by operators.', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3'),
-    'hero_subtitle_html' => vp_inline_text('about_hero_subtitle', 'For over 35 years, ' . ($site_name ?? 'Halyk Petroleum') . ' has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.', 'p', 'mt-3 max-w-2xl text-lg'),
+    'hero_subtitle_html' => vp_inline_text('about_hero_subtitle', 'For over 35 years, ' . ($site_name ?? 'Vortex Precision IT') . ' has engineered, manufactured and serviced industrial equipment for the most demanding applications on earth.', 'p', 'mt-3 max-w-2xl text-lg'),
     'hero_min'           => '420px',
 ]); ?>
 

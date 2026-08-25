@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — permission catalogue.
+ * Vortex Precision IT — permission catalogue.
  *
  * Single source of truth for every grantable permission in the admin area.
  * The `permissions` database table mirrors this list (synced automatically by

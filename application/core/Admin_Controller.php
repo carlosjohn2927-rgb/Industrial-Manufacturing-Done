@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — admin area base controller.
+ * Vortex Precision IT — admin area base controller.
  *
  * Responsibilities
  *   1. Require an authenticated staff account.

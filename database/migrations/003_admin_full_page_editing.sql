@@ -1,4 +1,4 @@
--- Halyk Petroleum CMS upgrade: ADMIN full website-editing access
+-- Vortex Precision IT CMS upgrade: ADMIN full website-editing access
 -- Safe to run repeatedly in phpMyAdmin on an existing installation.
 
 INSERT INTO `role_permissions` (`id`,`role`,`resource`,`actions`) VALUES

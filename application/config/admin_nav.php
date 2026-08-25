@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Halyk Petroleum — admin dashboard navigation.
+ * Vortex Precision IT — admin dashboard navigation.
  *
  * The sidebar of both dashboards is generated from this structure and then
  * filtered by the signed-in account's effective permissions, so an Admin only

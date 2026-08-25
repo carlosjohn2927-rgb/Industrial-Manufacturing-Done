@@ -1,6 +1,6 @@
 <?php
 /**
- * Halyk Petroleum — development SQLite installer.
+ * Vortex Precision IT — development SQLite installer.
  *
  * PRODUCTION USES MySQL/MariaDB (install/install.sql). This script exists so
  * the application can be run, demoed and tested on a machine that has no
@@ -30,7 +30,7 @@ $files = [
     $root . '/database/migrations/002_cms_seed.sql',
 ];
 
-echo "Halyk Petroleum — dev SQLite installer\n";
+echo "Vortex Precision IT — dev SQLite installer\n";
 echo "Target: {$target}\n\n";
 
 @mkdir(dirname($target), 0775, true);
@@ -263,13 +263,13 @@ echo "\nApplied {$applied} statements, " . count($indexes) . " indexes.\n";
 $now = date('Y-m-d H:i:s');
 $accounts = [
     [
-        'email' => getenv('VP_ADMIN_EMAIL') ?: 'superadmin@halykpetroleum-kz.com',
+        'email' => getenv('VP_ADMIN_EMAIL') ?: 'superadmin@vortexprecisionit.com',
         'pass'  => getenv('VP_ADMIN_PASSWORD') ?: 'SuperAdmin123!',
         'role'  => 'SUPER_ADMIN',
         'first' => 'Super', 'last' => 'Admin',
     ],
     [
-        'email' => 'admin@halykpetroleum-kz.com',
+        'email' => 'admin@vortexprecisionit.com',
         'pass'  => getenv('VP_DEMO_ADMIN_PASSWORD') ?: 'Admin123!',
         'role'  => 'ADMIN',
         'first' => 'Site', 'last' => 'Admin',

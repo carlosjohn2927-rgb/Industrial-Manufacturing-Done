@@ -1,6 +1,6 @@
 # Dashboard & CMS Guide
 
-Halyk Petroleum ships with two dashboards backed by **one** set of data:
+Vortex Precision IT ships with two dashboards backed by **one** set of data:
 
 | Dashboard | Who | What it can do |
 |---|---|---|

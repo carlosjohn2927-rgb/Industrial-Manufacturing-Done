@@ -4,7 +4,7 @@
     'hero_alt'           => 'Field engineer commissioning industrial equipment',
     'hero_eyebrow'       => 'Lifecycle support',
     'hero_title_html'    => vp_inline_text('services_hero_title', 'Services', 'h1', 'text-4xl lg:text-5xl font-extrabold mt-3'),
-    'hero_subtitle_html' => vp_inline_text('services_hero_subtitle', 'From concept to commissioning, ' . ($site_name ?? 'Halyk Petroleum') . ' partners with you at every stage of the equipment lifecycle.', 'p', 'mt-3 text-lg'),
+    'hero_subtitle_html' => vp_inline_text('services_hero_subtitle', 'From concept to commissioning, ' . ($site_name ?? 'Vortex Precision IT') . ' partners with you at every stage of the equipment lifecycle.', 'p', 'mt-3 text-lg'),
     'hero_min'           => '400px',
 ]); ?>
 <section class="container mx-auto px-4 py-12">

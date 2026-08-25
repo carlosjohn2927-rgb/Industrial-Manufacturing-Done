@@ -438,7 +438,7 @@ if (!function_exists('vp_seo_config')) {
     {
         $CI   =& get_instance();
         // Dashboard-managed identity wins over the config defaults.
-        $site    = $CI->settings->get('site_name') ?: ($CI->config->item('site_name') ?: 'Halyk Petroleum');
+        $site    = $CI->settings->get('site_name') ?: ($CI->config->item('site_name') ?: 'Vortex Precision IT');
         $tagline = $CI->settings->get('site_description')
                     ?: ($CI->settings->get('site_tagline') ?: ($CI->config->item('site_tagline') ?: 'Industrial Manufacturing Excellence'));
 
@@ -553,7 +553,7 @@ if (!function_exists('vp_seo_head')) {
     {
         $CI   =& get_instance();
         $seo  = vp_seo_config();
-        $site = function_exists('vp_site') ? vp_site('name') : ($CI->config->item('site_name') ?: 'Halyk Petroleum');
+        $site = function_exists('vp_site') ? vp_site('name') : ($CI->config->item('site_name') ?: 'Vortex Precision IT');
 
         $title = trim((string) $page_title) !== '' ? $page_title : $seo['default_title'];
         // Do not repeat the site name when the page title already carries it.
@@ -617,7 +617,7 @@ if (!function_exists('vp_chat_config')) {
     function vp_chat_config()
     {
         $CI   =& get_instance();
-        $site = $CI->config->item('site_name') ?: 'Halyk Petroleum';
+        $site = $CI->config->item('site_name') ?: 'Vortex Precision IT';
 
         $quick = vp_setting('chat_quick_replies', []);
         if (is_string($quick)) {

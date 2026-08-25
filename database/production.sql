@@ -1,5 +1,5 @@
 -- =============================================================================
--- Vortex Precision / Halyk Petroleum — COMPLETE PRODUCTION DATABASE
+-- Vortex Precision / Vortex Precision IT — COMPLETE PRODUCTION DATABASE
 -- =============================================================================
 -- This single file contains everything needed for the application to run:
 --   • All tables, columns, indexes, and foreign keys
@@ -17,7 +17,7 @@
 --   6. The database is now fully initialized — no further CLI steps needed.
 --
 -- The admin account credentials are:
---   Email:    admin@halykpetroleum-kz.com
+--   Email:    admin@vortexprecisionit.com
 --   Password: Nigeria1234@
 -- =============================================================================
 
@@ -568,7 +568,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 -- #############################################################################
 -- 2. ADMINISTRATOR ACCOUNT (fixed UUID so blog posts can reference it)
 -- #############################################################################
--- Email:    admin@halykpetroleum-kz.com
+-- Email:    admin@vortexprecisionit.com
 -- Password: Nigeria1234@
 --
 -- The password is bcrypt-hashed (cost 12). To change it, either:
@@ -579,12 +579,12 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 INSERT INTO `users` (`id`, `email`, `password`, `firstName`, `lastName`, `role`, `company`, `isActive`, `mustChangePassword`, `emailVerified`, `createdAt`, `updatedAt`)
 VALUES (
   'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-  'admin@halykpetroleum-kz.com',
+  'admin@vortexprecisionit.com',
   '$2b$12$XlT9QtIvi44/HE9Pf84ElOoDnG/GBvn5gxRM8fvOxU69j065wwwuS',
   'Admin',
   'User',
   'SUPER_ADMIN',
-  'Halyk Petroleum',
+  'Vortex Precision IT',
   1,
   0,
   1,
@@ -637,23 +637,23 @@ ON DUPLICATE KEY UPDATE `actions`=VALUES(`actions`);
 -- 4. CATEGORIES
 -- #############################################################################
 INSERT INTO `categories` (`id`,`name`,`slug`,`description`,`icon`,`sortOrder`,`isActive`,`metaTitle`) VALUES
-(UUID(),'Valves','valves','Industrial valves for flow control in demanding applications.','valve',1,1,'Industrial Valves - Halyk Petroleum'),
-(UUID(),'Pumps','pumps','Centrifugal, positive displacement and specialty pumps.','pump',2,1,'Industrial Pumps - Halyk Petroleum'),
-(UUID(),'Heat Exchangers','heat-exchangers','Shell-and-tube, plate and brazed heat exchangers.','heater',3,1,'Heat Exchangers - Halyk Petroleum'),
-(UUID(),'Pressure Vessels','pressure-vessels','ASME-coded pressure vessels for process industries.','vessel',4,1,'Pressure Vessels - Halyk Petroleum'),
-(UUID(),'Filtration','filtration','Industrial filtration systems and cartridges.','filter',5,1,'Filtration Systems - Halyk Petroleum'),
-(UUID(),'Instrumentation','instrumentation','Process measurement, gauges and sensors.','gauge',6,1,'Instrumentation - Halyk Petroleum');
+(UUID(),'Valves','valves','Industrial valves for flow control in demanding applications.','valve',1,1,'Industrial Valves - Vortex Precision IT'),
+(UUID(),'Pumps','pumps','Centrifugal, positive displacement and specialty pumps.','pump',2,1,'Industrial Pumps - Vortex Precision IT'),
+(UUID(),'Heat Exchangers','heat-exchangers','Shell-and-tube, plate and brazed heat exchangers.','heater',3,1,'Heat Exchangers - Vortex Precision IT'),
+(UUID(),'Pressure Vessels','pressure-vessels','ASME-coded pressure vessels for process industries.','vessel',4,1,'Pressure Vessels - Vortex Precision IT'),
+(UUID(),'Filtration','filtration','Industrial filtration systems and cartridges.','filter',5,1,'Filtration Systems - Vortex Precision IT'),
+(UUID(),'Instrumentation','instrumentation','Process measurement, gauges and sensors.','gauge',6,1,'Instrumentation - Vortex Precision IT');
 
 -- #############################################################################
 -- 5. INDUSTRIES
 -- #############################################################################
 INSERT INTO `industries` (`id`,`name`,`slug`,`description`,`icon`,`sortOrder`,`isActive`,`metaTitle`,`capabilities`) VALUES
-(UUID(),'Oil & Gas','oil-gas','Upstream, midstream and downstream solutions engineered for the most demanding hydrocarbon environments.','oil',1,1,'Oil & Gas Solutions - Halyk Petroleum', JSON_ARRAY('ASME B31.3 piping','API 610 pumps','API 600 valves','NACE MR0175 compliance')),
-(UUID(),'Chemical Processing','chemical-processing','Corrosion-resistant equipment for aggressive chemistries and continuous-duty plants.','flask',2,1,'Chemical Processing - Halyk Petroleum', JSON_ARRAY('Hastelloy / Duplex fabrication','PTFE linings','ATEX compliance','CIP capability')),
-(UUID(),'Power Generation','power-generation','High-pressure and high-temperature equipment for thermal, nuclear and renewable power.','bolt',3,1,'Power Generation - Halyk Petroleum', JSON_ARRAY('ASME Section I boilers','ASME Section VIII vessels','N-stamp nuclear','High-temp alloys')),
-(UUID(),'Water & Wastewater','water-wastewater','Treatment plant equipment for municipal and industrial water and wastewater.','droplet',4,1,'Water & Wastewater - Halyk Petroleum', JSON_ARRAY('NSF/ANSI 61 potable water','AWWA standards','Lift stations','Membrane skids')),
-(UUID(),'Pharmaceutical','pharmaceutical','Sanitary process equipment for pharma, biotech and life-sciences.','pill',5,1,'Pharmaceutical - Halyk Petroleum', JSON_ARRAY('3-A sanitary standards','Electropolish','FDA-compliant seals','Clean-in-place')),
-(UUID(),'Food & Beverage','food-beverage','Hygienic equipment for dairy, brewing, beverage and food processing.','utensils',6,1,'Food & Beverage - Halyk Petroleum', JSON_ARRAY('3-A sanitary','CIP/SIP','EHEDG hygienic design','Stainless 304/316L'));
+(UUID(),'Oil & Gas','oil-gas','Upstream, midstream and downstream solutions engineered for the most demanding hydrocarbon environments.','oil',1,1,'Oil & Gas Solutions - Vortex Precision IT', JSON_ARRAY('ASME B31.3 piping','API 610 pumps','API 600 valves','NACE MR0175 compliance')),
+(UUID(),'Chemical Processing','chemical-processing','Corrosion-resistant equipment for aggressive chemistries and continuous-duty plants.','flask',2,1,'Chemical Processing - Vortex Precision IT', JSON_ARRAY('Hastelloy / Duplex fabrication','PTFE linings','ATEX compliance','CIP capability')),
+(UUID(),'Power Generation','power-generation','High-pressure and high-temperature equipment for thermal, nuclear and renewable power.','bolt',3,1,'Power Generation - Vortex Precision IT', JSON_ARRAY('ASME Section I boilers','ASME Section VIII vessels','N-stamp nuclear','High-temp alloys')),
+(UUID(),'Water & Wastewater','water-wastewater','Treatment plant equipment for municipal and industrial water and wastewater.','droplet',4,1,'Water & Wastewater - Vortex Precision IT', JSON_ARRAY('NSF/ANSI 61 potable water','AWWA standards','Lift stations','Membrane skids')),
+(UUID(),'Pharmaceutical','pharmaceutical','Sanitary process equipment for pharma, biotech and life-sciences.','pill',5,1,'Pharmaceutical - Vortex Precision IT', JSON_ARRAY('3-A sanitary standards','Electropolish','FDA-compliant seals','Clean-in-place')),
+(UUID(),'Food & Beverage','food-beverage','Hygienic equipment for dairy, brewing, beverage and food processing.','utensils',6,1,'Food & Beverage - Vortex Precision IT', JSON_ARRAY('3-A sanitary','CIP/SIP','EHEDG hygienic design','Stainless 304/316L'));
 
 -- #############################################################################
 -- 6. PRODUCTS
@@ -784,17 +784,17 @@ INSERT INTO `faqs` (`id`,`question`,`answer`,`category`,`sortOrder`,`isActive`) 
 (UUID(),'Do you provide installation and commissioning?','Yes, we offer global field service including installation supervision, commissioning, operator training and ongoing maintenance contracts.','Service',4,1),
 (UUID(),'What is the warranty on your products?','All catalog products carry a standard 12-month warranty from shipment. Engineered equipment warranty is typically 18-24 months and clearly stated on the quotation.','Warranty',5,1),
 (UUID(),'Do you ship internationally?','We ship worldwide. We handle export documentation, certificates of origin and can ship FOB, CIF or DDP depending on your preference.','Logistics',6,1),
-(UUID(),'How do I get a quote?','Use the RFQ form on our site, or email sale@halykpetroleum-kz.com with your requirements, drawings and quantity. Most quotes are returned within 48 hours.','Quoting',7,1),
+(UUID(),'How do I get a quote?','Use the RFQ form on our site, or email sale@vortexprecisionit.com with your requirements, drawings and quantity. Most quotes are returned within 48 hours.','Quoting',7,1),
 (UUID(),'Can I get a sample before ordering?','For selected catalog items, sample or evaluation units can be supplied at a nominal cost that is credited back on the first production order.','Samples',8,1);
 
 -- #############################################################################
 -- 8. TESTIMONIALS
 -- #############################################################################
 INSERT INTO `testimonials` (`id`,`name`,`title`,`company`,`content`,`rating`,`avatar`,`industry`,`isActive`,`featured`) VALUES
-(UUID(),'Mark Henderson','Process Engineering Lead','DeltaChem Industries','Halyk Petroleum delivered our custom heat exchanger skids on time and below budget. Their engineering team was responsive throughout the project.',5,'/assets/img/reviews/mark-henderson.jpg','Chemical Processing',1,1),
-(UUID(),'Linda Park','Plant Manager','NorthStar Refining','We have standardised on Halyk Petroleum ball valves across our refinery. The quality is consistent, lead times are predictable, and their field service team is excellent.',5,'/assets/img/reviews/linda-park.jpg','Oil & Gas',1,1),
+(UUID(),'Mark Henderson','Process Engineering Lead','DeltaChem Industries','Vortex Precision IT delivered our custom heat exchanger skids on time and below budget. Their engineering team was responsive throughout the project.',5,'/assets/img/reviews/mark-henderson.jpg','Chemical Processing',1,1),
+(UUID(),'Linda Park','Plant Manager','NorthStar Refining','We have standardised on Vortex Precision IT ball valves across our refinery. The quality is consistent, lead times are predictable, and their field service team is excellent.',5,'/assets/img/reviews/linda-park.jpg','Oil & Gas',1,1),
 (UUID(),'Akhil Raman','Director of Operations','BlueRiver Water Authority','The plate heat exchangers supplied for our district heating upgrade have performed flawlessly through three full heating seasons.',5,'/assets/img/reviews/akhil-raman.jpg','Water & Wastewater',1,1),
-(UUID(),'Jonas Weber','Head of Engineering','Brewmaster GmbH','Their sanitary pumps and filters meet the strictest EHEDG requirements. Halyk Petroleum understands hygienic process design.',5,'/assets/img/reviews/jonas-weber.jpg','Food & Beverage',1,0);
+(UUID(),'Jonas Weber','Head of Engineering','Brewmaster GmbH','Their sanitary pumps and filters meet the strictest EHEDG requirements. Vortex Precision IT understands hygienic process design.',5,'/assets/img/reviews/jonas-weber.jpg','Food & Beverage',1,0);
 
 -- #############################################################################
 -- 9. PARTNERS
@@ -811,38 +811,38 @@ INSERT INTO `partners` (`id`,`name`,`logo`,`website`,`category`,`sortOrder`,`isA
 -- 10. APPLICATION SETTINGS
 -- #############################################################################
 INSERT INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VALUES
-(UUID(),'site_name','Halyk Petroleum','STRING','GENERAL',1),
+(UUID(),'site_name','Vortex Precision IT','STRING','GENERAL',1),
 (UUID(),'site_tagline','Industrial Manufacturing Excellence','STRING','GENERAL',2),
 (UUID(),'hero_title','Precision-engineered for the most demanding industries','STRING','HERO',1),
-(UUID(),'hero_subtitle','Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.','STRING','HERO',2),
+(UUID(),'hero_subtitle','Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.','STRING','HERO',2),
 (UUID(),'hero_cta_primary','Request a Quote','STRING','HERO',3),
 (UUID(),'hero_cta_secondary','Explore Products','STRING','HERO',4),
-(UUID(),'about_intro','Halyk Petroleum has been a trusted partner to industrial operators for over three decades. From our headquarters in Houston, Texas, we design, manufacture and service equipment for the most demanding applications in oil & gas, chemical processing, power generation, water, pharmaceutical and food & beverage.','TEXT','ABOUT',1),
+(UUID(),'about_intro','Vortex Precision IT has been a trusted partner to industrial operators for over three decades. From our headquarters in Houston, Texas, we design, manufacture and service equipment for the most demanding applications in oil & gas, chemical processing, power generation, water, pharmaceutical and food & beverage.','TEXT','ABOUT',1),
 (UUID(),'stats_years','35','INT','STATS',1),
 (UUID(),'stats_countries','60','INT','STATS',2),
 (UUID(),'stats_projects','4200','INT','STATS',3),
 (UUID(),'stats_clients','850','INT','STATS',4),
-(UUID(),'contact_email','sale@halykpetroleum-kz.com','STRING','CONTACT',1),
-(UUID(),'support_email','support@halykpetroleum-kz.com','STRING','CONTACT',2),
-(UUID(),'rfq_email','sale@halykpetroleum-kz.com','STRING','CONTACT',3),
+(UUID(),'contact_email','sale@vortexprecisionit.com','STRING','CONTACT',1),
+(UUID(),'support_email','support@vortexprecisionit.com','STRING','CONTACT',2),
+(UUID(),'rfq_email','sale@vortexprecisionit.com','STRING','CONTACT',3),
 (UUID(),'phone','+1 (555) 123-4567','STRING','CONTACT',4),
 (UUID(),'address','1234 Industrial Way, Houston, TX 77001, USA','STRING','CONTACT',5),
-(UUID(),'social','{\"linkedin\":\"https://linkedin.com/company/halykpetroleum\",\"twitter\":\"https://twitter.com/halykpetroleum\",\"facebook\":\"https://facebook.com/halykpetroleum\",\"youtube\":\"https://youtube.com/@halykpetroleum\"}','JSON','CONTACT',6),
+(UUID(),'social','{\"linkedin\":\"https://linkedin.com/company/vortexprecisionit\",\"twitter\":\"https://twitter.com/vortexprecisionit\",\"facebook\":\"https://facebook.com/vortexprecisionit\",\"youtube\":\"https://youtube.com/@vortexprecisionit\"}','JSON','CONTACT',6),
 (UUID(),'rfq_enabled','1','BOOL','RFQ',1),
 (UUID(),'rfq_rate_limit_per_hour','5','INT','RFQ',2),
-(UUID(),'rfq_admin_email','admin@halykpetroleum-kz.com','STRING','RFQ',3),
-(UUID(),'seo_default_title','Halyk Petroleum — Industrial Manufacturing','STRING','SEO',1),
-(UUID(),'seo_default_description','Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for oil & gas, chemical, power, water, pharmaceutical and food & beverage operators worldwide.','TEXT','SEO',2),
+(UUID(),'rfq_admin_email','admin@vortexprecisionit.com','STRING','RFQ',3),
+(UUID(),'seo_default_title','Vortex Precision IT — Industrial Manufacturing','STRING','SEO',1),
+(UUID(),'seo_default_description','Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for oil & gas, chemical, power, water, pharmaceutical and food & beverage operators worldwide.','TEXT','SEO',2),
 (UUID(),'seo_keywords','industrial valves, centrifugal pumps, heat exchangers, pressure vessels, filtration systems, oil and gas equipment, process equipment manufacturer','STRING','SEO',3),
 (UUID(),'seo_robots','index, follow','STRING','SEO',4),
 (UUID(),'seo_og_image','/assets/img/hero-industrial.jpg','STRING','SEO',5),
 (UUID(),'seo_enable_jsonld','1','BOOL','SEO',6),
 (UUID(),'seo_schema_type','Organization','STRING','SEO',7),
-(UUID(),'seo_schema_name','Halyk Petroleum','STRING','SEO',8),
+(UUID(),'seo_schema_name','Vortex Precision IT','STRING','SEO',8),
 (UUID(),'seo_schema_logo','/assets/img/logo.png','STRING','SEO',9),
 (UUID(),'chat_enabled','1','BOOL','CHAT',1),
-(UUID(),'chat_title','Halyk Assistant','STRING','CHAT',2),
-(UUID(),'chat_bot_name','Halyk','STRING','CHAT',3),
+(UUID(),'chat_title','Vortex Precision IT Assistant','STRING','CHAT',2),
+(UUID(),'chat_bot_name','Vortex Precision IT','STRING','CHAT',3),
 (UUID(),'chat_avatar','/assets/img/chat-bot-avatar.png','STRING','CHAT',8),
 (UUID(),'chat_welcome','Hi there! 👋 I can help you with our products, industries, pricing, delivery times and quotes. What would you like to know?','TEXT','CHAT',4),
 (UUID(),'chat_ai_provider','local','STRING','CHAT',5),
@@ -865,15 +865,15 @@ INSERT INTO `careers` (`id`,`title`,`slug`,`department`,`location`,`type`,`exper
 -- 12. NEWS
 -- #############################################################################
 INSERT INTO `news` (`id`,`title`,`slug`,`summary`,`content`,`publishedAt`,`isActive`) VALUES
-(UUID(),'Halyk Petroleum completes delivery of 18 skidded heat exchanger packages to Gulf Coast chemical plant','skid-delivery-gulf-coast','A milestone order demonstrating our ability to deliver turnkey process skids to tight schedules.','Halyk Petroleum has successfully delivered 18 custom-engineered heat exchanger skids to a major Gulf Coast chemical complex. The packages, which include plate heat exchangers, instrumentation and structural steel, were delivered on a 14-week accelerated schedule and are now in commissioning.','2026-07-12 09:00:00',1),
-(UUID(),'New EHEDG-certified sanitary pump line launched','sanitary-pump-launch','Our new PD pump line brings hygienic fluid handling to dairy, brewing and pharmaceutical customers.','Halyk Petroleum has launched a new line of rotary lobe positive-displacement pumps for sanitary service. The line is EHEDG-certified, available in 316L stainless with EHEDG-compliant elastomers.','2026-05-30 09:00:00',1),
-(UUID(),'Halyk achieves ISO 9001:2015 recertification','iso-9001-recert','Quality system recertification reflects our continued commitment to customer satisfaction.','We are pleased to announce the successful completion of our ISO 9001:2015 surveillance audit, with zero non-conformances raised by the lead auditor.','2026-03-04 09:00:00',1);
+(UUID(),'Vortex Precision IT completes delivery of 18 skidded heat exchanger packages to Gulf Coast chemical plant','skid-delivery-gulf-coast','A milestone order demonstrating our ability to deliver turnkey process skids to tight schedules.','Vortex Precision IT has successfully delivered 18 custom-engineered heat exchanger skids to a major Gulf Coast chemical complex. The packages, which include plate heat exchangers, instrumentation and structural steel, were delivered on a 14-week accelerated schedule and are now in commissioning.','2026-07-12 09:00:00',1),
+(UUID(),'New EHEDG-certified sanitary pump line launched','sanitary-pump-launch','Our new PD pump line brings hygienic fluid handling to dairy, brewing and pharmaceutical customers.','Vortex Precision IT has launched a new line of rotary lobe positive-displacement pumps for sanitary service. The line is EHEDG-certified, available in 316L stainless with EHEDG-compliant elastomers.','2026-05-30 09:00:00',1),
+(UUID(),'Vortex Precision IT achieves ISO 9001:2015 recertification','iso-9001-recert','Quality system recertification reflects our continued commitment to customer satisfaction.','We are pleased to announce the successful completion of our ISO 9001:2015 surveillance audit, with zero non-conformances raised by the lead auditor.','2026-03-04 09:00:00',1);
 
 -- #############################################################################
 -- 13. DOWNLOADS
 -- #############################################################################
 INSERT INTO `downloads` (`id`,`title`,`description`,`fileUrl`,`type`,`category`,`fileSize`,`downloads`,`isActive`) VALUES
-(UUID(),'Company Brochure 2026','Full-line overview of Halyk Petroleum capabilities and reference projects.','/assets/files/company-brochure-2026.pdf','PDF','General','3.2 MB',0,1),
+(UUID(),'Company Brochure 2026','Full-line overview of Vortex Precision IT capabilities and reference projects.','/assets/files/company-brochure-2026.pdf','PDF','General','3.2 MB',0,1),
 (UUID(),'Valve Selection Guide','Engineering guide for selecting the right valve for your service.','/assets/files/valve-selection-guide.pdf','PDF','Valves','1.4 MB',0,1),
 (UUID(),'Pump Selection Guide','Engineering guide for centrifugal and positive-displacement pumps.','/assets/files/pump-selection-guide.pdf','PDF','Pumps','1.8 MB',0,1),
 (UUID(),'Heat Exchanger Sizing Worksheet','Excel worksheet to size plate or shell-and-tube exchangers.','/assets/files/hx-sizing.xlsx','XLSX','Heat Exchangers','85 KB',0,1);
@@ -893,7 +893,7 @@ INSERT INTO `blog_posts` (`id`,`title`,`slug`,`excerpt`,`content`,`authorId`,`ca
  'PUBLISHED',
  '2026-06-15 09:00:00',
  412,
- 'Choosing the right ball valve - Halyk Petroleum'),
+ 'Choosing the right ball valve - Vortex Precision IT'),
 (UUID(),
  'Understanding ASME Section VIII pressure vessel design',
  'understanding-asme-section-viii',
@@ -905,7 +905,7 @@ INSERT INTO `blog_posts` (`id`,`title`,`slug`,`excerpt`,`content`,`authorId`,`ca
  'PUBLISHED',
  '2026-04-22 09:00:00',
  289,
- 'Understanding ASME Section VIII - Halyk Petroleum');
+ 'Understanding ASME Section VIII - Vortex Precision IT');
 
 
 -- =====================================================================
@@ -913,7 +913,7 @@ INSERT INTO `blog_posts` (`id`,`title`,`slug`,`excerpt`,`content`,`authorId`,`ca
 -- Mirrors database/migrations/001_cms_and_permissions.sql
 -- =====================================================================
 -- =====================================================================
--- Halyk Petroleum — CMS + Role/Permission upgrade (migration 001)
+-- Vortex Precision IT — CMS + Role/Permission upgrade (migration 001)
 -- =====================================================================
 -- Adds the tables required by the Super Admin / Admin dashboards:
 --   permissions        catalogue of every grantable permission
@@ -1058,7 +1058,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Mirrors database/migrations/002_cms_seed.sql
 -- =====================================================================
 -- =====================================================================
--- Halyk Petroleum — CMS + permissions seed data (migration 002)
+-- Vortex Precision IT — CMS + permissions seed data (migration 002)
 -- =====================================================================
 -- Idempotent: uses INSERT IGNORE so re-running never overwrites content
 -- that an administrator has since edited in the dashboard.
@@ -1140,15 +1140,15 @@ ON DUPLICATE KEY UPDATE `actions`=VALUES(`actions`);
 -- Website settings managed from Dashboard → Settings / Appearance
 -- ---------------------------------------------------------------------
 INSERT IGNORE INTO `settings` (`id`,`key`,`value`,`type`,`group`,`sortOrder`) VALUES
-(UUID(),'site_title','Halyk Petroleum — Industrial Manufacturing','STRING','WEBSITE',1),
-(UUID(),'site_description','Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for demanding operators worldwide.','TEXT','WEBSITE',2),
+(UUID(),'site_title','Vortex Precision IT — Industrial Manufacturing','STRING','WEBSITE',1),
+(UUID(),'site_description','Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems for demanding operators worldwide.','TEXT','WEBSITE',2),
 (UUID(),'site_url','','STRING','WEBSITE',3),
 (UUID(),'site_language','en','STRING','WEBSITE',4),
 
 (UUID(),'logo_light','/assets/img/logo-header.png','STRING','BRANDING',1),
 (UUID(),'logo_dark','/assets/img/logo-footer.png','STRING','BRANDING',2),
 (UUID(),'logo_footer','/assets/img/logo-footer.png','STRING','BRANDING',3),
-(UUID(),'logo_alt','Halyk Petroleum','STRING','BRANDING',4),
+(UUID(),'logo_alt','Vortex Precision IT','STRING','BRANDING',4),
 (UUID(),'logo_height','44','INT','BRANDING',5),
 (UUID(),'favicon','/assets/img/favicon.ico','STRING','BRANDING',6),
 
@@ -1220,7 +1220,7 @@ INSERT IGNORE INTO `page_sections`
 (`id`,`pageKey`,`type`,`name`,`title`,`subtitle`,`body`,`image`,`buttonText`,`buttonUrl`,`buttonText2`,`buttonUrl2`,`settings`,`sortOrder`,`isActive`,`isSystem`) VALUES
 (UUID(),'home','hero','Hero banner',
  'Precision-engineered for the most demanding industries',
- 'Halyk Petroleum designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.',
+ 'Vortex Precision IT designs and manufactures industrial valves, pumps, heat exchangers, pressure vessels and filtration systems trusted by operators worldwide.',
  NULL,'/assets/img/hero-industrial.jpg','Request a Quote','rfq','Explore Products','products',
  '{"eyebrow":"Industrial manufacturing","badges":["ASME certified","ISO 9001:2015","Global support"]}',10,1,1),
 

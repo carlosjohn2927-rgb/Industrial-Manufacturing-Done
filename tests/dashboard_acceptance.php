@@ -1,6 +1,6 @@
 <?php
 /**
- * Halyk Petroleum — Super Admin / Admin dashboard acceptance suite.
+ * Vortex Precision IT — Super Admin / Admin dashboard acceptance suite.
  *
  * Drives a running instance over real HTTP (curl + cookie jars, CSRF tokens
  * read from the forms) and verifies the complete dashboard checklist:
@@ -14,18 +14,18 @@
  * Environment:
  *   VP_TEST_URL              base URL (default http://127.0.0.1:8080)
  *   VP_TEST_SUPER_EMAIL/PASS super admin credentials
- *                            (default superadmin@halykpetroleum-kz.com / SuperAdmin123!)
+ *                            (default superadmin@vortexprecisionit.com / SuperAdmin123!)
  *
  * The suite creates a temporary administrator ("acceptance.admin@…") and
  * deletes it again at the end.
  */
 
 $BASE  = rtrim($argv[1] ?? (getenv('VP_TEST_URL') ?: 'http://127.0.0.1:8080'), '/');
-$SUPER = ['email' => getenv('VP_TEST_SUPER_EMAIL') ?: 'superadmin@halykpetroleum-kz.com',
+$SUPER = ['email' => getenv('VP_TEST_SUPER_EMAIL') ?: 'superadmin@vortexprecisionit.com',
           'pass'  => getenv('VP_TEST_SUPER_PASSWORD') ?: 'SuperAdmin123!'];
 
 $TMP_ADMIN = [
-    'email' => 'acceptance.admin@halyk-test.local',
+    'email' => 'acceptance.admin@vortex-precision-it-test.local',
     'pass'  => 'Acceptance-Pass-123',
 ];
 
@@ -140,7 +140,7 @@ function section($title) { echo "\n\033[1m{$title}\033[0m\n"; }
 
 /* ================================================================== */
 
-echo "Halyk Petroleum — dashboard acceptance suite\nTarget: {$BASE}\n";
+echo "Vortex Precision IT — dashboard acceptance suite\nTarget: {$BASE}\n";
 
 $superJar = jar('super');
 $adminJar = jar('admin');
@@ -321,7 +321,7 @@ if ($sectionId) {
 }
 
 // Settings → site name
-$name_marker = 'Halyk Acceptance ' . substr(md5((string) mt_rand()), 0, 4);
+$name_marker = 'Vortex Precision IT Acceptance ' . substr(md5((string) mt_rand()), 0, 4);
 post('admin/settings/save', [
     'site_name' => $name_marker, 'site_title' => $name_marker . ' | Industrial',
     'site_tagline' => 'Acceptance tagline', 'site_description' => 'Acceptance description',
@@ -333,12 +333,12 @@ check('Website name changed in Settings appears on the public site', strpos($pub
 // Contact info → footer
 $phone_marker = '+7 700 ' . mt_rand(100, 999) . ' 00 00';
 post('admin/settings/save_contact', [
-    'contact_email' => 'acceptance@halyk-test.local', 'support_email' => '', 'rfq_email' => '',
+    'contact_email' => 'acceptance@vortex-precision-it-test.local', 'support_email' => '', 'rfq_email' => '',
     'phone' => $phone_marker, 'address' => 'Acceptance Street 1', 'contact_hours' => 'Mon–Fri',
 ], $superJar, 'admin/settings/contact');
 $pub = get('', null);
 check('Footer contact information updates on the public website',
-    strpos($pub['body'], 'acceptance@halyk-test.local') !== false && strpos($pub['body'], 'Acceptance Street 1') !== false);
+    strpos($pub['body'], 'acceptance@vortex-precision-it-test.local') !== false && strpos($pub['body'], 'Acceptance Street 1') !== false);
 
 // Navigation
 $menu_marker = 'Acc' . mt_rand(100, 999);
@@ -397,7 +397,7 @@ post('admin/appearance/save_header', [
     'header_topbar_enabled' => '0', 'header_topbar_text' => '',
     'footer_about' => $footer_marker, 'footer_copyright' => '', 'footer_note' => '',
     'footer_newsletter_enabled' => '0',
-    'contact_email' => 'acceptance@halyk-test.local', 'phone' => $phone_marker,
+    'contact_email' => 'acceptance@vortex-precision-it-test.local', 'phone' => $phone_marker,
     'address' => 'Acceptance Street 1', 'contact_hours' => 'Mon–Fri',
     'social_linkedin' => 'https://linkedin.com/company/acceptance',
 ], $superJar, 'admin/appearance/header');
