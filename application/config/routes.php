@@ -123,6 +123,7 @@ $route['admin/testimonials']              = 'admin/testimonials';
 $route['admin/testimonials/create']       = 'admin/testimonials/create';
 $route['admin/testimonials/edit/(:any)']  = 'admin/testimonials/edit/$1';
 $route['admin/testimonials/delete/(:any)']= 'admin/testimonials/delete/$1';
+$route['admin/testimonials/save']         = 'admin/testimonials/save';
 
 $route['admin/partners']                  = 'admin/partners';
 $route['admin/partners/create']           = 'admin/partners/create';

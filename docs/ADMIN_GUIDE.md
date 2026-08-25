@@ -86,7 +86,11 @@ Title, description, file URL (or relative path under `/assets/files/`), type, ca
 
 ## Testimonials / Partners
 
-Editable lists used on the home page.
+Editable lists used on the home page. Open **Content → Testimonials** (or `/admin/testimonials`) to add, edit, hide, feature or delete a customer testimonial. Each entry includes the customer name, job title, company, quote, 1–5 star rating, optional industry and photo URL.
+
+### If Testimonials is missing from the dashboard
+
+The signed-in account needs the `testimonials.manage` permission. A Super Admin can grant it under **People → Administrators → Permissions**. For older cPanel installations whose database does not yet have that permission, run `database/migrations/005_testimonials_admin_access.sql` in **cPanel → phpMyAdmin → SQL**, then sign out and back in.
 
 ## Media
 
