@@ -257,6 +257,16 @@ if (!function_exists('vp_product_image')) {
             'vortexpro-pg-vppg'              => 'vortexpro-pg-vppg.jpg',
             'vortexpro-lt-vplt'              => 'vortexpro-lt-vplt.jpg',
             'vortexpro-cv-vpcv'              => 'vortexpro-cv-vpcv.jpg',
+            'vortexpro-globe-valve-vp-gv-300' => 'vortexpro-globe-valve-vp-gv-300.jpg',
+            'vortexpro-butterfly-valve-vp-bf-150' => 'vortexpro-butterfly-valve-vp-bf-150.jpg',
+            'vortexpro-api-process-pump-vp-ap-610' => 'vortexpro-api-process-pump-vp-ap-610.jpg',
+            'vortexpro-vertical-turbine-pump-vp-vt-90' => 'vortexpro-vertical-turbine-pump-vp-vt-90.jpg',
+            'vortexpro-shell-tube-exchanger-vp-st-500' => 'vortexpro-shell-tube-exchanger-vp-st-500.jpg',
+            'vortexpro-brazed-plate-exchanger-vp-bp-40' => 'vortexpro-brazed-plate-exchanger-vp-bp-40.jpg',
+            'vortexpro-filter-separator-vp-fs-800' => 'vortexpro-filter-separator-vp-fs-800.jpg',
+            'vortexpro-self-cleaning-filter-vp-sc-100' => 'vortexpro-self-cleaning-filter-vp-sc-100.jpg',
+            'vortexpro-coriolis-flowmeter-vp-cf-25' => 'vortexpro-coriolis-flowmeter-vp-cf-25.jpg',
+            'vortexpro-smart-pressure-transmitter-vp-pt-400' => 'vortexpro-smart-pressure-transmitter-vp-pt-400.jpg',
         ];
         $productSlug = $product['slug'] ?? '';
         if (isset($productArtwork[$productSlug])) {

@@ -534,3 +534,22 @@ SELECT UUID(),'VortexPro Coriolis Flowmeter VP-CF-25','vortexpro-coriolis-flowme
 
 INSERT INTO products (id,name,slug,sku,description,shortDescription,categoryId,industryIds,material,pressure,temperature,voltage,dimensions,weight,certifications,availability,featured,isActive,views,metaTitle,metaDescription)
 SELECT UUID(),'VortexPro Smart Pressure Transmitter VP-PT-400','vortexpro-smart-pressure-transmitter-vp-pt-400','VP-INS-PT400','A smart pressure transmitter with 4–20 mA HART output, local configuration buttons and remote seal options. It delivers stable pressure measurement for hazardous and general process areas.','Smart HART pressure transmitter for reliable process measurement.',c.id,JSON_ARRAY((SELECT id FROM industries WHERE slug = 'oil-gas' LIMIT 1),(SELECT id FROM industries WHERE slug = 'power-generation' LIMIT 1)),'316L stainless steel','Up to 600 bar','-40 to 125 °C','10.5 to 42 VDC','1/2 in NPT process connection','1.4 kg',JSON_ARRAY('ATEX','IECEx','SIL 2'),'IN_STOCK',0,1,0,'VortexPro Smart Pressure Transmitter VP-PT-400','Smart HART transmitter for hazardous and general process areas.' FROM categories c WHERE c.slug='instrumentation' AND NOT EXISTS (SELECT 1 FROM products WHERE sku='VP-INS-PT400');
+
+-- Dedicated product artwork for every new catalog item.
+INSERT INTO product_images (id,productId,url,alt,caption,sortOrder,isPrimary)
+SELECT UUID(), p.id,
+       CONCAT('/assets/img/products/', CASE p.sku
+           WHEN 'VP-VLV-GV300' THEN 'vortexpro-globe-valve-vp-gv-300.jpg'
+           WHEN 'VP-VLV-BF150' THEN 'vortexpro-butterfly-valve-vp-bf-150.jpg'
+           WHEN 'VP-PMP-AP610' THEN 'vortexpro-api-process-pump-vp-ap-610.jpg'
+           WHEN 'VP-PMP-VT90' THEN 'vortexpro-vertical-turbine-pump-vp-vt-90.jpg'
+           WHEN 'VP-HX-ST500' THEN 'vortexpro-shell-tube-exchanger-vp-st-500.jpg'
+           WHEN 'VP-HX-BP40' THEN 'vortexpro-brazed-plate-exchanger-vp-bp-40.jpg'
+           WHEN 'VP-FLT-FS800' THEN 'vortexpro-filter-separator-vp-fs-800.jpg'
+           WHEN 'VP-FLT-SC100' THEN 'vortexpro-self-cleaning-filter-vp-sc-100.jpg'
+           WHEN 'VP-INS-CF25' THEN 'vortexpro-coriolis-flowmeter-vp-cf-25.jpg'
+           WHEN 'VP-INS-PT400' THEN 'vortexpro-smart-pressure-transmitter-vp-pt-400.jpg'
+       END), p.name, 'Product image', 0, 1
+FROM products p
+WHERE p.sku IN ('VP-VLV-GV300','VP-VLV-BF150','VP-PMP-AP610','VP-PMP-VT90','VP-HX-ST500','VP-HX-BP40','VP-FLT-FS800','VP-FLT-SC100','VP-INS-CF25','VP-INS-PT400')
+  AND NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.productId = p.id AND pi.isPrimary = 1);
