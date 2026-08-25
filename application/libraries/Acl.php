@@ -258,16 +258,10 @@ class Acl
         return $out;
     }
 
-    /** Permissions every ADMIN receives as part of the website-editor role. */
-    private function admin_website_permissions()
+    /** Every dashboard permission an ADMIN receives. SUPER_ADMIN remains a distinct, protected role. */
+    private function admin_dashboard_permissions()
     {
-        return [
-            'products.manage', 'categories.manage', 'industries.manage', 'downloads.manage',
-            'blog.manage', 'news.manage', 'faqs.manage', 'careers.manage',
-            'testimonials.manage', 'partners.manage',
-            'homepage.manage', 'pages.manage', 'menus.manage', 'appearance.manage',
-            'media.manage', 'seo.manage', 'settings.manage',
-        ];
+        return $this->grantable_keys();
     }
 
     /**
@@ -293,13 +287,11 @@ class Acl
             else unset($keys[$key]);
         }
 
-        // ADMIN is a full website-editor role. Keep these grants mandatory so
-        // accounts created before this policy change (whose permission rows
-        // contain explicit denials) can still edit every public-facing page.
-        // Operational areas such as customers, audit and administrator
-        // management remain independently controlled.
+        // ADMIN is the full dashboard role. Keep every grant mandatory so
+        // accounts created before this policy change, including ones with old
+        // per-user denials, immediately receive the complete dashboard.
         if ($role === ROLE_ADMIN) {
-            foreach ($this->admin_website_permissions() as $key) {
+            foreach ($this->admin_dashboard_permissions() as $key) {
                 if ($this->exists($key) && !$this->is_super_only($key)) $keys[$key] = true;
             }
         }
@@ -332,11 +324,11 @@ class Acl
      */
     public function set_user_permissions($user_id, array $keys, $actor_id = null)
     {
-        // Website-editing grants are part of the ADMIN role contract and must
-        // not be removed by the per-account permission form.
+        // Full dashboard access is part of the ADMIN role contract and cannot
+        // be removed by an old per-account permission override.
         $account = $this->CI->db->select('role')->get_where('users', ['id' => $user_id], 1)->row_array();
         if (($account['role'] ?? '') === ROLE_ADMIN) {
-            $keys = array_merge($keys, $this->admin_website_permissions());
+            $keys = array_merge($keys, $this->admin_dashboard_permissions());
         }
 
         $keys = array_values(array_filter(array_unique($keys), function ($k) {

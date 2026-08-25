@@ -5,7 +5,8 @@ Halyk Petroleum ships with two dashboards backed by **one** set of data:
 | Dashboard | Who | What it can do |
 |---|---|---|
 | **Super Admin Dashboard** | `SUPER_ADMIN` | Everything, always. Owns the administration system. |
-| **Admin Dashboard** | `ADMIN`, `SALES`, `ENGINEER`, `EDITOR` | Exactly the sections the Super Admin granted. |
+| **Administrator Dashboard** | `ADMIN` | Every dashboard section and setting. |
+| **Limited staff dashboard** | `SALES`, `ENGINEER`, `EDITOR` | Only the sections granted to that role/account. |
 
 Both are the same application at `/admin`; the sidebar, the panels and every
 server-side action are filtered by the signed-in account's permissions.
@@ -50,7 +51,7 @@ and mirrored into the `permissions` table.
 
 ```
 SUPER_ADMIN   every permission, always — cannot be reduced or removed
-ADMIN         role defaults (role_permissions) ± per-account overrides
+ADMIN         every dashboard permission; stale per-account denials are ignored
 SALES / ENGINEER / EDITOR   narrower role defaults, same override mechanism
 ```
 
@@ -89,8 +90,8 @@ in a logged `403 ACCESS_DENIED`. Hiding a sidebar entry is cosmetic only.
 | Catalog | `products.manage`, `categories.manage`, `industries.manage`, `downloads.manage` |
 | Content | `blog.manage`, `news.manage`, `faqs.manage`, `careers.manage`, `testimonials.manage`, `partners.manage` |
 | Website | `homepage.manage`, `pages.manage`, `menus.manage`, `appearance.manage`, `media.manage`, `seo.manage` |
-| People | `customers.manage`, `admins.manage` *(Super Admin only)* |
-| System | `settings.manage`, `audit.view`, `system.manage` *(Super Admin only)* |
+| People | `customers.manage`, `admins.manage` |
+| System | `settings.manage`, `audit.view`, `system.manage` |
 
 Personal notifications (`/admin/notifications`) and the own-profile page need no
 permission — they are always scoped to the signed-in account.

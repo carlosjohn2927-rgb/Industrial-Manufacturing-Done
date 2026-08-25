@@ -7,16 +7,12 @@
  * decide exactly which dashboard sections each of them may use.
  *
  * Hard rules enforced here, server-side, on every request:
- *   • Only a SUPER_ADMIN can open any action in this controller.
- *   • A SUPER_ADMIN account can never be edited, disabled, deleted, demoted
- *     or have its permissions changed by anybody but itself (and even then
- *     the role cannot be downgraded while it is the last Super Admin).
- *   • Super-only permissions (admins.manage, system.manage) can never be
- *     granted to a normal ADMIN.
+ *   • Administrators with admins.manage can manage normal staff accounts.
+ *   • The Super Admin account remains protected from other accounts.
+ *   • No account can be promoted to the Super Admin role through this screen.
  */
 class Admins extends Admin_Controller
 {
-    protected $super_admin_only = true;
     protected $required_permission = 'admins.manage';
 
     /** Roles that may be assigned from this screen. */

@@ -104,16 +104,17 @@ Customer accounts only — staff accounts are managed by the Super Admin under
 - List, search, create, edit, deactivate, delete
 - Requires the `customers.manage` permission
 
-## Administrators (`/admin/admins`, Super Admin only)
+## Administrators (`/admin/admins`)
 
-- Create / edit / enable / disable / delete administrators
+Administrators have full dashboard access and can:
+
+- Create / edit / enable / disable / delete normal administrator accounts
 - Reset passwords (typed or auto-generated, optionally forcing a change at next login)
-- Assign or remove permissions per account, section by section
-- Review each administrator's activity trail
+- Assign dashboard permissions per account
+- Review administrator activity trails and manage system settings
 
-The Super Admin account itself cannot be edited, disabled, deleted or
-re-permissioned by anybody else, and no administrator can ever be promoted to
-Super Admin from the dashboard.
+The Super Admin account itself remains protected from edits, disabling,
+deleting, re-permissioning or promotion by another administrator.
 
 ## Website content
 
