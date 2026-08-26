@@ -88,8 +88,21 @@ class Products extends Admin_Controller
     public function edit($id = null)
     {
         if (!$id) show_404();
+
+        // Sanitize the ID: trim whitespace and ensure it's a clean string.
+        // Product IDs are UUIDs (see MY_Model::insert()), but older installs
+        // may still have numeric IDs, so accept both.
+        $id = trim((string) $id);
+        if ($id === '' || (!ctype_xdigit(str_replace('-', '', $id)) && !ctype_digit($id))) {
+            log_message('warning', 'Products::edit - invalid product ID format: ' . var_export($id, true));
+            show_404();
+        }
+
         $p = $this->Product_model->find($id);
-        if (!$p) show_404();
+        if (!$p) {
+            log_message('warning', 'Products::edit - product not found in DB for id=' . var_export($id, true));
+            show_404();
+        }
         $this->page_title = 'Edit: ' . $p['name'];
         $this->_form();
 
@@ -114,8 +127,16 @@ class Products extends Admin_Controller
     public function delete($id = null)
     {
         if (!$id) show_404();
+        $id = trim((string) $id);
+        if ($id === '' || (!ctype_xdigit(str_replace('-', '', $id)) && !ctype_digit($id))) {
+            log_message('warning', 'Products::delete - invalid product ID: ' . var_export($id, true));
+            show_404();
+        }
         $p = $this->Product_model->find($id);
-        if (!$p) show_404();
+        if (!$p) {
+            log_message('warning', 'Products::delete - product not found for deletion, id=' . var_export($id, true));
+            show_404();
+        }
         $this->Product_model->delete($id);
         $this->audit->log(AUDIT_DELETE, 'product', $id, ['name' => $p['name']]);
         $this->flash('success', 'Product deleted.');
@@ -129,8 +150,14 @@ class Products extends Admin_Controller
     public function image_delete($productId = null, $imageId = null)
     {
         if (!$productId || !$imageId) show_404();
+        $productId = trim((string) $productId);
+        $imageId   = trim((string) $imageId);
+        if ($productId === '' || $imageId === '') show_404();
         $img = $this->Product_image_model->find($imageId);
-        if (!$img || $img['productId'] !== $productId) show_404();
+        if (!$img || $img['productId'] !== $productId) {
+            log_message('warning', 'Products::image_delete - image not found or mismatch, productId=' . var_export($productId, true) . ', imageId=' . var_export($imageId, true));
+            show_404();
+        }
         // Remove the file from disk
         $abs = FCPATH . $img['url'];
         if ($img['url'] && is_file($abs)) @unlink($abs);
@@ -159,8 +186,14 @@ class Products extends Admin_Controller
     public function image_primary($productId = null, $imageId = null)
     {
         if (!$productId || !$imageId) show_404();
+        $productId = trim((string) $productId);
+        $imageId   = trim((string) $imageId);
+        if ($productId === '' || $imageId === '') show_404();
         $img = $this->Product_image_model->find($imageId);
-        if (!$img || $img['productId'] !== $productId) show_404();
+        if (!$img || $img['productId'] !== $productId) {
+            log_message('warning', 'Products::image_primary - image not found or mismatch, productId=' . var_export($productId, true) . ', imageId=' . var_export($imageId, true));
+            show_404();
+        }
         $this->db->update('product_images', ['isPrimary' => 0], ['productId' => $productId]);
         $this->Product_image_model->update($imageId, ['isPrimary' => 1]);
         $this->audit->log(AUDIT_UPDATE, 'product_image', $imageId, ['productId' => $productId, 'isPrimary' => 1]);
@@ -210,9 +243,19 @@ class Products extends Admin_Controller
     {
         if ($this->input->method() !== 'post') show_404();
 
-        $id = $this->input->post('id');
-        $is_create = empty($id);
-        if (!$is_create && !$this->Product_model->find($id)) show_404();
+        $id = trim((string) ($this->input->post('id') ?: ''));
+        $is_create = $id === '';
+        if (!$is_create) {
+            // Validate the ID format before looking it up.
+            if (!ctype_xdigit(str_replace('-', '', $id)) && !ctype_digit($id)) {
+                log_message('warning', 'Products::save - invalid product ID in POST: ' . var_export($id, true));
+                show_404();
+            }
+            if (!$this->Product_model->find($id)) {
+                log_message('warning', 'Products::save - product not found for update, id=' . var_export($id, true));
+                show_404();
+            }
+        }
 
         // Same rules for create and edit.
         $this->form_validation->set_data($this->input->post());
