@@ -218,15 +218,18 @@ if (!function_exists('vp_product_image')) {
      * Resolve the best available image URL for a product row.
      *
      * Resolution order:
-     *   1. `imageUrl`  - uploaded primary image (Product_model::attach_images)
+     *   1. `imageUrl`  - the product's own primary image
+     *                     (Product_model::attach_images -> product_images)
      *   2. `image`     - a legacy single-image column, if present
-     *   3. dedicated artwork for each seeded catalog product
-     *   4. category artwork  /assets/img/products/<category-slug>.jpg
-     *      (valves, pumps, heat-exchangers, pressure-vessels, filtration,
-     *       instrumentation - the files shipped in app/assets/img/products/)
-     *   5. a keyword guess from the product name, so a product with no
-     *      category still gets a relevant photo instead of the placeholder
-     *   6. /assets/img/products/default.jpg
+     *   3. vp_product_fallback_image() - local artwork
+     *
+     * Step 1 is unconditional on purpose. Every catalog row ships with its
+     * own photo in `product_images` (the 93 AJR NDT instruments have 93
+     * distinct URLs, 1:1 with the products), so any rule that skips the
+     * product's own picture makes the entire grid render the same two shared
+     * placeholder photos. If a specific product's photo must be replaced,
+     * replace it for that product (Dashboard → Products → edit → Images, or
+     * update that row in `product_images`) - never by ignoring the column.
      *
      * @param  array|null  $product   Product row
      * @param  string|null $categorySlug Optional explicit category slug
@@ -235,24 +238,70 @@ if (!function_exists('vp_product_image')) {
     function vp_product_image($product, $categorySlug = null)
     {
         $product = (array) $product;
-        $default = IMG_URL . 'products/default.jpg';
 
-        // 1 + 2: a real uploaded image always wins,
-        // unless it's an AJR product with external logo/watermark
+        // 1 + 2: the product's own photo always wins.
         foreach (['imageUrl', 'image'] as $k) {
             if (!empty($product[$k])) {
-                // For AJR products (SKU starts with 'AJR-'), skip external image
-                $sku = $product['sku'] ?? '';
-                if (strpos($sku, 'AJR-') === 0) {
-                    // AJR product - continue to category/keyword fallback below
-                } else {
-                    return $product[$k];
-                }
+                return $product[$k];
             }
         }
 
-        // Seeded catalog products have dedicated, curated artwork. Uploaded
-        // primary images above still take precedence for CMS-managed content.
+        // 3: no photo of its own -> local artwork.
+        return vp_product_fallback_image($product, $categorySlug);
+    }
+}
+
+if (!function_exists('vp_product_artwork_file')) {
+    /**
+     * Return "<slug>.jpg" when assets/img/products/<slug>.jpg exists on disk,
+     * otherwise null.
+     *
+     * This is what lets a site owner give a category its own artwork simply by
+     * uploading that one file (e.g. assets/img/products/hardness-testing.jpg)
+     * - no code change, no database edit.
+     *
+     * @param  string $slug Category slug
+     * @return string|null  File name, or null when no such artwork exists
+     */
+    function vp_product_artwork_file($slug)
+    {
+        $slug = preg_replace('/[^a-z0-9\-]/', '', strtolower((string) $slug));
+        if ($slug === '' || !defined('FCPATH')) return null;
+        return is_file(rtrim(FCPATH, '/\\') . '/assets/img/products/' . $slug . '.jpg')
+            ? $slug . '.jpg'
+            : null;
+    }
+}
+
+if (!function_exists('vp_product_fallback_image')) {
+    /**
+     * Best *local* artwork for a product that has no photo of its own.
+     *
+     * This is the tail of vp_product_image()'s chain, exposed on its own so
+     * templates can also use it as the `onerror` target: if a product's photo
+     * is missing or unreachable, the card degrades to artwork relevant to
+     * that product/category instead of every card showing the same
+     * `default.jpg`.
+     *
+     * Resolution order:
+     *   1. dedicated artwork for each seeded catalog product
+     *   2. category artwork  /assets/img/products/<category-slug>.jpg
+     *      (either a file shipped in assets/img/products/ or dropped in later
+     *       by the site owner - both are picked up automatically)
+     *   3. a keyword guess from the product name, so a product with no
+     *      category still gets a relevant photo instead of the placeholder
+     *   4. /assets/img/products/default.jpg
+     *
+     * @param  array|null  $product
+     * @param  string|null $categorySlug
+     * @return string
+     */
+    function vp_product_fallback_image($product, $categorySlug = null)
+    {
+        $product = (array) $product;
+        $default = IMG_URL . 'products/default.jpg';
+
+        // Seeded catalog products have dedicated, curated artwork.
         $productArtwork = [
             'vortexpro-ball-valve-vp150'     => 'vortexpro-ball-valve-vp150.jpg',
             'vortexpro-gate-valve-vgs'       => 'vortexpro-gate-valve-vgs.jpg',
@@ -282,15 +331,43 @@ if (!function_exists('vp_product_image')) {
             return IMG_URL . 'products/' . $productArtwork[$productSlug];
         }
 
-        // Category artwork shipped with the theme.
-        $known = ['valves', 'pumps', 'heat-exchangers', 'pressure-vessels', 'filtration', 'instrumentation'];
+        // 2: category artwork.
+        //    a) a file named after the category slug in assets/img/products/
+        //       (ships with the theme for the process-equipment categories and
+        //        is picked up automatically when the owner drops in one for an
+        //        AJR NDT category, e.g. hardness-testing.jpg), then
+        //    b) the closest shipped photo for the AJR NDT categories - they are
+        //       all handheld inspection instruments, so `instrumentation.jpg`
+        //       is a better stand-in than the generic default.
+        $categoryArtwork = [
+            // AJR NDT categories (migration 010) -> shipped instrument photo.
+            'ultrasonic-flaw-detection'        => 'instrumentation.jpg',
+            'thickness-coating-gauges'         => 'instrumentation.jpg',
+            'hardness-testing'                 => 'instrumentation.jpg',
+            'surface-roughness-testing'        => 'instrumentation.jpg',
+            'magnetic-particle-inspection'     => 'instrumentation.jpg',
+            'radiography-testing'              => 'instrumentation.jpg',
+            'eddy-current-testing'             => 'instrumentation.jpg',
+            'visual-inspection-videoscopes'    => 'instrumentation.jpg',
+            'ndt-uv-lamps'                     => 'instrumentation.jpg',
+            'holiday-wire-rope-testing'        => 'instrumentation.jpg',
+            'photometers-radiometers'          => 'instrumentation.jpg',
+            'calibration-blocks'               => 'instrumentation.jpg',
+            'ultrasonic-probes-cables'         => 'instrumentation.jpg',
+        ];
 
         $slug = $categorySlug ?: ($product['categorySlug'] ?? null);
-        if ($slug && in_array($slug, $known, true)) {
-            return IMG_URL . 'products/' . $slug . '.jpg';
+        if ($slug) {
+            $file = vp_product_artwork_file($slug);
+            if ($file !== null) {
+                return IMG_URL . 'products/' . $file;
+            }
+            if (isset($categoryArtwork[$slug])) {
+                return IMG_URL . 'products/' . $categoryArtwork[$slug];
+            }
         }
 
-        // 4: keyword guess from the product name / sku / description.
+        // 3: keyword guess from the product name / sku / description.
         $hay = strtolower(trim(($product['name'] ?? '') . ' ' . ($product['shortDescription'] ?? '')));
         if ($hay !== '') {
             $map = [
@@ -316,8 +393,12 @@ if (!function_exists('vp_product_image')) {
 
 if (!function_exists('vp_product_image_tag')) {
     /**
-     * Render a complete <img> for a product card, with an onerror fallback so
-     * a deleted upload can never leave a broken-image icon on the page.
+     * Render a complete <img> for a product card.
+     *
+     * `src` is the product's own photo (vp_product_image()); `onerror` swaps in
+     * artwork relevant to that product/category, so a deleted upload or an
+     * unreachable remote photo can never leave a broken-image icon - or a grid
+     * of identical placeholders - on the page.
      *
      * @param array|null $product
      * @param string     $class  CSS classes for the <img>
@@ -329,12 +410,20 @@ if (!function_exists('vp_product_image_tag')) {
         $product = (array) $product;
         $src = vp_product_image($product, $categorySlug);
         $alt = $product['imageAlt'] ?? ($product['name'] ?? 'Product');
-        $fallback = IMG_URL . 'products/default.jpg';
-        return '<img src="' . vp_safe_html($src) . '"'
+        // Degrade to artwork relevant to this product/category, not to one
+        // shared placeholder: a single unreachable photo must not turn a whole
+        // grid into identical cards. Omitted entirely when there is nothing
+        // better to fall back to (avoids a pointless self-referential swap).
+        $fallback = vp_product_fallback_image($product, $categorySlug);
+
+        $tag = '<img src="' . vp_safe_html($src) . '"'
             . ' alt="' . vp_safe_html($alt) . '"'
             . ' loading="' . vp_safe_html($loading) . '" decoding="async"'
-            . ' class="' . vp_safe_html($class) . '"'
-            . ' onerror="this.onerror=null;this.src=\'' . $fallback . '\'">';
+            . ' class="' . vp_safe_html($class) . '"';
+        if ($fallback !== '' && $fallback !== $src) {
+            $tag .= ' onerror="this.onerror=null;this.src=\'' . vp_safe_html($fallback) . '\'"';
+        }
+        return $tag . '>';
     }
 }
 

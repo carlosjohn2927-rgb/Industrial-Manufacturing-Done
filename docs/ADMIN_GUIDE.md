@@ -54,6 +54,58 @@ industry" is one click. Duplicate SKUs/slugs are refused with a clear message.
 - Create / edit / delete (needs the `products.manage` permission)
 - Form supports: multi-image upload (auto-resized to 1600px), dynamic specifications, related products, industries, SEO meta, featured flag, active/draft
 
+### Product images
+
+Every product card on the site (catalog grid, homepage *Featured products*,
+search results and live suggestions, industry pages, admin list) shows **that
+product's own photo**. Images are resolved by one function,
+`vp_product_image()` in `application/helpers/app_helper.php`, in this order:
+
+1. the product's primary row in `product_images` — what you upload in
+   **Products → edit → Images**, and what the AJR NDT catalog seed
+   (migration 010) ships: 93 products, 93 distinct photos;
+2. artwork named after the product (curated `vortexpro-*` files in
+   `assets/img/products/`);
+3. artwork named after the category — drop `assets/img/products/<category-slug>.jpg`
+   in place (e.g. `hardness-testing.jpg`) and it is picked up automatically, no
+   code change;
+4. a keyword guess from the product name (`pumps.jpg`, `valves.jpg`, …);
+5. `assets/img/products/default.jpg`.
+
+If a photo cannot be loaded (deleted upload, unreachable remote URL) the card
+swaps in the artwork from steps 2–5 for *that* product/category, so one bad
+image never turns a grid into identical placeholders.
+
+To replace a product's photo, replace it for that product — upload a new image
+and mark it primary, or update that one `product_images` row. Do not filter
+images out by SKU/brand in `vp_product_image()`: that makes the whole catalog
+render the same shared artwork. `php tests/product_images_check.php` fails if
+the catalog stops resolving to one distinct image per product.
+
+#### Hosting the AJR NDT photos on your own server
+
+The 93 AJR NDT photos from migration 010 are remote URLs on a third-party CDN
+(`image.chukouplus.com`). They render fine, but the catalog depends on that
+host staying up and not blocking hotlinking. To make them yours:
+
+```bash
+# 1. preview: what would be downloaded, and the SQL that would run
+php scripts/localize_product_images.php --dry-run
+
+# 2. apply: download, verify, store under assets/uploads/products/,
+#    and point each product_images row at the local copy
+php scripts/localize_product_images.php
+```
+
+Each download is verified as a real image (`getimagesize` + MIME check) and
+re-encoded through GD, which discards anything appended after the image data.
+The script is safe to re-run — already-local rows are skipped, existing files
+are not overwritten without `--force`, and a JSON report lands in
+`assets/logs/`. Useful flags: `--limit=5` (test with a few first),
+`--sku-prefix=AJR-`, `--referer=<url>` (if the CDN requires one),
+`--from-sql=database/ajr_ndt_products.sql` (plan without a database).
+`php tests/localize_images_check.php` covers this tool offline.
+
 ## Categories
 
 Flat list ordered by `order`. Used for product groupings on the public site.
