@@ -145,6 +145,10 @@ importing two more files in phpMyAdmin — no CLI, no data loss:
 3. `database/migrations/002_cms_seed.sql` → **Go**
 4. `database/migrations/003_admin_full_page_editing.sql` → **Go**
 5. `database/migrations/004_black_writeup.sql` → **Go**
+6. `database/migrations/008_add_industrial_product_range.sql` → **Go**
+7. `database/migrations/009_catalog_prices_500_to_5000.sql` → **Go**
+8. `database/migrations/010_add_ajr_ndt_product_range.sql` → **Go**
+9. `database/migrations/011_show_ajr_ndt_catalog_on_site.sql` → **Go**
 
 All files are safe to import more than once (`CREATE TABLE IF NOT EXISTS`,
 `INSERT IGNORE`, `ON DUPLICATE KEY UPDATE`). The three `ALTER TABLE media …`
@@ -178,9 +182,9 @@ The file `database/production.sql` contains:
 | **All tables** | 25+ tables with columns, indexes, and foreign keys |
 | **Admin account** | `admin@vortexprecisionit.com` / `Nigeria1234@` (bcrypt-hashed) |
 | **Role permissions** | SUPER_ADMIN, ADMIN, SALES, ENGINEER, EDITOR roles |
-| **Categories** | 6 product categories (Valves, Pumps, Heat Exchangers, etc.) |
+| **Categories** | 19 product categories (process equipment + 13 AJR NDT ranges) |
 | **Industries** | 6 industries (Oil & Gas, Chemical, Power, Water, Pharma, Food) |
-| **Products** | 12 sample products with specifications |
+| **Products** | Process catalog plus 93 AJR NDT products with images and specifications |
 | **FAQs** | 8 frequently asked questions |
 | **Testimonials** | 4 customer testimonials |
 | **Partners** | 6 partner logos |

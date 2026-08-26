@@ -15,13 +15,13 @@ class Products extends MY_Controller
     public function index()
     {
         $this->page_title = 'Products';
-        $this->page_description = 'Browse the Vortex Precision product catalog: valves, pumps, heat exchangers, pressure vessels, filtration and instrumentation.';
+        $this->page_description = 'Browse the Vortex Precision product catalog: process equipment plus the full AJR NDT range — ultrasonic, thickness, hardness, MPI, radiography, eddy current and more.';
 
         $category = $this->input->get('category');
         $industry = $this->input->get('industry');
         $search   = $this->input->get('q');
         $page     = max(1, (int) $this->input->get('page'));
-        $per      = 12;
+        $per      = 24;
 
         $where = ['isActive' => 1];
         if ($category) {

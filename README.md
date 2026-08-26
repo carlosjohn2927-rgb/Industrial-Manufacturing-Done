@@ -57,7 +57,13 @@ database/migrations/001_cms_and_permissions.sql
 database/migrations/002_cms_seed.sql
 database/migrations/003_admin_full_page_editing.sql
 database/migrations/004_black_writeup.sql
+database/migrations/008_add_industrial_product_range.sql
+database/migrations/009_catalog_prices_500_to_5000.sql
+database/migrations/010_add_ajr_ndt_product_range.sql
+database/migrations/011_show_ajr_ndt_catalog_on_site.sql
 ```
+
+Merging the code is not enough: the 93 AJR NDT products live in the database. Existing sites must import `010` (and `011`) in phpMyAdmin or the catalog will stay empty of those items.
 
 ---
 

@@ -158,11 +158,11 @@ INSERT IGNORE INTO `page_sections`
 (UUID(),'home','categories','Product categories',
  'Our product categories',
  'From precision-machined valves to ASME-coded pressure vessels, every category is engineered to the same standard.',
- NULL,NULL,NULL,NULL,NULL,NULL,'{"limit":6}',30,1,0),
+ NULL,NULL,NULL,NULL,NULL,NULL,'{"limit":24}',30,1,0),
 
 (UUID(),'home','products','Featured products',
  'Featured products','Our most-requested, in-stock equipment.',NULL,NULL,'View all','products',NULL,NULL,
- '{"limit":4}',40,1,0),
+ '{"limit":8}',40,1,0),
 
 (UUID(),'home','industries','Industries',
  'Industries we serve','Engineered for the requirements of the world''s most demanding sectors.',

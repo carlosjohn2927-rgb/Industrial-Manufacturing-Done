@@ -1230,11 +1230,11 @@ INSERT IGNORE INTO `page_sections`
 (UUID(),'home','categories','Product categories',
  'Our product categories',
  'From precision-machined valves to ASME-coded pressure vessels, every category is engineered to the same standard.',
- NULL,NULL,NULL,NULL,NULL,NULL,'{"limit":6}',30,1,0),
+ NULL,NULL,NULL,NULL,NULL,NULL,'{"limit":24}',30,1,0),
 
 (UUID(),'home','products','Featured products',
  'Featured products','Our most-requested, in-stock equipment.',NULL,NULL,'View all','products',NULL,NULL,
- '{"limit":4}',40,1,0),
+ '{"limit":8}',40,1,0),
 
 (UUID(),'home','industries','Industries',
  'Industries we serve','Engineered for the requirements of the world''s most demanding sectors.',
@@ -1946,3 +1946,25 @@ ON DUPLICATE KEY UPDATE `value`=VALUES(`value`);
 
 SET FOREIGN_KEY_CHECKS=1;
 -- END OF AJR NDT SEED SCRIPT
+
+-- =============================================================================
+-- Homepage catalog limits (migration 011)
+-- =============================================================================
+-- =============================================================================
+-- Show the AJR NDT catalog on the public site (homepage + listings).
+-- =============================================================================
+-- Existing installs already have homepage sections with {"limit":6}. Those
+-- six slots are filled by the original valve/pump categories (sortOrder 1–6),
+-- so the 13 AJR NDT categories (sortOrder 10–130) never appeared on the home
+-- page even after migration 010 was imported. This update is safe to re-run.
+
+UPDATE `page_sections`
+   SET `settings` = '{"limit":24}',
+       `subtitle` = 'From industrial process equipment to AJR NDT inspection instruments, every category is engineered to the same standard.'
+ WHERE `pageKey` = 'home' AND `type` = 'categories';
+
+UPDATE `page_sections`
+   SET `settings` = '{"limit":8}',
+       `subtitle` = 'Our most-requested process equipment and AJR NDT inspection instruments.'
+ WHERE `pageKey` = 'home' AND `type` = 'products';
+

@@ -14,7 +14,7 @@
     'hero_image'         => IMG_URL . 'products/valves.jpg',
     'hero_alt'           => 'Industrial valves ready for process service',
     'hero_title_html'    => vp_inline_text('products_hero_title', 'Product catalog', 'h1', 'text-4xl lg:text-5xl font-extrabold'),
-    'hero_subtitle_html' => vp_inline_text('products_hero_subtitle', 'Valves, pumps, heat exchangers, pressure vessels, filtration and instrumentation — engineered to the highest standards.', 'p', 'mt-3 text-lg'),
+    'hero_subtitle_html' => vp_inline_text('products_hero_subtitle', 'Process equipment and the full AJR NDT range — ultrasonic, thickness, hardness, MPI, radiography, eddy current and more.', 'p', 'mt-3 text-lg'),
 ]); ?>
 
 <section class="bg-white border-b">

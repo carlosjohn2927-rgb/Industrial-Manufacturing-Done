@@ -147,6 +147,20 @@ end-to-end with attachments and email, upload security, and `.htaccess`
 redirects/blocking — against **PHP 8.2/8.3 and MySQL 8.0/MariaDB 10.6** on
 every push. See `app/tests/acceptance.php`.
 
+## 4b. Existing site: AJR NDT catalog not on the website
+
+Merging the catalog files is not enough. The 93 products are **database rows**.
+If the site was installed before this release, import these in phpMyAdmin
+(or they will never appear on `/products`):
+
+```
+database/migrations/010_add_ajr_ndt_product_range.sql
+database/migrations/011_show_ajr_ndt_catalog_on_site.sql
+```
+
+Then reload `/products`. You should see AJR SKUs (`AJR-AFD-100`, etc.) and
+the 13 NDT categories in the filter dropdown.
+
 ## Troubleshooting
 
 | Problem | Fix |
