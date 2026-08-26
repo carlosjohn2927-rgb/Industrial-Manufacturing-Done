@@ -34,9 +34,14 @@
         $mainImg = !empty($images) && !empty($images[0]['url'])
             ? $images[0]['url']
             : vp_product_image($product, $category['slug'] ?? null);
+        // Degrade to artwork for this product/category rather than the single
+        // shared placeholder, so one unreachable photo cannot make unrelated
+        // products look identical.
+        $mainFallback = vp_product_fallback_image($product, $category['slug'] ?? null);
+        if ($mainFallback === $mainImg) $mainFallback = '';   // nothing better to swap in
         ?>
         <div class="rounded-2xl aspect-square overflow-hidden bg-gray-100 border">
-            <img id="vp-main-image" src="<?= vp_safe_html($mainImg) ?>" onerror="this.onerror=null;this.src='<?= IMG_URL ?>products/default.jpg'" alt="<?= vp_safe_html($product['name']) ?>" class="w-full h-full object-cover" decoding="async">
+            <img id="vp-main-image" src="<?= vp_safe_html($mainImg) ?>"<?php if ($mainFallback !== ''): ?> onerror="this.onerror=null;this.src='<?= vp_safe_html($mainFallback) ?>'"<?php endif; ?> alt="<?= vp_safe_html($product['name']) ?>" class="w-full h-full object-cover" decoding="async">
         </div>
         <?php if (count($images) > 1): ?>
             <div class="grid grid-cols-4 gap-2 mt-3">

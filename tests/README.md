@@ -20,6 +20,20 @@ php app/tests/acceptance.php
 
 `acceptance.php --install` runs step 1 for you.
 
+## Standalone checks (no database, no server)
+
+```bash
+php tests/product_images_check.php
+```
+
+Parses the shipped seed data and asserts that every catalog product resolves
+to **its own distinct image** through the real `vp_product_image()` /
+`vp_product_image_tag()` helpers (93 AJR NDT products → 93 different URLs),
+that the fallback chain still works for products without a photo, and that the
+process-equipment artwork is unaffected. This is the regression test for the
+"all the product images look the same" bug — it fails as soon as a rule in the
+helper starts ignoring a product's own photo.
+
 ## What it verifies (140+ checks)
 
 | Area | Checks |
