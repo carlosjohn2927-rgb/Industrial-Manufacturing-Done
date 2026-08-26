@@ -82,6 +82,30 @@ images out by SKU/brand in `vp_product_image()`: that makes the whole catalog
 render the same shared artwork. `php tests/product_images_check.php` fails if
 the catalog stops resolving to one distinct image per product.
 
+#### Hosting the AJR NDT photos on your own server
+
+The 93 AJR NDT photos from migration 010 are remote URLs on a third-party CDN
+(`image.chukouplus.com`). They render fine, but the catalog depends on that
+host staying up and not blocking hotlinking. To make them yours:
+
+```bash
+# 1. preview: what would be downloaded, and the SQL that would run
+php scripts/localize_product_images.php --dry-run
+
+# 2. apply: download, verify, store under assets/uploads/products/,
+#    and point each product_images row at the local copy
+php scripts/localize_product_images.php
+```
+
+Each download is verified as a real image (`getimagesize` + MIME check) and
+re-encoded through GD, which discards anything appended after the image data.
+The script is safe to re-run — already-local rows are skipped, existing files
+are not overwritten without `--force`, and a JSON report lands in
+`assets/logs/`. Useful flags: `--limit=5` (test with a few first),
+`--sku-prefix=AJR-`, `--referer=<url>` (if the CDN requires one),
+`--from-sql=database/ajr_ndt_products.sql` (plan without a database).
+`php tests/localize_images_check.php` covers this tool offline.
+
 ## Categories
 
 Flat list ordered by `order`. Used for product groupings on the public site.

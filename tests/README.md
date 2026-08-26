@@ -23,16 +23,25 @@ php app/tests/acceptance.php
 ## Standalone checks (no database, no server)
 
 ```bash
-php tests/product_images_check.php
+php tests/product_images_check.php     # one distinct image per product
+php tests/localize_images_check.php    # the product-image localizer
 ```
 
-Parses the shipped seed data and asserts that every catalog product resolves
-to **its own distinct image** through the real `vp_product_image()` /
-`vp_product_image_tag()` helpers (93 AJR NDT products → 93 different URLs),
-that the fallback chain still works for products without a photo, and that the
-process-equipment artwork is unaffected. This is the regression test for the
-"all the product images look the same" bug — it fails as soon as a rule in the
-helper starts ignoring a product's own photo.
+`product_images_check.php` parses the shipped seed data and asserts that every
+catalog product resolves to **its own distinct image** through the real
+`vp_product_image()` / `vp_product_image_tag()` helpers (93 AJR NDT products →
+93 different URLs), that the fallback chain still works for products without a
+photo, and that the process-equipment artwork is unaffected. This is the
+regression test for the "all the product images look the same" bug — it fails as
+soon as a rule in the helper starts ignoring a product's own photo.
+
+`localize_images_check.php` covers `scripts/lib/localize.php`, the logic behind
+`scripts/localize_product_images.php`: download planning (remote vs. already
+local, `--limit`, `--sku-prefix`, per-product `-1`/`-2` naming), file-name
+sanitising (traversal attempts), the generated `UPDATE`, the credential guard,
+and — with real files created through GD — that an HTML error page is rejected
+and that a PHP payload appended after valid image data is stripped by the
+re-encode. No database and no network required.
 
 ## What it verifies (140+ checks)
 
