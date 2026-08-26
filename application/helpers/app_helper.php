@@ -237,9 +237,18 @@ if (!function_exists('vp_product_image')) {
         $product = (array) $product;
         $default = IMG_URL . 'products/default.jpg';
 
-        // 1 + 2: a real uploaded image always wins.
+        // 1 + 2: a real uploaded image always wins,
+        // unless it's an AJR product with external logo/watermark
         foreach (['imageUrl', 'image'] as $k) {
-            if (!empty($product[$k])) return $product[$k];
+            if (!empty($product[$k])) {
+                // For AJR products (SKU starts with 'AJR-'), skip external image
+                $sku = $product['sku'] ?? '';
+                if (strpos($sku, 'AJR-') === 0) {
+                    // AJR product - continue to category/keyword fallback below
+                } else {
+                    return $product[$k];
+                }
+            }
         }
 
         // Seeded catalog products have dedicated, curated artwork. Uploaded
