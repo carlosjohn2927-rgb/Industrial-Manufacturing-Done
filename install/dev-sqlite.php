@@ -28,6 +28,15 @@ $files = [
     $root . '/database/migrations/001_cms_and_permissions.sql',
     $root . '/install/seed.sql',
     $root . '/database/migrations/002_cms_seed.sql',
+    $root . '/database/migrations/003_admin_full_page_editing.sql',
+    $root . '/database/migrations/004_black_writeup.sql',
+    $root . '/database/migrations/005_testimonials_admin_access.sql',
+    $root . '/database/migrations/006_admin_full_dashboard_access.sql',
+    $root . '/database/migrations/007_vortex_precision_it_branding.sql',
+    $root . '/database/migrations/008_add_industrial_product_range.sql',
+    $root . '/database/migrations/009_catalog_prices_500_to_5000.sql',
+    $root . '/database/migrations/010_add_ajr_ndt_product_range.sql',
+    $root . '/database/migrations/011_show_ajr_ndt_catalog_on_site.sql',
 ];
 
 echo "Vortex Precision IT — dev SQLite installer\n";
