@@ -21,6 +21,11 @@ $route['rfq/thanks/(:any)']    = 'rfq/thanks/$1';
 $route['products']             = 'products';
 $route['products/(:any)']      = 'products/view/$1';
 
+$route['category']             = 'products';
+$route['category/(:any)']      = 'products/category/$1';
+$route['categories']           = 'products';
+$route['categories/(:any)']    = 'products/category/$1';
+
 $route['industries']           = 'industries';
 $route['industries/(:any)']    = 'industries/view/$1';
 
@@ -51,6 +56,12 @@ $route['register']             = 'auth/register';
 $route['logout']               = 'auth/logout';
 $route['forgot']               = 'auth/forgot';
 $route['reset/(:any)']         = 'auth/reset/$1';
+$route['auth/me']              = 'auth/me';
+$route['api/auth/me']          = 'auth/me';
+$route['auth/token']           = 'auth/token';
+$route['api/auth/token']       = 'auth/token';
+$route['auth/refresh']         = 'auth/api_refresh';
+$route['api/auth/refresh']     = 'auth/api_refresh';
 
 /* ---------- Admin ---------- */
 $route['admin']                = 'admin/dashboard';
@@ -60,6 +71,7 @@ $route['admin/dashboard']      = 'admin/dashboard';
 
 $route['admin/products']                 = 'admin/products';
 $route['admin/products/create']          = 'admin/products/create';
+$route['admin/products/save']            = 'admin/products/save';
 $route['admin/products/edit/(:any)']      = 'admin/products/edit/$1';
 $route['admin/products/delete/(:any)']   = 'admin/products/delete/$1';
 $route['admin/products/(:any)/images/(:any)/delete'] = 'admin/products/image_delete/$1/$2';
@@ -67,8 +79,15 @@ $route['admin/products/(:any)/images/(:any)/primary'] = 'admin/products/image_pr
 
 $route['admin/categories']                = 'admin/categories';
 $route['admin/categories/create']         = 'admin/categories/create';
+$route['admin/categories/save']           = 'admin/categories/save';
 $route['admin/categories/edit/(:any)']    = 'admin/categories/edit/$1';
 $route['admin/categories/delete/(:any)']  = 'admin/categories/delete/$1';
+
+$route['admin/category']                  = 'admin/categories';
+$route['admin/category/create']           = 'admin/categories/create';
+$route['admin/category/save']             = 'admin/categories/save';
+$route['admin/category/edit/(:any)']      = 'admin/categories/edit/$1';
+$route['admin/category/delete/(:any)']    = 'admin/categories/delete/$1';
 
 $route['admin/quotes']                    = 'admin/quotes';
 $route['admin/quotes/(:any)']             = 'admin/quotes/view/$1';
@@ -82,6 +101,7 @@ $route['admin/quotes/export/csv']         = 'admin/quotes/export_csv';
 
 $route['admin/users']                     = 'admin/users';
 $route['admin/users/create']              = 'admin/users/create';
+$route['admin/users/save']                = 'admin/users/save';
 $route['admin/users/edit/(:any)']         = 'admin/users/edit/$1';
 $route['admin/users/delete/(:any)']       = 'admin/users/delete/$1';
 
@@ -91,43 +111,50 @@ $route['admin/contacts/(:any)/delete']    = 'admin/contacts/delete/$1';
 
 $route['admin/blog']                      = 'admin/blog';
 $route['admin/blog/create']               = 'admin/blog/create';
+$route['admin/blog/save']                 = 'admin/blog/save';
 $route['admin/blog/edit/(:any)']          = 'admin/blog/edit/$1';
 $route['admin/blog/delete/(:any)']        = 'admin/blog/delete/$1';
 
 $route['admin/careers']                   = 'admin/careers';
 $route['admin/careers/create']            = 'admin/careers/create';
+$route['admin/careers/save']              = 'admin/careers/save';
 $route['admin/careers/edit/(:any)']       = 'admin/careers/edit/$1';
 $route['admin/careers/delete/(:any)']     = 'admin/careers/delete/$1';
 $route['admin/careers/(:any)/applications'] = 'admin/careers/applications/$1';
 
 $route['admin/faqs']                      = 'admin/faqs';
 $route['admin/faqs/create']               = 'admin/faqs/create';
+$route['admin/faqs/save']                 = 'admin/faqs/save';
 $route['admin/faqs/edit/(:any)']          = 'admin/faqs/edit/$1';
 $route['admin/faqs/delete/(:any)']        = 'admin/faqs/delete/$1';
 
 $route['admin/downloads']                 = 'admin/downloads';
 $route['admin/downloads/create']          = 'admin/downloads/create';
+$route['admin/downloads/save']            = 'admin/downloads/save';
 $route['admin/downloads/edit/(:any)']     = 'admin/downloads/edit/$1';
 $route['admin/downloads/delete/(:any)']   = 'admin/downloads/delete/$1';
 
 $route['admin/industries']                = 'admin/industries';
 $route['admin/industries/create']         = 'admin/industries/create';
+$route['admin/industries/save']           = 'admin/industries/save';
 $route['admin/industries/edit/(:any)']    = 'admin/industries/edit/$1';
 $route['admin/industries/delete/(:any)']  = 'admin/industries/delete/$1';
 
 $route['admin/news']                      = 'admin/news';
 $route['admin/news/create']               = 'admin/news/create';
+$route['admin/news/save']                 = 'admin/news/save';
 $route['admin/news/edit/(:any)']          = 'admin/news/edit/$1';
 $route['admin/news/delete/(:any)']        = 'admin/news/delete/$1';
 
 $route['admin/testimonials']              = 'admin/testimonials';
 $route['admin/testimonials/create']       = 'admin/testimonials/create';
+$route['admin/testimonials/save']         = 'admin/testimonials/save';
 $route['admin/testimonials/edit/(:any)']  = 'admin/testimonials/edit/$1';
 $route['admin/testimonials/delete/(:any)']= 'admin/testimonials/delete/$1';
-$route['admin/testimonials/save']         = 'admin/testimonials/save';
 
 $route['admin/partners']                  = 'admin/partners';
 $route['admin/partners/create']           = 'admin/partners/create';
+$route['admin/partners/save']             = 'admin/partners/save';
 $route['admin/partners/edit/(:any)']      = 'admin/partners/edit/$1';
 $route['admin/partners/delete/(:any)']    = 'admin/partners/delete/$1';
 

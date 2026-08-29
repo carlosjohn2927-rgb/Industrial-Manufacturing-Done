@@ -82,7 +82,14 @@ $max = max(1, max($points));
             <h2 class="font-bold text-ink-900 mb-4">Products per category</h2>
             <ul class="space-y-2 text-sm">
                 <?php foreach ($categories as $c): ?>
-                    <li class="flex items-center gap-2"><?= vp_safe_html($c['name']) ?><span class="ml-auto font-bold"><?= (int) $c['c'] ?></span></li>
+                    <li class="flex items-center gap-2">
+                        <?php if (!empty($c['id'])): ?>
+                            <a class="truncate text-brand-700 hover:underline" href="<?= base_url('admin/categories/edit/' . $c['id']) ?>" title="Edit category"><?= vp_safe_html($c['name']) ?></a>
+                        <?php else: ?>
+                            <span><?= vp_safe_html($c['name']) ?></span>
+                        <?php endif; ?>
+                        <span class="ml-auto font-bold"><?= (int) $c['c'] ?></span>
+                    </li>
                 <?php endforeach; ?>
             </ul>
         </section>

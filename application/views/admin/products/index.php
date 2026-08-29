@@ -55,7 +55,13 @@ foreach ($categories as $c) $categories_by_id[$c['id']] = $c;
                 <td>
                     <a class="text-brand-600 hover:underline font-semibold" href="<?= base_url('admin/products/edit/' . $p['id']) ?>"><?= vp_safe_html($p['name']) ?></a>
                 </td>
-                <td class="text-xs text-gray-600"><?= $p['categoryId'] ? vp_safe_html(($categories_by_id[$p['categoryId']]['name'] ?? '—')) : '—' ?></td>
+                <td class="text-xs text-gray-600">
+                    <?php if ($p['categoryId'] && !empty($categories_by_id[$p['categoryId']])): ?>
+                        <a class="text-brand-600 hover:underline" href="<?= base_url('admin/categories/edit/' . $p['categoryId']) ?>" title="Edit category"><?= vp_safe_html($categories_by_id[$p['categoryId']]['name']) ?></a>
+                    <?php else: ?>
+                        —
+                    <?php endif; ?>
+                </td>
                 <td><span class="vp-pill <?= ($p['availability']==='IN_STOCK' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') ?>"><?= vp_safe_html(str_replace('_',' ',$p['availability'])) ?></span></td>
                 <td class="text-xs text-gray-500"><?= (int) $p['views'] ?></td>
                 <td><?= !empty($p['featured']) ? '<span class="vp-pill bg-blue-100 text-blue-800">★ Featured</span>' : '' ?></td>

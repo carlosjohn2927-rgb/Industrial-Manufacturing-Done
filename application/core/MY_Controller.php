@@ -226,9 +226,33 @@ class MY_Controller extends CI_Controller
                 if (!empty($data['product']['id'])) {
                     $target = 'admin/products/edit/' . rawurlencode($data['product']['id']);
                     $permission = 'products.manage';
+                } elseif (!empty($data['current_category'])) {
+                    $this->load->model('Category_model');
+                    $catSlug = $data['current_category'];
+                    $cat = $this->Category_model->find_one(['slug' => $catSlug]) ?: $this->Category_model->find($catSlug);
+                    if ($cat && $this->acl->user_can($user, 'categories.manage')) {
+                        return ['url' => base_url('admin/categories/edit/' . rawurlencode($cat['id'])), 'label' => 'Edit Category'];
+                    }
+                    $target = 'admin/homepage/index/products';
+                    $permission = 'homepage.manage';
                 } else {
                     $target = 'admin/homepage/index/products';
                     $permission = 'homepage.manage';
+                }
+                break;
+            case 'category':
+            case 'categories':
+                $this->load->model('Category_model');
+                $catObj = $data['category'] ?? null;
+                if (!$catObj && !empty($data['current_category'])) {
+                    $catObj = $this->Category_model->find_one(['slug' => $data['current_category']]) ?: $this->Category_model->find($data['current_category']);
+                }
+                if (!empty($catObj['id'])) {
+                    $target = 'admin/categories/edit/' . rawurlencode($catObj['id']);
+                    $permission = 'categories.manage';
+                } else {
+                    $target = 'admin/categories';
+                    $permission = 'categories.manage';
                 }
                 break;
             case 'industries':
