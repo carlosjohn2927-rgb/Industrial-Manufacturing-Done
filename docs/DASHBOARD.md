@@ -139,6 +139,7 @@ Everything the public site shows is stored in the database and edited here.
 | Header & footer | `/admin/appearance/header` | announcement bar, CTA button, contact block, social links, footer about/copyright/note |
 | Media library | `/admin/media` | upload, replace, rename, alt text, copy URL, delete (files used as logo/favicon are protected) |
 | Settings | `/admin/settings` | identity, contact, social, system (maintenance, chat assistant, email identity), plus a raw key/value editor |
+| Categories | `/admin/categories` | product categories: create/edit/delete, name, slug (auto-generated and kept unique), parent category, description, icon, image, sort order, active flag, SEO title/description |
 | Products | `/admin/products` | full product catalogue: create/edit/delete, images, specifications, category and industry assignment, filters by category **and** industry |
 | SEO | `/admin/seo` | titles, descriptions, robots, Open Graph, JSON-LD |
 

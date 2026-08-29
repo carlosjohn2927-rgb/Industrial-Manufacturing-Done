@@ -66,6 +66,10 @@ class Admin_Crud extends Admin_Controller
             'page' => $result['page'],
             'search' => $search,
             'columns' => $this->list_columns,
+            // The list view needs this to build its New / Edit / Delete URLs.
+            // (In a CI3 view $this is the CI_Loader, so the view cannot derive
+            // the controller name itself — without this the links 404.)
+            'redirect_url' => $this->redirect_url,
             'base_url' => base_url($this->redirect_url) . '?' . http_build_query(array_filter(['q' => $search])) . '&page={page}',
         ];
         $this->render('admin/_crud_index', $data);
@@ -75,11 +79,12 @@ class Admin_Crud extends Admin_Controller
     {
         $this->page_title = $this->_title('create');
         $this->_form();
-        $this->render('admin/_crud_form', [
+        $this->render($this->_form_view(), array_merge($this->_form_data(null), [
             'row' => null,
             'columns' => $this->list_columns,
+            'redirect_url' => $this->redirect_url,
             'form_url' => base_url($this->redirect_url . '/save'),
-        ]);
+        ]));
     }
 
     public function edit($id = null)
@@ -89,11 +94,12 @@ class Admin_Crud extends Admin_Controller
         if (!$row) show_404();
         $this->page_title = $this->_title('edit', $row);
         $this->_form();
-        $this->render('admin/_crud_form', [
+        $this->render($this->_form_view(), array_merge($this->_form_data($row), [
             'row' => $row,
             'columns' => $this->list_columns,
+            'redirect_url' => $this->redirect_url,
             'form_url' => base_url($this->redirect_url . '/save'),
-        ]);
+        ]));
     }
 
     public function save()
@@ -116,7 +122,12 @@ class Admin_Crud extends Admin_Controller
         }
 
         $data = $this->_collect_post();
-        if (!empty($data['slug']) && !$data['slug']) $data['slug'] = vp_slugify($data['name'] ?? 'item');
+
+        // Auto-generate the slug from the name when the form left it blank
+        // (forms that have no slug field at all are left untouched).
+        if ($this->input->post('slug') !== null && empty($data['slug']) && !empty($data['name'])) {
+            $data['slug'] = vp_slugify($data['name']);
+        }
 
         if ($id) {
             $this->M()->update($id, $data);
@@ -143,6 +154,29 @@ class Admin_Crud extends Admin_Controller
 
     /** Override in subclass to set custom validation rules. */
     protected function _form() {}
+
+    /**
+     * Extra data the form view needs (e.g. dropdown options).
+     * Override in subclasses; receives the row being edited (null on create).
+     */
+    protected function _form_data($row = null)
+    {
+        return [];
+    }
+
+    /**
+     * Which form view to render: a dedicated one at
+     * views/admin/{$view_prefix}/form.php when it exists, else the generic
+     * _crud_form that builds itself from $list_columns.
+     */
+    protected function _form_view()
+    {
+        if ($this->view_prefix
+            && is_file(VIEWPATH . 'admin/' . $this->view_prefix . DIRECTORY_SEPARATOR . 'form.php')) {
+            return 'admin/' . $this->view_prefix . '/form';
+        }
+        return 'admin/_crud_form';
+    }
 
     /** Override in subclass to customise the post collection. */
     protected function _collect_post()

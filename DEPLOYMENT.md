@@ -149,11 +149,16 @@ importing two more files in phpMyAdmin — no CLI, no data loss:
 7. `database/migrations/009_catalog_prices_500_to_5000.sql` → **Go**
 8. `database/migrations/010_add_ajr_ndt_product_range.sql` → **Go**
 9. `database/migrations/011_show_ajr_ndt_catalog_on_site.sql` → **Go**
+10. `database/migrations/012_remove_duplicate_products.sql` → **Go** *(removes any
+    duplicate products from the catalogue and adds the unique indexes that stop
+    duplicates from being created again)*
 
 All files are safe to import more than once (`CREATE TABLE IF NOT EXISTS`,
 `INSERT IGNORE`, `ON DUPLICATE KEY UPDATE`). The three `ALTER TABLE media …`
 statements in the first file report *"Duplicate column name"* if they were
-already applied — that message can be ignored.
+already applied — that message can be ignored. The same applies to the two
+`ALTER TABLE products …` statements at the end of `012` (*"Duplicate key
+name"*).
 
 After the import, sign in and open **Dashboard → Website → Homepage** to start
 editing the public site.
