@@ -25,13 +25,21 @@ class Products extends MY_Controller
 
         $where = ['isActive' => 1];
         if ($category) {
-            $cat = $this->Category_model->find_one(['slug' => $category, 'isActive' => 1]);
-            if ($cat) $where['categoryId'] = $cat['id'];
+            $cat = $this->Category_model->find_one(['slug' => $category, 'isActive' => 1])
+                ?: $this->Category_model->find_one(['slug' => $category])
+                ?: $this->Category_model->find($category);
+            if ($cat) {
+                $where['categoryId'] = $cat['id'];
+                $category = $cat['slug'];
+            }
         }
         if ($industry) {
-            $ind = $this->Industry_model->find_one(['slug' => $industry, 'isActive' => 1]);
+            $ind = $this->Industry_model->find_one(['slug' => $industry, 'isActive' => 1])
+                ?: $this->Industry_model->find_one(['slug' => $industry])
+                ?: $this->Industry_model->find($industry);
             if ($ind) {
                 $where['industryIds LIKE'] = '%' . $ind['id'] . '%';
+                $industry = $ind['slug'];
             }
         }
 
@@ -55,6 +63,22 @@ class Products extends MY_Controller
             'base_url'    => base_url('products') . '?' . http_build_query(array_filter(['category' => $category, 'industry' => $industry, 'q' => $search])) . '&page={page}',
         ];
         $this->render('products/index', $data);
+    }
+
+    public function category($slug = null)
+    {
+        if (!$slug) {
+            redirect('products');
+        }
+        $cat = $this->Category_model->find_one(['slug' => $slug, 'isActive' => 1])
+            ?: $this->Category_model->find_one(['slug' => $slug])
+            ?: $this->Category_model->find($slug);
+        if (!$cat) show_404();
+
+        $_GET['category'] = $cat['slug'];
+        $this->page_title = $cat['metaTitle'] ?: ($cat['name'] . ' - Products');
+        $this->page_description = $cat['metaDescription'] ?: vp_truncate(strip_tags((string) $cat['description']), 160);
+        return $this->index();
     }
 
     public function view($slug = null)

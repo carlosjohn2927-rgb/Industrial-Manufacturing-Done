@@ -46,7 +46,7 @@ class Reports extends Admin_Controller
                                  ->get('products')->result_array();
 
         /* Category distribution */
-        $categories = $this->db->select('categories.name AS name, COUNT(products.id) AS c')
+        $categories = $this->db->select('categories.id AS id, categories.name AS name, COUNT(products.id) AS c')
                                ->from('categories')
                                ->join('products', 'products.categoryId = categories.id', 'left')
                                ->group_by('categories.id')

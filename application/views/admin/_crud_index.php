@@ -45,7 +45,9 @@ if (!$crud_url) {
                     <td>
                         <?php
                         $v = $r[$col] ?? '';
-                        if (in_array($col, ['isActive', 'active'], true)) {
+                        if (in_array($col, ['name', 'title'], true)) {
+                            echo '<a class="font-semibold text-brand-600 hover:underline" href="' . base_url($crud_url) . '/edit/' . $r['id'] . '">' . vp_safe_html($v) . '</a>';
+                        } elseif (in_array($col, ['isActive', 'active'], true)) {
                             echo (int)$v ? '<span class="vp-pill bg-green-100 text-green-800">Active</span>' : '<span class="vp-pill bg-gray-200 text-gray-700">Off</span>';
                         } elseif (in_array($col, ['featured'], true)) {
                             echo (int)$v ? '<span class="vp-pill bg-blue-100 text-blue-800">★</span>' : '';

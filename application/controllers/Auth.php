@@ -255,6 +255,78 @@ class Auth extends MY_Controller
         redirect('admin/login');
     }
 
+    /* ---------- REST / API compatibility endpoints ---------- */
+
+    /**
+     * Return authenticated user profile (GET /api/auth/me or GET /auth/me).
+     */
+    public function me()
+    {
+        if (!$this->vp_auth->check()) {
+            return $this->json(['ok' => false, 'error' => 'Unauthenticated'], 401);
+        }
+        $user = $this->vp_auth->user();
+        unset($user['password'], $user['rememberToken']);
+        return $this->json([
+            'ok'   => true,
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * API token login (POST /api/auth/token or POST /auth/token).
+     */
+    public function token()
+    {
+        $this->vp_auth->ensure_session_store();
+        $email = $this->input->post('email');
+        $password = $this->input->post('password');
+
+        if (empty($email) || empty($password)) {
+            $raw = json_decode($this->input->raw_input_stream ?: '', true);
+            if (is_array($raw)) {
+                $email = $email ?: ($raw['email'] ?? '');
+                $password = $password ?: ($raw['password'] ?? '');
+            }
+        }
+
+        if (empty($email) || empty($password)) {
+            return $this->json(['ok' => false, 'error' => 'Email and password required'], 400);
+        }
+
+        $user = $this->vp_auth->attempt($email, $password, true);
+        if (!$user) {
+            return $this->json([
+                'ok'    => false,
+                'error' => $this->vp_auth->last_attempt_error === 'locked' ? 'Account locked due to too many failed attempts' : 'Invalid credentials',
+            ], 401);
+        }
+
+        unset($user['password'], $user['rememberToken']);
+        return $this->json([
+            'ok'         => true,
+            'user'       => $user,
+            'csrf_token' => $this->security->get_csrf_hash(),
+        ]);
+    }
+
+    /**
+     * API token refresh (POST /api/auth/refresh or POST /auth/refresh).
+     */
+    public function api_refresh()
+    {
+        if (!$this->vp_auth->check()) {
+            return $this->json(['ok' => false, 'error' => 'Unauthenticated'], 401);
+        }
+        $user = $this->vp_auth->user();
+        unset($user['password'], $user['rememberToken']);
+        return $this->json([
+            'ok'         => true,
+            'user'       => $user,
+            'csrf_token' => $this->security->get_csrf_hash(),
+        ]);
+    }
+
     /* ---------- helpers ---------- */
 
     private function _redirect_after_login($user)

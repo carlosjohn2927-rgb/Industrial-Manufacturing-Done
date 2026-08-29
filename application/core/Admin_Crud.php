@@ -51,6 +51,19 @@ class Admin_Crud extends Admin_Controller
         return $this->{$this->model_name};
     }
 
+    /**
+     * Locate a record by primary key (UUID) or by slug fallback.
+     */
+    protected function _find_row($id)
+    {
+        if (!$id) return null;
+        $row = $this->M()->find($id);
+        if (!$row && method_exists($this->M(), 'find_one')) {
+            $row = $this->M()->find_one(['slug' => $id]);
+        }
+        return $row;
+    }
+
     public function index()
     {
         $this->page_title = $this->_title('index');
@@ -90,7 +103,7 @@ class Admin_Crud extends Admin_Controller
     public function edit($id = null)
     {
         if (!$id) show_404();
-        $row = $this->M()->find($id);
+        $row = $this->_find_row($id);
         if (!$row) show_404();
         $this->page_title = $this->_title('edit', $row);
         $this->_form();
@@ -106,6 +119,14 @@ class Admin_Crud extends Admin_Controller
     {
         if ($this->input->method() !== 'post') show_404();
         $id = $this->input->post('id');
+
+        // Resolve $id to real primary key if a slug was posted
+        if ($id) {
+            $existing = $this->_find_row($id);
+            if ($existing && !empty($existing['id'])) {
+                $id = $existing['id'];
+            }
+        }
 
         // Set the validation rules defined by the subclass (they are
         // normally registered in _form(), which only create()/edit() call).
@@ -144,10 +165,11 @@ class Admin_Crud extends Admin_Controller
     public function delete($id = null)
     {
         if (!$id) show_404();
-        $row = $this->M()->find($id);
+        $row = $this->_find_row($id);
         if (!$row) show_404();
-        $this->M()->delete($id);
-        $this->audit->log(AUDIT_DELETE, $this->model_name, $id, ['name' => $row['name'] ?? $id]);
+        $realId = $row['id'] ?? $id;
+        $this->M()->delete($realId);
+        $this->audit->log(AUDIT_DELETE, $this->model_name, $realId, ['name' => $row['name'] ?? $row['title'] ?? $realId]);
         $this->flash('success', 'Deleted.');
         redirect($this->redirect_url);
     }

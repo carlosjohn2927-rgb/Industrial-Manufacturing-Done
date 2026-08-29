@@ -33,7 +33,12 @@ $action = $is_create ? base_url('admin/products/save') : base_url('admin/product
                 <p class="vp-help">URL: /products/<span id="vp-slug-preview"><?= vp_safe_html($product['slug'] ?? 'your-slug') ?></span></p>
             </div>
             <div class="vp-form-row">
-                <label>Category</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label>Category</label>
+                    <?php if (!empty($product['categoryId'])): ?>
+                        <a class="text-xs text-brand-600 hover:underline" href="<?= base_url('admin/categories/edit/' . $product['categoryId']) ?>" target="_blank" rel="noopener">Edit category <i class="ri-external-link-line"></i></a>
+                    <?php endif; ?>
+                </div>
                 <select class="vp-select" name="categoryId">
                     <option value="">—</option>
                     <?php foreach ($categories as $c): ?>

@@ -56,7 +56,12 @@ class Categories extends Admin_Crud
 
         // Parent: empty string = top-level category (NULL in the database).
         $parent = trim((string) $this->input->post('parentId'));
-        $data['parentId'] = $parent !== '' ? $parent : null;
+        if ($parent !== '') {
+            $pRow = $this->_find_row($parent);
+            $data['parentId'] = $pRow ? $pRow['id'] : $parent;
+        } else {
+            $data['parentId'] = null;
+        }
 
         // Slug: fall back to the name, then make sure it stays unique so the
         // database's uk_categories_slug index can never reject the save.
@@ -85,7 +90,9 @@ class Categories extends Admin_Crud
     {
         $this->db->where('slug', $slug);
         if ($ignoreId) {
-            $this->db->where('id !=', $ignoreId);
+            $row = $this->_find_row($ignoreId);
+            $realId = $row ? $row['id'] : $ignoreId;
+            $this->db->where('id !=', $realId);
         }
         return (bool) $this->db->get('categories')->row_array();
     }
