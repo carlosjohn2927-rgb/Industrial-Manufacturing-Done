@@ -22,5 +22,71 @@ class Categories extends Admin_Crud
     {
         $this->form_validation->set_rules('name', 'Name', 'required|max_length[190]');
         $this->form_validation->set_rules('slug', 'Slug', 'max_length[190]');
+        $this->form_validation->set_rules('description', 'Description', 'max_length[65535]');
+        $this->form_validation->set_rules('icon', 'Icon', 'max_length[190]');
+        $this->form_validation->set_rules('parentId', 'Parent category', 'max_length[36]');
+        $this->form_validation->set_rules('sortOrder', 'Sort order', 'integer');
+        $this->form_validation->set_rules('metaTitle', 'Meta title', 'max_length[255]');
+        $this->form_validation->set_rules('metaDescription', 'Meta description', 'max_length[500]');
+    }
+
+    /** Dropdown options for the "Parent category" field (a category can't be its own parent). */
+    protected function _form_data($row = null)
+    {
+        $where = [];
+        if (!empty($row['id'])) {
+            $where = ['id !=' => $row['id']];
+        }
+        return [
+            'parent_options' => $this->M()->find_all($where, ['sortOrder' => 'ASC', 'name' => 'ASC']),
+        ];
+    }
+
+    /** Collect every editable field (the generic _collect_post only covers list columns). */
+    protected function _collect_post()
+    {
+        $data = parent::_collect_post(); // name, slug, sortOrder, isActive
+
+        foreach (['description', 'icon', 'image', 'metaTitle', 'metaDescription'] as $field) {
+            $val = $this->input->post($field);
+            if ($val !== null) {
+                $data[$field] = trim($val);
+            }
+        }
+
+        // Parent: empty string = top-level category (NULL in the database).
+        $parent = trim((string) $this->input->post('parentId'));
+        $data['parentId'] = $parent !== '' ? $parent : null;
+
+        // Slug: fall back to the name, then make sure it stays unique so the
+        // database's uk_categories_slug index can never reject the save.
+        $slug = trim((string) ($data['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = vp_slugify((string) ($data['name'] ?? 'category'));
+        }
+        $data['slug'] = $this->_unique_slug($slug, $this->input->post('id'));
+
+        return $data;
+    }
+
+    /** Append -2, -3, … while the slug is already used by another category. */
+    protected function _unique_slug($slug, $ignoreId = null)
+    {
+        $base = $slug !== '' ? $slug : 'category';
+        $candidate = $base;
+        $n = 2;
+        while ($this->_slug_taken($candidate, $ignoreId)) {
+            $candidate = $base . '-' . $n++;
+        }
+        return $candidate;
+    }
+
+    protected function _slug_taken($slug, $ignoreId = null)
+    {
+        $this->db->where('slug', $slug);
+        if ($ignoreId) {
+            $this->db->where('id !=', $ignoreId);
+        }
+        return (bool) $this->db->get('categories')->row_array();
     }
 }

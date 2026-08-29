@@ -1,13 +1,29 @@
 <?php
 /** @var array $rows */
 /** @var array $columns */
+
+/*
+ * Base URL of this CRUD section, e.g. "admin/categories".
+ *
+ * IMPORTANT: inside a CodeIgniter 3 view $this is the CI_Loader object, NOT
+ * the controller — get_class($this) returns "CI_Loader", which used to produce
+ * broken links like admin/ci_loader/edit/{id} (404 on every Edit / Delete /
+ * New). Admin_Crud::index() passes $redirect_url for exactly this reason; the
+ * router-based fallback below only exists as a safety net for other callers.
+ */
+$crud_url = $redirect_url ?? null;
+if (!$crud_url) {
+    $crud_url = strtolower(trim((string) $this->router->fetch_directory(), '/') . '/'
+        . (string) $this->router->fetch_class());
+    $crud_url = trim($crud_url, '/');
+}
 ?>
 <div class="flex items-center justify-between mb-4">
     <form method="get" class="flex items-center gap-2">
         <input class="vp-input" type="search" name="q" value="<?= vp_safe_html($search ?? '') ?>" placeholder="Search…">
         <button class="vp-btn vp-btn-secondary" type="submit">Search</button>
     </form>
-    <a class="vp-btn vp-btn-primary" href="<?= base_url($redirect_url ?? (strtolower(get_class($this)) === 'admin_crud' ? '#' : 'admin/' . strtolower(get_class($this)))) . '/create' ?>"><i class="ri-add-line"></i> New</a>
+    <a class="vp-btn vp-btn-primary" href="<?= base_url($crud_url) . '/create' ?>"><i class="ri-add-line"></i> New</a>
 </div>
 
 <div class="overflow-x-auto">
@@ -44,8 +60,8 @@
                     </td>
                 <?php endforeach; ?>
                 <td class="text-right whitespace-nowrap">
-                    <a class="text-brand-600 hover:underline text-xs" href="<?= base_url($redirect_url ?? ('admin/' . strtolower(get_class($this)))) . '/edit/' . $r['id'] ?>">Edit</a>
-                    <form action="<?= base_url($redirect_url ?? ('admin/' . strtolower(get_class($this)))) . '/delete/' . $r['id'] ?>" method="post" class="inline" data-confirm="Delete this record?">
+                    <a class="text-brand-600 hover:underline text-xs" href="<?= base_url($crud_url) . '/edit/' . $r['id'] ?>">Edit</a>
+                    <form action="<?= base_url($crud_url) . '/delete/' . $r['id'] ?>" method="post" class="inline" data-confirm="Delete this record?">
                         <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token ?>">
                         <button class="text-red-600 hover:underline text-xs ml-2" type="submit">Delete</button>
                     </form>
