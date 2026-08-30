@@ -62,9 +62,11 @@ database/migrations/009_catalog_prices_500_to_5000.sql
 database/migrations/010_add_ajr_ndt_product_range.sql
 database/migrations/011_show_ajr_ndt_catalog_on_site.sql
 database/migrations/012_remove_duplicate_products.sql
+database/migrations/013_category_images.sql
+database/migrations/014_category_images_data.sql
 ```
 
-Merging the code is not enough: the 93 AJR NDT products live in the database. Existing sites must import `010` (and `011`) in phpMyAdmin or the catalog will stay empty of those items. Import `012` as well if the catalogue ever shows the same product twice — it deletes the duplicate rows (keeping the original and merging its photos, specifications, downloads and links) and is safe to re-run.
+Merging the code is not enough: the 93 AJR NDT products live in the database. Existing sites must import `010` (and `011`) in phpMyAdmin or the catalog will stay empty of those items. Import `012` as well if the catalogue ever shows the same product twice — it deletes the duplicate rows (keeping the original and merging its photos, specifications, downloads and links) and is safe to re-run. `013` adds the category `image` column and `014` fills in the curated artwork for every seeded category (safe to re-import).
 
 ---
 

@@ -152,6 +152,11 @@ importing two more files in phpMyAdmin — no CLI, no data loss:
 10. `database/migrations/012_remove_duplicate_products.sql` → **Go** *(removes any
     duplicate products from the catalogue and adds the unique indexes that stop
     duplicates from being created again)*
+11. `database/migrations/013_category_images.sql` → **Go** *(adds the `image`
+    column to `categories`, needed by the admin editor and the public grid)*
+12. `database/migrations/014_category_images_data.sql` → **Go** *(points every
+    seeded category at its curated artwork, so the public category grid never
+    shows a blank or missing image; safe to re-import)*
 
 All files are safe to import more than once (`CREATE TABLE IF NOT EXISTS`,
 `INSERT IGNORE`, `ON DUPLICATE KEY UPDATE`). The three `ALTER TABLE media …`
