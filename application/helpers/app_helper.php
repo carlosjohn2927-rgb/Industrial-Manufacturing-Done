@@ -213,6 +213,26 @@ if (!function_exists('vp_pagination_links')) {
     }
 }
 
+if (!function_exists('vp_category_image')) {
+    /**
+     * Resolve a category's artwork consistently for public cards.
+     *
+     * Category images are stored as either a media path or an absolute URL.
+     * Keep the shipped slug artwork as the fallback so an empty/deleted image
+     * never produces a broken card.
+     */
+    function vp_category_image($category)
+    {
+        $category = is_array($category) ? $category : [];
+        $slug = trim((string) ($category['slug'] ?? ''));
+        $stored = trim((string) ($category['image'] ?? ''));
+        if ($stored !== '') {
+            return function_exists('vp_asset_url') ? vp_asset_url($stored) : '/' . ltrim($stored, '/');
+        }
+        return IMG_URL . 'products/' . ($slug !== '' ? rawurlencode($slug) : 'default') . '.jpg';
+    }
+}
+
 if (!function_exists('vp_product_image')) {
     /**
      * Resolve the best available image URL for a product row.
