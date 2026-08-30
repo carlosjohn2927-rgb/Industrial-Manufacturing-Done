@@ -164,6 +164,51 @@
         var grid  = document.getElementById('vp-media-grid');
         var target = null;
 
+        /**
+         * Resolve the admin base URL at runtime instead of trusting the
+         * configured VP_ADMIN_BASE blindly. If that value points at a
+         * different origin than the page the admin is actually on (www vs
+         * non-www, http vs https, a stale VP_BASE_URL), every media-library
+         * request would go to the wrong host and hang or be blocked as
+         * mixed content — leaving the picker stuck on "Loading…"/"Uploading…".
+         */
+        function vpAdminBase() {
+            var b = String(window.VP_ADMIN_BASE || '').trim().replace(/\/+$/, '');
+            var origin = window.location.origin
+                || (window.location.protocol + '//' + window.location.host);
+            if (!b) return origin + '/';
+            try {
+                var u = new URL(b, window.location.href);
+                if (u.origin !== origin) {
+                    // Keep the configured path (sub-folder installs) but use
+                    // the origin the page is actually served from.
+                    return origin + (u.pathname || '/').replace(/\/+$/, '') + '/';
+                }
+                return b + '/';
+            } catch (e) {
+                return origin + '/';
+            }
+        }
+
+        /**
+         * Keep every CSRF token on the page in sync with the server.
+         * CI3 rotates the token on every POST (csrf_regenerate), so an AJAX
+         * save (media upload, homepage reorder, …) invalidates the hidden
+         * token of every form already rendered on the page — the next Save
+         * is then rejected with a 403 and the category/product "never saves".
+         * Whenever the server returns a fresh token we push it into the meta
+         * tag AND every hidden form input.
+         */
+        function vpSyncCsrf(csrf) {
+            if (!csrf) return;
+            var meta = document.querySelector('meta[name="csrf-token"]');
+            var name = meta && meta.getAttribute('data-name') ? meta.getAttribute('data-name') : 'csrf_token';
+            if (meta) meta.setAttribute('content', csrf);
+            document.querySelectorAll('input[type="hidden"][name="' + name + '"]').forEach(function (inp) {
+                inp.value = csrf;
+            });
+        }
+
         function closeModal() { if (modal) modal.classList.add('hidden'); }
 
         function renderMedia(items) {
@@ -186,10 +231,29 @@
         function loadMedia(q) {
             if (!grid) return;
             grid.innerHTML = '<p class="col-span-full text-center text-sm text-gray-500 py-10">Loading…</p>';
-            fetch(VP_ADMIN_BASE + 'admin/media/browse?q=' + encodeURIComponent(q || ''), { credentials: 'same-origin' })
-                .then(function (r) { return r.json(); })
-                .then(function (d) { renderMedia(d.items || []); })
-                .catch(function () { grid.innerHTML = '<p class="col-span-full text-center text-sm text-red-600 py-10">Could not load the media library.</p>'; });
+            var ctrl = ('AbortController' in window) ? new AbortController() : null;
+            var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 30000) : null;
+            fetch(vpAdminBase() + 'admin/media/browse?q=' + encodeURIComponent(q || ''), {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                signal: ctrl ? ctrl.signal : undefined
+            })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(function (d) {
+                    if (!d || d.ok === false) throw new Error((d && d.error) || 'The server rejected the request.');
+                    renderMedia(d.items || []);
+                })
+                .catch(function (err) {
+                    grid.innerHTML = '<p class="col-span-full text-center text-sm text-red-600 py-10">'
+                        + ((err && err.name === 'AbortError')
+                            ? 'The media library took too long to respond. Please try again.'
+                            : 'Could not load the media library. Please try again.')
+                        + '</p>';
+                })
+                .then(function () { if (timer) clearTimeout(timer); });
         }
 
         document.addEventListener('click', function (e) {
@@ -244,29 +308,67 @@
 
         var upBtn = document.getElementById('vp-media-upload-btn');
         if (upBtn) {
+            var uploadInFlight = false;
             upBtn.addEventListener('click', function () {
+                if (uploadInFlight) return;
                 var input = document.getElementById('vp-media-upload-input');
                 if (!input || !input.files.length) { alert('Choose a file first.'); return; }
                 var fd = new FormData();
                 fd.append('file', input.files[0]);
                 fd.append('folder', 'general');
                 fd.append('ajax', '1');
-                var tok = document.querySelector('meta[name="csrf-token"]');
-                if (tok) fd.append(tok.getAttribute('data-name'), tok.getAttribute('content'));
-                upBtn.disabled = true; upBtn.textContent = 'Uploading…';
-                fetch(VP_ADMIN_BASE + 'admin/media/upload', { method: 'POST', body: fd, credentials: 'same-origin' })
-                    .then(function (r) { return r.json(); })
-                    .then(function (d) {
-                        upBtn.disabled = false; upBtn.innerHTML = '<i class="ri-upload-2-line"></i> Upload';
-                        if (!d.ok) { alert(d.error || 'Upload failed.'); return; }
-                        if (tok && d.csrf) tok.setAttribute('content', d.csrf);
-                        input.value = '';
-                        loadMedia('');
+                var meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta) fd.append(meta.getAttribute('data-name') || 'csrf_token', meta.getAttribute('content'));
+                var ctrl = ('AbortController' in window) ? new AbortController() : null;
+                var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 60000) : null;
+                var resetBtn = function () {
+                    uploadInFlight = false;
+                    upBtn.disabled = false;
+                    upBtn.innerHTML = '<i class="ri-upload-2-line"></i> Upload';
+                };
+                var attempt = function (retried) {
+                    if (uploadInFlight) return;
+                    uploadInFlight = true;
+                    upBtn.disabled = true; upBtn.textContent = 'Uploading…';
+                    fetch(vpAdminBase() + 'admin/media/upload', {
+                        method: 'POST',
+                        body: fd,
+                        credentials: 'same-origin',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        signal: ctrl ? ctrl.signal : undefined
                     })
-                    .catch(function () {
-                        upBtn.disabled = false; upBtn.innerHTML = '<i class="ri-upload-2-line"></i> Upload';
-                        alert('Upload failed.');
-                    });
+                        .then(function (r) { return r.json(); })
+                        .then(function (d) {
+                            resetBtn();
+                            if (timer) clearTimeout(timer);
+                            // The server rotates the CSRF token on every POST;
+                            // resync every token on the page so the form still
+                            // saves afterwards.
+                            if (d && d.csrf) vpSyncCsrf(d.csrf);
+                            if (!d || !d.ok) {
+                                // Token expired mid-session: resync and retry once.
+                                if (!retried && d && d.csrf && /csrf|session|token/i.test(d.error || '')) {
+                                    var m2 = document.querySelector('meta[name="csrf-token"]');
+                                    if (m2) {
+                                        fd.set(m2.getAttribute('data-name') || 'csrf_token', m2.getAttribute('content'));
+                                        return attempt(true);
+                                    }
+                                }
+                                alert(d && d.error ? d.error : 'Upload failed.');
+                                return;
+                            }
+                            input.value = '';
+                            loadMedia('');
+                        })
+                        .catch(function (err) {
+                            resetBtn();
+                            if (timer) clearTimeout(timer);
+                            alert((err && err.name === 'AbortError')
+                                ? 'The upload took too long. Please try again with a smaller file.'
+                                : 'Upload failed. Please try again.');
+                        });
+                };
+                attempt(false);
             });
         }
 
@@ -306,11 +408,16 @@
                 fd.append('pageKey', builder.getAttribute('data-page-key') || 'home');
                 fd.append('ajax', '1');
                 var tok = document.querySelector('meta[name="csrf-token"]');
-                if (tok) fd.append(tok.getAttribute('data-name'), tok.getAttribute('content'));
-                fetch(VP_ADMIN_BASE + 'admin/homepage/reorder', { method: 'POST', body: fd, credentials: 'same-origin' })
+                if (tok) fd.append(tok.getAttribute('data-name') || 'csrf_token', tok.getAttribute('content'));
+                fetch(vpAdminBase() + 'admin/homepage/reorder', {
+                    method: 'POST',
+                    body: fd,
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
                     .then(function (r) { return r.json(); })
                     .then(function (d) {
-                        if (tok && d && d.csrf) tok.setAttribute('content', d.csrf);
+                        if (d && d.csrf) vpSyncCsrf(d.csrf);
                     })
                     .catch(function () {});
             });

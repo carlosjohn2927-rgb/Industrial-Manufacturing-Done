@@ -50,6 +50,19 @@
             try { return JSON.parse(el.textContent); } catch (e) { return null; }
         }
 
+        // The server rotates the CSRF token on every POST (csrf_regenerate),
+        // so after an AJAX save the hidden token inside every form on the
+        // page is stale and the next save would be rejected with a 403.
+        // Push the fresh token the server returns into every form.
+        function syncCsrf(csrf) {
+            if (!csrf) return;
+            var name = (config && config.csrfName) || 'csrf_token';
+            document.querySelectorAll('form input[type="hidden"][name="' + name + '"]').forEach(function (inp) {
+                inp.value = csrf;
+            });
+            if (config) config.csrf = csrf;
+        }
+
         function postForm(url, form, onOk) {
             var fd = new FormData(form);
             var submit = form.querySelector('button[type="submit"]');
@@ -66,6 +79,7 @@
             })
                 .then(function (r) { return r.json(); })
                 .then(function (d) {
+                    if (d && d.csrf) syncCsrf(d.csrf);
                     if (d && d.ok) {
                         if (onOk) onOk(d);
                     } else {

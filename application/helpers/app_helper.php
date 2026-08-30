@@ -218,18 +218,67 @@ if (!function_exists('vp_category_image')) {
      * Resolve a category's artwork consistently for public cards.
      *
      * Category images are stored as either a media path or an absolute URL.
-     * Keep the shipped slug artwork as the fallback so an empty/deleted image
-     * never produces a broken card.
+     * Every category ships with curated artwork so the grid NEVER shows a
+     * blank/missing card:
+     *
+     *   1. the category's own stored image (set in the dashboard via the
+     *      media library), then
+     *   2. a shipped photo named after the category slug
+     *      (assets/img/products/<slug>.jpg) if it exists on disk, then
+     *   3. curated per-category artwork (one photo per AJR NDT category
+     *      plus the six process-equipment category photos), then
+     *   4. the generic default photo as a last resort.
+     *
+     * @param array|object|null $category Category row
+     * @return string Absolute-from-root image URL
      */
     function vp_category_image($category)
     {
-        $category = is_array($category) ? $category : [];
+        $category = is_array($category) ? $category : (array) $category;
         $slug = trim((string) ($category['slug'] ?? ''));
         $stored = trim((string) ($category['image'] ?? ''));
+
         if ($stored !== '') {
             return function_exists('vp_asset_url') ? vp_asset_url($stored) : '/' . ltrim($stored, '/');
         }
-        return IMG_URL . 'products/' . ($slug !== '' ? rawurlencode($slug) : 'default') . '.jpg';
+
+        // Shipped artwork for a category slug (e.g. valves.jpg) — picked up
+        // automatically when the site owner drops a file in later too.
+        if ($slug !== '' && function_exists('vp_product_artwork_file')) {
+            $file = vp_product_artwork_file($slug);
+            if ($file !== null) {
+                return IMG_URL . 'products/' . $file;
+            }
+        }
+
+        // Curated fallbacks so a category never renders blank/broken.
+        $curated = [
+            'valves'                        => 'valves.jpg',
+            'pumps'                         => 'pumps.jpg',
+            'heat-exchangers'               => 'heat-exchangers.jpg',
+            'pressure-vessels'              => 'pressure-vessels.jpg',
+            'filtration'                    => 'filtration.jpg',
+            'instrumentation'               => 'instrumentation.jpg',
+            // AJR NDT categories (handheld inspection instruments).
+            'ultrasonic-flaw-detection'     => 'ultrasonic-flaw-detection.jpg',
+            'thickness-coating-gauges'      => 'thickness-coating-gauges.jpg',
+            'hardness-testing'              => 'hardness-testing.jpg',
+            'surface-roughness-testing'     => 'surface-roughness-testing.jpg',
+            'magnetic-particle-inspection'  => 'magnetic-particle-inspection.jpg',
+            'radiography-testing'           => 'radiography-testing.jpg',
+            'eddy-current-testing'          => 'eddy-current-testing.jpg',
+            'visual-inspection-videoscopes' => 'visual-inspection-videoscopes.jpg',
+            'ndt-uv-lamps'                  => 'ndt-uv-lamps.jpg',
+            'holiday-wire-rope-testing'     => 'holiday-wire-rope-testing.jpg',
+            'photometers-radiometers'       => 'photometers-radiometers.jpg',
+            'calibration-blocks'            => 'calibration-blocks.jpg',
+            'ultrasonic-probes-cables'      => 'ultrasonic-probes-cables.jpg',
+        ];
+        if ($slug !== '' && isset($curated[$slug])) {
+            return IMG_URL . 'products/' . $curated[$slug];
+        }
+
+        return IMG_URL . 'products/default.jpg';
     }
 }
 

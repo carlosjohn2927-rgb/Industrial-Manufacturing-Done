@@ -156,10 +156,14 @@ If the site was installed before this release, import these in phpMyAdmin
 ```
 database/migrations/010_add_ajr_ndt_product_range.sql
 database/migrations/011_show_ajr_ndt_catalog_on_site.sql
+database/migrations/013_category_images.sql
+database/migrations/014_category_images_data.sql
 ```
 
 Then reload `/products`. You should see AJR SKUs (`AJR-AFD-100`, etc.) and
-the 13 NDT categories in the filter dropdown.
+the 13 NDT categories in the filter dropdown. `013` adds the `categories.image`
+column and `014` fills in the curated category artwork so the public category
+grid on the homepage shows the right image for every category.
 
 ## Troubleshooting
 
