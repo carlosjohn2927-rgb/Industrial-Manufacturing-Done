@@ -12,9 +12,9 @@ if (empty($rows)) return;
         <?php foreach ($rows as $c): ?>
             <a href="<?= base_url('products?category=' . urlencode($c['slug'])) ?>" class="group bg-white border rounded-2xl overflow-hidden hover:shadow-lg hover:border-brand-300 transition">
                 <div class="aspect-[16/9] bg-gray-100 overflow-hidden">
-                    <img src="<?= vp_safe_html($c['image'] ? vp_asset_url($c['image']) : IMG_URL . 'products/' . $c['slug'] . '.jpg') ?>"
+                    <img src="<?= vp_safe_html(vp_category_image($c)) ?>"
                          alt="<?= vp_safe_html($c['name']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                         loading="lazy" decoding="async" onerror="this.onerror=null;this.src='<?= IMG_URL ?>products/default.jpg'">
+                         loading="lazy" decoding="async" onerror="this.onerror=null;this.src='<?= vp_safe_html(IMG_URL . 'products/default.jpg') ?>'">
                 </div>
                 <div class="p-5">
                     <h3 class="font-bold text-lg text-ink-900"><?= vp_safe_html($c['name']) ?></h3>

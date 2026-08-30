@@ -24,6 +24,7 @@ class Categories extends Admin_Crud
         $this->form_validation->set_rules('slug', 'Slug', 'max_length[190]');
         $this->form_validation->set_rules('description', 'Description', 'max_length[65535]');
         $this->form_validation->set_rules('icon', 'Icon', 'max_length[190]');
+        $this->form_validation->set_rules('image', 'Image', 'max_length[255]');
         $this->form_validation->set_rules('parentId', 'Parent category', 'max_length[36]');
         $this->form_validation->set_rules('sortOrder', 'Sort order', 'integer');
         $this->form_validation->set_rules('metaTitle', 'Meta title', 'max_length[255]');
@@ -88,10 +89,20 @@ class Categories extends Admin_Crud
 
     protected function _slug_taken($slug, $ignoreId = null)
     {
-        $this->db->where('slug', $slug);
+        // Resolve the id before starting the query. _find_row() executes its
+        // own query and resets CodeIgniter's query builder; doing that after
+        // where('slug', ...) silently dropped the slug condition. On an edit
+        // the old code therefore saw any other category as a collision and
+        // kept adding suffixes forever, leaving the request hanging (and the
+        // site appearing to stop loading after Save).
+        $realId = null;
         if ($ignoreId) {
             $row = $this->_find_row($ignoreId);
             $realId = $row ? $row['id'] : $ignoreId;
+        }
+
+        $this->db->where('slug', $slug);
+        if ($realId) {
             $this->db->where('id !=', $realId);
         }
         return (bool) $this->db->get('categories')->row_array();
