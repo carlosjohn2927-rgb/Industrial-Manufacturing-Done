@@ -164,6 +164,11 @@ $route['admin/media/delete/(:any)']       = 'admin/media/delete/$1';
 
 $route['admin/settings']                  = 'admin/settings';
 $route['admin/settings/save']             = 'admin/settings/save';
+$route['admin/updates']                   = 'admin/updates/index';
+$route['admin/updates/apply/(:any)']      = 'admin/updates/apply/$1';
+$route['admin/updates/apply_all']         = 'admin/updates/apply_all';
+$route['admin/updates/mark/(:any)']       = 'admin/updates/mark/$1';
+$route['admin/updates/mark_all']          = 'admin/updates/mark_all';
 $route['admin/seo']                       = 'admin/seo';
 $route['admin/seo/save']                  = 'admin/seo/save';
 $route['admin/audit']                     = 'admin/audit';

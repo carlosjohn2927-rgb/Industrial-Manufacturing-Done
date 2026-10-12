@@ -137,8 +137,18 @@ they may use (**Dashboard → People → Administrators**). See
 
 ## Upgrading an Existing Installation (dashboard / CMS release)
 
-If your database was imported **before** this release, add the new tables by
-importing two more files in phpMyAdmin — no CLI, no data loss:
+**Easiest: apply the updates from the dashboard.** Upload the new files, then
+sign in as the Super Admin and open **Dashboard → System → Database
+Updates**. Every update the release needs appears as *Pending* (with a
+warning banner on every dashboard page) — click **Apply all pending** and the
+new tables, products and categories appear immediately. No phpMyAdmin, no
+terminal. (Updates already imported by hand are detected automatically and
+shown as *Applied (detected)*; anything undetectable can be recorded with
+*Mark applied*.)
+
+**Manual alternative — phpMyAdmin:** if your database was imported **before**
+this release, add the new tables by importing the files below — no CLI, no
+data loss:
 
 1. phpMyAdmin → your database → **Import**
 2. `database/migrations/001_cms_and_permissions.sql` → **Go**

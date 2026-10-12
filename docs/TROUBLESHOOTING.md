@@ -227,7 +227,36 @@ error text on failure), and failures are also written to
 
 ---
 
-## 3. Quick reference
+## 3. An update was merged but the website shows nothing new
+
+**Symptom.** A release "adds products/categories" (e.g. the AJR NDT range,
+the Refteck catalog), the code is live on the server, but `/products` and the
+homepage show none of it.
+
+**Cause.** Catalog data lives in the **database**, not in the PHP files. A git
+merge or a cPanel upload changes code only. The rows are added by the SQL
+files in `database/migrations/`, and those have not been applied to the
+database yet.
+
+**Fix (no terminal needed).** Sign in as the Super Admin and open
+**Dashboard → System → Database Updates**. Anything the release needs shows
+as *Pending* — click **Apply all pending**, then reload the site. A warning
+banner also appears on every dashboard page while updates are pending, so
+this step cannot be missed again.
+
+**Fix (phpMyAdmin).** Import the relevant file(s) from
+`database/migrations/` — for the Refteck range that is
+`015_add_refteck_product_range.sql` (safe to re-run). All shipped updates are
+idempotent.
+
+**How to check afterwards.** *Database Updates* shows each file as
+*Applied*, with its timestamp in the activity log
+(`Dashboard → System → Activity Log`, actions `DB_UPDATE_APPLIED`,
+`DB_UPDATE_MARKED`, `DB_UPDATE_FAILED`).
+
+---
+
+## 4. Quick reference
 
 | Symptom | Most likely cause | Command |
 |---|---|---|
@@ -237,3 +266,4 @@ error text on failure), and failures are also written to
 | "Insufficient permissions" | non-staff role (§1.5) | `php install/fix-admin.php` |
 | Forms submit, no email arrives | blank `VP_SMTP_PASS` (§2.1) | `php install/test-mail.php` |
 | Email arrives in spam | missing SPF/DKIM (§2.5) | cPanel → Email Deliverability |
+| Update merged, products missing on the site | database update not applied (§3) | Dashboard → System → Database Updates |

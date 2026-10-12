@@ -89,6 +89,15 @@ class Admin_Controller extends Auth_Controller
         $this->data['can']             = $this->_permission_set();
         $this->data['is_super_admin']  = $this->is_super_admin();
         $this->data['public_site_url'] = base_url();
+
+        // Pending SQL database updates (Super Admin only): merging or
+        // uploading new code never changes the database, so surface any
+        // shipped database/migrations/*.sql that has not been applied yet.
+        $this->data['pending_db_updates'] = ['count' => 0, 'items' => []];
+        if ($this->is_super_admin()) {
+            $this->load->model('Schema_update_model');
+            $this->data['pending_db_updates'] = $this->Schema_update_model->pending_summary();
+        }
     }
 
     /* ------------------------------------------------------------------ */

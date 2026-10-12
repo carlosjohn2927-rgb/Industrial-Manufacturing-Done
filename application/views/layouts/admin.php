@@ -48,6 +48,19 @@ $site = vp_site();
         </div>
         <?php endif; ?>
 
+        <?php if (!empty($pending_db_updates['count'])): ?>
+        <div class="px-6 mt-4">
+            <div class="rounded-lg px-4 py-3 border bg-amber-50 border-amber-300 text-amber-900 flex items-center gap-2 text-sm">
+                <i class="ri-database-2-line text-lg"></i>
+                <span>
+                    <strong><?= (int) $pending_db_updates['count'] ?> database update(s) pending.</strong>
+                    The files are on the server but not yet applied to the database — new products and categories will not appear until they are.
+                </span>
+                <a class="ml-auto font-semibold underline whitespace-nowrap" href="<?= base_url('admin/updates') ?>">Review &amp; apply</a>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <?php if (vp_maintenance_active()): ?>
         <div class="px-6 mt-4">
             <div class="rounded-lg px-4 py-3 border bg-amber-50 border-amber-300 text-amber-900 flex items-center gap-2 text-sm">

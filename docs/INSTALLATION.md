@@ -150,7 +150,9 @@ every push. See `app/tests/acceptance.php`.
 ## 4b. Existing site: AJR NDT catalog not on the website
 
 Merging the catalog files is not enough. The 93 products are **database rows**.
-If the site was installed before this release, import these in phpMyAdmin
+If the site was installed before this release, apply these in
+**Dashboard → System → Database Updates** (sign in as the Super Admin and
+click **Apply all pending**), or import them in phpMyAdmin
 (or they will never appear on `/products`):
 
 ```
