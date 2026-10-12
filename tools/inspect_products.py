@@ -1,6 +1,10 @@
 import glob
 import re
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from check_duplicate_products import iter_insert_blocks, extract_rows
 
 def check_file(filename):
     if not os.path.exists(filename):
@@ -9,26 +13,13 @@ def check_file(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Extract product rows. Two shapes exist in this repo:
-    #   ('p0010001-...', 'Name', 'slug', 'SKU', ...)          (migration 010)
-    #   SELECT 'rp000001-...','Name','slug','SKU', ...        (migration 015)
+    # Reuse the duplicate checker's parser: it understands every product-row
+    # shape in this repo (VALUES tuples from 008/010, INSERT ... SELECT with
+    # literal or UUID() ids from 015/008, UNION chains, multi-line rows).
     products = []
-    lines = content.splitlines()
-    for line in lines:
-        line_clean = line.strip()
-        if (
-            line_clean.startswith("('p0010001-")
-            or line_clean.startswith("('prod-")
-            or line_clean.startswith("SELECT 'rp")
-        ):
-            fields = re.findall(r"'((?:[^'\\]|\\.)*)'", line_clean)
-            if len(fields) >= 4:
-                products.append({
-                    'id': fields[0],
-                    'name': fields[1],
-                    'slug': fields[2],
-                    'sku': fields[3]
-                })
+    for _line_no, block in iter_insert_blocks(content, 'products'):
+        for name, slug, sku in extract_rows(block, 'products'):
+            products.append({'name': name, 'slug': slug, 'sku': sku})
     print(f"File {filename}: Found {len(products)} products")
     return products
 

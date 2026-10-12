@@ -30,7 +30,7 @@ Usage: php scripts/$script [options]
 
   --dry-run               Plan and print; download nothing, write nothing.
   --from-sql=<file>       Build the plan from a seed .sql file (implies --dry-run).
-  --limit=<n>             Only the first <n> remote images.
+  --limit=<n>             Only the first <n> remote images (per image set).
   --sku-prefix=<p>        Only products whose SKU starts with <p> (e.g. AJR-).
   --force                 Re-download and overwrite an existing local file.
   --no-reencode           Keep the downloaded bytes as-is (skip the GD pass).
@@ -38,6 +38,9 @@ Usage: php scripts/$script [options]
   --max-mb=<n>            Reject downloads larger than <n> MB (default 10).
   --referer=<url>         Send this Referer header.
   --help                  This text.
+
+Product photos (product_images) and category artwork (categories.image) are
+both handled in the same run; --sku-prefix only filters product photos.
 
 TXT;
     }
@@ -200,12 +203,12 @@ if (!function_exists('vp_loc_update_sql')) {
      * mysqli::real_escape_string() in production; the built-in fallback keeps
      * this callable (and testable) without a database connection.
      */
-    function vp_loc_update_sql($imageId, $newUrl, $escape = null)
+    function vp_loc_update_sql($imageId, $newUrl, $escape = null, $table = 'product_images', $urlColumn = 'url')
     {
         $esc = is_callable($escape) ? $escape : function ($v) {
             return str_replace(["\\", "'"], ["\\\\", "\\'"], (string) $v);
         };
-        return "UPDATE `product_images` SET `url` = '" . $esc($newUrl)
+        return "UPDATE `{$table}` SET `{$urlColumn}` = '" . $esc($newUrl)
              . "' WHERE `id` = '" . $esc($imageId) . "';";
     }
 }
@@ -388,7 +391,9 @@ if (!function_exists('vp_loc_store_image')) {
 if (!function_exists('vp_loc_rows_from_sql')) {
     /**
      * Plan source when there is no database: read the product + product_images
-     * rows straight out of a seed .sql file.
+     * rows straight out of a seed .sql file. Understands both VALUES tuples
+     * (010-style) and INSERT ... SELECT statements (008/015-style), joining
+     * image rows to products by productId or by the WHERE-clause SKU.
      */
     function vp_loc_rows_from_sql($file, $root)
     {
@@ -400,23 +405,65 @@ if (!function_exists('vp_loc_rows_from_sql')) {
         }
 
         $products = [];
-        foreach (vp_seed_insert_rows($sql, 'products') as $p) {
-            $products[$p['id'] ?? ''] = [
-                'slug' => $p['slug'] ?? '', 'name' => $p['name'] ?? '', 'sku' => $p['sku'] ?? '',
+        foreach (array_merge(vp_seed_insert_rows($sql, 'products'),
+                             vp_seed_select_rows($sql, 'products')) as $p) {
+            $id = (string) ($p['id'] ?? '');
+            if ($id === '') continue;
+            $products[$id] = [
+                'id' => $id, 'slug' => $p['slug'] ?? '', 'name' => $p['name'] ?? '', 'sku' => $p['sku'] ?? '',
             ];
+        }
+        $bySku = [];
+        foreach ($products as $p) {
+            if ($p['sku'] !== '') $bySku[strtoupper($p['sku'])] = $p;
         }
 
         $rows = [];
-        foreach (vp_seed_insert_rows($sql, 'product_images') as $img) {
-            $pid  = $img['productId'] ?? '';
-            $meta = $products[$pid] ?? ['slug' => '', 'name' => '', 'sku' => ''];
+        foreach (array_merge(vp_seed_insert_rows($sql, 'product_images'),
+                             vp_seed_select_rows($sql, 'product_images')) as $img) {
+            $pid  = (string) ($img['productId'] ?? '');
+            $meta = $products[$pid] ?? null;
+            if ($meta === null && isset($img['_sku'])) {
+                $meta = $bySku[strtoupper($img['_sku'])] ?? null;
+                if ($meta !== null) $pid = $meta['id'];   // per-product file numbering
+            }
+            if ($meta === null) $meta = ['slug' => '', 'name' => '', 'sku' => ''];
             $rows[] = [
                 'id'        => $img['id'] ?? null,
                 'productId' => $pid,
                 'url'       => $img['url'] ?? '',
                 'slug'      => $meta['slug'],
                 'name'      => $meta['name'] !== '' ? $meta['name'] : ($img['alt'] ?? ''),
-                'sku'       => $meta['sku'],
+                'sku'       => $meta['sku'] !== '' ? $meta['sku'] : ($img['_sku'] ?? ''),
+            ];
+        }
+        return $rows;
+    }
+}
+
+if (!function_exists('vp_loc_category_rows_from_sql')) {
+    /**
+     * Category rows straight out of a seed .sql file (VALUES or SELECT style).
+     *
+     * @return array[] ['id','slug','name','url']
+     */
+    function vp_loc_category_rows_from_sql($file, $root)
+    {
+        require_once $root . '/scripts/lib/seed_sql.php';
+        $sql = (string) @file_get_contents($file);
+        if ($sql === '') {
+            fwrite(STDERR, "Cannot read --from-sql file: $file\n");
+            exit(1);
+        }
+
+        $rows = [];
+        foreach (array_merge(vp_seed_insert_rows($sql, 'categories'),
+                             vp_seed_select_rows($sql, 'categories')) as $c) {
+            $rows[] = [
+                'id'   => $c['id'] ?? null,
+                'slug' => $c['slug'] ?? '',
+                'name' => $c['name'] ?? ($c['slug'] ?? '(unknown)'),
+                'url'  => $c['image'] ?? '',
             ];
         }
         return $rows;
@@ -470,5 +517,110 @@ if (!function_exists('vp_loc_rows_from_db')) {
         $rows = [];
         while ($r = $res->fetch_assoc()) $rows[] = $r;
         return $rows;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Category artwork (categories.image)                                 */
+/* ------------------------------------------------------------------ */
+if (!function_exists('vp_loc_category_rows_from_db')) {
+    /**
+     * Every category that carries an image, in a stable order.
+     *
+     * @return array[] ['id','slug','name','url']
+     */
+    function vp_loc_category_rows_from_db(mysqli $db)
+    {
+        $res = $db->query(
+            "SELECT id, slug, name, image AS url
+               FROM categories
+              WHERE image IS NOT NULL AND image <> ''
+              ORDER BY sortOrder ASC, name ASC"
+        );
+        if ($res === false) {
+            fwrite(STDERR, 'Query failed: ' . $db->error . "\n");
+            exit(1);
+        }
+        $rows = [];
+        while ($r = $res->fetch_assoc()) $rows[] = $r;
+        return $rows;
+    }
+}
+
+if (!function_exists('vp_loc_category_plan')) {
+    /**
+     * Decide what to do with every categories.image row. No I/O.
+     *
+     * Same action shape as vp_loc_plan(), with 'kind' => 'category' and one
+     * file per category (assets/uploads/categories/<slug>.jpg). --sku-prefix
+     * does not apply here (categories have no SKU).
+     *
+     * @param  array $rows  ['id','slug','name','url']
+     * @param  array $opts  from vp_loc_args()
+     * @return array        actions with 'do' set to
+     *                      download | skip-local | skip-empty | skip-limit
+     */
+    function vp_loc_category_plan(array $rows, array $opts)
+    {
+        $actions = [];
+
+        foreach ($rows as $row) {
+            $url  = isset($row['url']) ? trim((string) $row['url']) : '';
+            $base = [
+                'id'         => $row['id'] ?? null,
+                'kind'       => 'category',
+                'table'      => 'categories',
+                'url_column' => 'image',
+                'product'    => $row['name'] ?? ($row['slug'] ?? '(unknown)'),
+                'sku'        => '',
+                'old_url'    => $url,
+                'do'         => 'skip-empty',
+                'reason'     => 'no url',
+            ];
+
+            if ($url === '') {
+                $actions[] = $base;
+                continue;
+            }
+
+            if (!vp_loc_is_remote($url)) {
+                $base['do']     = 'skip-local';
+                $base['reason'] = 'already local';
+                $actions[] = $base;
+                continue;
+            }
+
+            $base['do']       = 'download';
+            $base['reason']   = 'remote';
+            $base['slug']     = vp_loc_slug($row['slug'] ?? $row['name'] ?? 'category');
+            $base['position'] = 1;
+            $base['file']     = $base['slug'] . '.jpg';
+            $base['path']     = 'assets/uploads/categories/' . $base['file'];
+            $base['new_url']  = '/assets/uploads/categories/' . $base['file'];
+            $actions[] = $base;
+        }
+
+        if ($opts['limit'] > 0) {
+            $seen = 0;
+            foreach ($actions as &$a) {
+                if ($a['do'] !== 'download') continue;
+                $seen++;
+                if ($seen > $opts['limit']) {
+                    $a['do']     = 'skip-limit';
+                    $a['reason'] = 'beyond --limit=' . $opts['limit'];
+                }
+            }
+            unset($a);
+        }
+
+        return $actions;
+    }
+}
+
+if (!function_exists('vp_loc_category_update_sql')) {
+    /** The exact UPDATE applied for one category image row. */
+    function vp_loc_category_update_sql($categoryId, $newUrl, $escape = null)
+    {
+        return vp_loc_update_sql($categoryId, $newUrl, $escape, 'categories', 'image');
     }
 }

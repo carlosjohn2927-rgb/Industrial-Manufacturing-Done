@@ -68,6 +68,8 @@ $config['admin_nav'] = [
         'group' => 'System',
         'items' => [
             ['label' => 'Settings',      'url' => 'admin/settings',      'icon' => 'ri-settings-3-line',      'permission' => 'settings.manage', 'match' => 'settings'],
+            // Super Admin only (system.manage is super-only in the ACL).
+            ['label' => 'Database Updates', 'url' => 'admin/updates',    'icon' => 'ri-database-2-line',      'permission' => 'system.manage',   'match' => 'updates'],
             // Personal inbox: available to every staff account, no permission needed.
             ['label' => 'Notifications', 'url' => 'admin/notifications', 'icon' => 'ri-notification-3-line',  'permission' => null, 'match' => 'notifications'],
             ['label' => 'Activity Log',  'url' => 'admin/audit',         'icon' => 'ri-shield-keyhole-line',  'permission' => 'audit.view',      'match' => 'audit'],

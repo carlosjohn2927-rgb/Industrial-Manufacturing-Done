@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 /**
- * localize_product_images.php — copy remote product photos onto your own
- * server and point the catalog at the local copies.
+ * localize_product_images.php — copy remote product and category photos onto
+ * your own server and point the catalog at the local copies.
  *
  *   php scripts/localize_product_images.php --dry-run          # plan (from DB)
  *   php scripts/localize_product_images.php                    # download + apply
@@ -45,7 +45,7 @@
  * Exit code 0 = nothing failed.
  */
 
-if (PHP_SAPI !== 'cli') {
+if (PHP_SAPI !== 'cli' && PHP_SAPI !== 'wasm') {
     http_response_code(403);
     exit("This tool can only be run from the command line.\n");
 }
@@ -106,12 +106,25 @@ if ($opts['from_sql'] !== null) {
     $rows = vp_loc_rows_from_db($db);
 }
 
-echo '  rows:      ' . count($rows) . " product images\n\n";
+if ($opts['from_sql'] !== null) {
+    $catRows = vp_loc_category_rows_from_sql($opts['from_sql'], $ROOT);
+} else {
+    $catRows = vp_loc_category_rows_from_db($db);
+}
+
+echo '  rows:      ' . count($rows) . " product images, " . count($catRows) . " category images\n\n";
 
 /* ------------------------------------------------------------------ */
 /* 2. Plan                                                             */
 /* ------------------------------------------------------------------ */
 $actions = vp_loc_plan($rows, $opts);
+foreach ($actions as &$pa) {
+    $pa['kind']        = 'product';
+    $pa['table']       = 'product_images';
+    $pa['url_column']  = 'url';
+}
+unset($pa);
+$actions = array_merge($actions, vp_loc_category_plan($catRows, $opts));
 
 $counts = [];
 foreach ($actions as $a) $counts[$a['do']] = ($counts[$a['do']] ?? 0) + 1;
@@ -131,8 +144,11 @@ if (count($toDownload) > count($preview)) {
 
 if ($opts['dry_run']) {
     if (!empty($toDownload)) {
+        $first = $toDownload[0];
         echo "\nSQL that would be applied (first row shown):\n  "
-           . vp_loc_update_sql($toDownload[0]['id'], $toDownload[0]['new_url']) . "\n";
+           . vp_loc_update_sql($first['id'], $first['new_url'], null,
+                               $first['table'] ?? 'product_images',
+                               $first['url_column'] ?? 'url') . "\n";
     }
     echo "\nDry run complete: " . count($toDownload) . " image(s) would be downloaded.\n";
     if ($opts['from_sql'] === null) {
@@ -149,18 +165,17 @@ if (empty($toDownload)) {
 /* ------------------------------------------------------------------ */
 /* 3. Apply                                                            */
 /* ------------------------------------------------------------------ */
-$destDir = $ROOT . '/assets/uploads/products';
-if (!is_dir($destDir) && !@mkdir($destDir, 0755, true) && !is_dir($destDir)) {
-    fwrite(STDERR, "Cannot create $destDir\n");
-    exit(1);
-}
-
 $tmpDir = sys_get_temp_dir();
 $report = ['started' => date('c'), 'rows' => [], 'counts' => ['ok' => 0, 'failed' => 0, 'skipped' => 0]];
 $failed = 0;
 
 foreach ($toDownload as $i => $a) {
     $no    = $i + 1;
+    $destDir = $ROOT . '/' . dirname($a['path']);
+    if (!is_dir($destDir) && !@mkdir($destDir, 0755, true) && !is_dir($destDir)) {
+        fwrite(STDERR, "Cannot create $destDir\n");
+        exit(1);
+    }
     $dest  = $destDir . '/' . $a['file'];
     $label = '[' . $no . '/' . count($toDownload) . '] ' . $a['product'];
 
@@ -195,10 +210,14 @@ foreach ($toDownload as $i => $a) {
     // Without GD the stored file can carry a different extension than planned;
     // always use what is really on disk.
     $finalFile = $stored['file'];
-    $newUrl    = '/assets/uploads/products/' . $finalFile;
+    $urlPrefix = ($a['kind'] ?? 'product') === 'category'
+               ? '/assets/uploads/categories/' : '/assets/uploads/products/';
+    $newUrl    = $urlPrefix . $finalFile;
 
-    $sql = "UPDATE `product_images` SET `url` = '" . $db->real_escape_string($newUrl)
-         . "' WHERE `id` = '" . $db->real_escape_string($a['id']) . "'";
+    $esc = function ($v) use ($db) { return $db->real_escape_string($v); };
+    $sql = vp_loc_update_sql($a['id'], $newUrl, $esc,
+                             $a['table'] ?? 'product_images',
+                             $a['url_column'] ?? 'url');
     if (!$db->query($sql)) {
         echo '  FAIL  ' . $label . ' - stored the file but the UPDATE failed: ' . $db->error . "\n";
         $report['rows'][] = ['id' => $a['id'], 'status' => 'db-failed',
@@ -231,6 +250,6 @@ if (is_dir($logDir)) {
 
 echo "\nDone: {$report['counts']['ok']} localized, {$report['counts']['skipped']} skipped, "
    . "{$report['counts']['failed']} failed.\n";
-echo "Every product keeps its own distinct photo, now served from your own domain.\n";
+echo "Every product and category keeps its own distinct photo, now served from your own domain.\n";
 
 exit($failed > 0 ? 1 : 0);

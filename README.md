@@ -49,8 +49,18 @@ which dashboard sections they can use: `Dashboard → People → Administrators`
 
 ### Upgrading an existing installation
 
-Import these two files in phpMyAdmin (in order) to add the dashboard/CMS tables
-to a database created before this release — both are safe to re-run:
+**Easiest: apply database updates from the dashboard.** Uploading or merging
+new code never changes the database by itself — catalog items (products,
+categories, images …) are database rows added by the SQL files in
+`database/migrations/`. After deploying new files, sign in as the Super
+Admin and open **Dashboard → System → Database Updates**. Any update the
+release needs shows as *Pending* (a warning banner also appears on every
+dashboard page until it is applied) — click **Apply all pending**. No
+phpMyAdmin or terminal required.
+
+**Manual alternative — phpMyAdmin:** import these files (in order) to add the
+dashboard/CMS tables and catalog data to a database created before this
+release — all are safe to re-run:
 
 ```
 database/migrations/001_cms_and_permissions.sql
@@ -67,7 +77,7 @@ database/migrations/014_category_images_data.sql
 database/migrations/015_add_refteck_product_range.sql
 ```
 
-Merging the code is not enough: the 93 AJR NDT products live in the database. Existing sites must import `010` (and `011`) in phpMyAdmin or the catalog will stay empty of those items. Import `015` the same way to add the 107 Refteck catalog products (10 new categories: valves, drilling, rotary, pumps, process, instrumentation, electrical, MRO, oil & lubricants, HVAC, heavy plant, safety — safe to re-run, see `docs/REFTECK_PRODUCT_CATALOG.md`). Import `012` as well if the catalogue ever shows the same product twice — it deletes the duplicate rows (keeping the original and merging its photos, specifications, downloads and links) and is safe to re-run. `013` adds the category `image` column and `014` fills in the curated artwork for every seeded category (safe to re-import).
+Merging the code is not enough: the 93 AJR NDT products live in the database. Existing sites must import `010` (and `011`) — via **Dashboard → System → Database Updates** or phpMyAdmin — or the catalog will stay empty of those items. Import `015` the same way to add the 107 Refteck catalog products (10 new categories: valves, drilling, rotary, pumps, process, instrumentation, electrical, MRO, oil & lubricants, HVAC, heavy plant, safety — safe to re-run, see `docs/REFTECK_PRODUCT_CATALOG.md`). Import `012` as well if the catalogue ever shows the same product twice — it deletes the duplicate rows (keeping the original and merging its photos, specifications, downloads and links) and is safe to re-run. `013` adds the category `image` column and `014` fills in the curated artwork for every seeded category (safe to re-import).
 
 ---
 

@@ -24,7 +24,9 @@ php app/tests/acceptance.php
 
 ```bash
 php tests/product_images_check.php     # one distinct image per product
-php tests/localize_images_check.php    # the product-image localizer
+php tests/localize_images_check.php    # the product/category image localizer
+php tests/migration_sqlite_check.php   # migration chain + 015 idempotency (SQLite)
+php tests/db_updates_check.php         # Database Updates feature (91 checks)
 ```
 
 `product_images_check.php` parses the shipped seed data and asserts that every
@@ -37,11 +39,24 @@ soon as a rule in the helper starts ignoring a product's own photo.
 
 `localize_images_check.php` covers `scripts/lib/localize.php`, the logic behind
 `scripts/localize_product_images.php`: download planning (remote vs. already
-local, `--limit`, `--sku-prefix`, per-product `-1`/`-2` naming), file-name
-sanitising (traversal attempts), the generated `UPDATE`, the credential guard,
-and — with real files created through GD — that an HTML error page is rejected
-and that a PHP payload appended after valid image data is stripped by the
-re-encode. No database and no network required.
+local, `--limit`, `--sku-prefix`, per-product `-1`/`-2` naming), category
+artwork planning (`categories.image` → `assets/uploads/categories/`), reading
+rows from seed files in both `VALUES` and `INSERT … SELECT` shapes (migrations
+008/015), file-name sanitising (traversal attempts), the generated `UPDATE`,
+the credential guard, and — with real files created through GD — that an HTML
+error page is rejected and that a PHP payload appended after valid image data
+is stripped by the re-encode. No database and no network required.
+
+`migration_sqlite_check.php` builds a full database with the real development
+installer (`install/dev-sqlite.php`: install.sql + migrations 001–015 + seed)
+on a temporary SQLite file, asserts the seeded catalog is complete and
+duplicate-free (29 categories, 222 products, the full 107-product Refteck range
+with one distinct primary image each), then **re-applies every statement of
+migration 015** to prove the migration is repeatable without duplicates.
+Requires `pdo_sqlite`; no MySQL server and no network.
+
+`db_updates_check.php` covers the admin Database Updates feature (migration
+discovery, splitting, checksums, runner, security) without a database.
 
 ## What it verifies (140+ checks)
 
