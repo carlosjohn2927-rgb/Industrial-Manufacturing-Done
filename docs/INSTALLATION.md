@@ -158,12 +158,20 @@ database/migrations/010_add_ajr_ndt_product_range.sql
 database/migrations/011_show_ajr_ndt_catalog_on_site.sql
 database/migrations/013_category_images.sql
 database/migrations/014_category_images_data.sql
+database/migrations/015_add_refteck_product_range.sql
 ```
 
 Then reload `/products`. You should see AJR SKUs (`AJR-AFD-100`, etc.) and
 the 13 NDT categories in the filter dropdown. `013` adds the `categories.image`
 column and `014` fills in the curated category artwork so the public category
 grid on the homepage shows the right image for every category.
+
+`015` adds the 107 products of the Refteck catalog
+([refteck.com/product](https://www.refteck.com/product/)) with their 10 new
+categories (`RF-*` SKUs, safe to re-import). Its photos are hot-linked from
+refteck.com; run `php scripts/localize_product_images.php` afterwards to
+download them onto your own server — the cards fall back to the theme artwork
+until then. See `docs/REFTECK_PRODUCT_CATALOG.md` for the full product list.
 
 ## Troubleshooting
 

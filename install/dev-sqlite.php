@@ -39,6 +39,7 @@ $files = [
     $root . '/database/migrations/011_show_ajr_ndt_catalog_on_site.sql',
     $root . '/database/migrations/013_category_images.sql',
     $root . '/database/migrations/014_category_images_data.sql',
+    $root . '/database/migrations/015_add_refteck_product_range.sql',
 ];
 
 echo "Vortex Precision IT — dev SQLite installer\n";
