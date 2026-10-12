@@ -149,6 +149,124 @@ check('every plan row carries a real product name',
     count(array_filter($seedDownloads, function ($a) { return trim((string) $a['product']) === ''; })) === 0);
 
 /* ------------------------------------------------------------------ */
+/* SELECT-style seed rows (migrations 008/015)                         */
+/* ------------------------------------------------------------------ */
+section('SELECT-style seed rows (vp_seed_select_rows)');
+
+require_once $ROOT . '/scripts/lib/seed_sql.php';
+
+$snip = "INSERT INTO categories (`id`,`name`,`slug`,`image`)\n"
+      . "SELECT 'rc1','Cat One','cat-one','https://img.example/c1.png'\n"
+      . "FROM (SELECT 1) AS _dual WHERE NOT EXISTS (SELECT 1 FROM categories WHERE slug = 'cat-one');\n"
+      . "INSERT INTO products (`id`,`name`,`slug`,`sku`,`categoryId`)\n"
+      . "SELECT 'rp1','Prod One','prod-one','RF-01',c.id\n"
+      . "FROM categories c WHERE c.slug = 'cat-one'\n"
+      . "  AND NOT EXISTS (SELECT 1 FROM products WHERE sku = 'RF-01');\n"
+      . "INSERT INTO product_images (`id`,`productId`,`url`,`alt`)\n"
+      . "SELECT 'ri1',p.id,'https://img.example/p1.jpg','Prod One'\n"
+      . "FROM products p WHERE p.sku = 'RF-01'\n"
+      . "  AND NOT EXISTS (SELECT 1 FROM product_images pi WHERE pi.url = 'https://img.example/p1.jpg');\n";
+
+$selCats = vp_seed_select_rows($snip, 'categories');
+check('SELECT-style category row parsed', count($selCats) === 1 && $selCats[0]['slug'] === 'cat-one'
+    && $selCats[0]['image'] === 'https://img.example/c1.png', json_encode($selCats[0] ?? null));
+
+$selProds = vp_seed_select_rows($snip, 'products');
+check('SELECT-style product row parsed', count($selProds) === 1 && $selProds[0]['sku'] === 'RF-01'
+    && $selProds[0]['name'] === 'Prod One', json_encode($selProds[0] ?? null));
+check('expression columns become empty, join slug kept',
+    ($selProds[0]['categoryId'] ?? 'x') === '' && ($selProds[0]['_category_slug'] ?? '') === 'cat-one');
+
+$selImgs = vp_seed_select_rows($snip, 'product_images');
+check('SELECT-style image row parsed with SKU join key', count($selImgs) === 1
+    && $selImgs[0]['url'] === 'https://img.example/p1.jpg' && ($selImgs[0]['_sku'] ?? '') === 'RF-01',
+    json_encode($selImgs[0] ?? null));
+
+$escSnip = "INSERT INTO t (`id`,`note`) SELECT 'a','it\\'s fine, \"ok\"' FROM (SELECT 1) AS _dual;\n";
+$escRows = vp_seed_select_rows($escSnip, 't');
+check('backslash-escaped literals are unescaped',
+    count($escRows) === 1 && $escRows[0]['note'] === "it's fine, \"ok\"", json_encode($escRows[0] ?? null));
+
+$refteckSql = $ROOT . '/database/migrations/015_add_refteck_product_range.sql';
+$refteckProds  = vp_seed_select_rows(file_get_contents($refteckSql), 'products');
+$refteckImgs   = vp_seed_select_rows(file_get_contents($refteckSql), 'product_images');
+$refteckCats   = vp_seed_select_rows(file_get_contents($refteckSql), 'categories');
+check('migration 015: 107 product rows', count($refteckProds) === 107, count($refteckProds) . ' rows');
+check('migration 015: 107 product image rows', count($refteckImgs) === 107, count($refteckImgs) . ' rows');
+check('migration 015: 10 new category rows', count($refteckCats) === 10, count($refteckCats) . ' rows');
+check('every 015 image row carries its product SKU',
+    count(array_filter($refteckImgs, function ($r) { return ($r['_sku'] ?? '') === ''; })) === 0);
+check('every 015 product row has name, slug and SKU',
+    count(array_filter($refteckProds, function ($r) {
+        return ($r['name'] ?? '') === '' || ($r['slug'] ?? '') === '' || ($r['sku'] ?? '') === '';
+    })) === 0);
+check('every 015 image URL is on refteck.com',
+    count(array_filter($refteckImgs, function ($r) {
+        return strpos((string) ($r['url'] ?? ''), 'https://www.refteck.com/wp-content/uploads/') !== 0;
+    })) === 0);
+
+$mergeRows = vp_loc_rows_from_sql($refteckSql, $ROOT);
+check('from-sql join: 107 images get slug/name/sku via the WHERE SKU',
+    count($mergeRows) === 107
+    && count(array_filter($mergeRows, function ($r) { return $r['sku'] === '' || $r['slug'] === ''; })) === 0,
+    count($mergeRows) . ' rows');
+check('joined rows carry the resolved product id (keeps file numbering per product)',
+    count(array_filter($mergeRows, function ($r) { return $r['productId'] === ''; })) === 0);
+$mergePlan = vp_loc_plan($mergeRows, $baseOpts);
+$byName = [];
+foreach ($mergePlan as $a) {
+    if ($a['do'] === 'download') $byName[$a['product']] = $a['file'];
+}
+check('file numbering restarts at -1 for every product',
+    ($byName['Ball Valve'] ?? '') === 'ball-valve-1.jpg'
+    && strpos($byName['Gate Valve (Also known as a Sluice Valve)'] ?? '', '-1.jpg') !== false,
+    json_encode(array_slice($byName, 0, 2)));
+
+/* ------------------------------------------------------------------ */
+/* Category artwork (vp_loc_category_plan)                             */
+/* ------------------------------------------------------------------ */
+section('Category artwork (vp_loc_category_plan)');
+
+$catRows = vp_loc_category_rows_from_sql($refteckSql, $ROOT);
+check('category rows read from migration 015', count($catRows) === 10, count($catRows) . ' rows');
+
+$catPlan = vp_loc_category_plan($catRows, $baseOpts);
+$catDownloads = array_values(array_filter($catPlan, function ($a) { return $a['do'] === 'download'; }));
+check('all 10 category images are remote and would be downloaded',
+    count($catDownloads) === 10, count($catDownloads) . ' planned');
+check('category files land in assets/uploads/categories/',
+    count(array_filter($catDownloads, function ($a) {
+        return strpos($a['new_url'], '/assets/uploads/categories/') !== 0
+            || strpos($a['path'], 'assets/uploads/categories/') !== 0;
+    })) === 0);
+check('category target paths are distinct',
+    count(array_unique(array_column($catDownloads, 'new_url'))) === count($catDownloads));
+
+$mixed = vp_loc_category_plan([
+    ['id' => 'c1', 'slug' => 'valves', 'name' => 'Valves', 'url' => '/assets/img/products/valves.jpg'],
+    ['id' => 'c2', 'slug' => 'pumps', 'name' => 'Pumps', 'url' => ''],
+    ['id' => 'c3', 'slug' => 'Safety Products', 'name' => 'Safety', 'url' => 'https://x.example/s.png'],
+], $baseOpts);
+check('local category artwork is left alone', $mixed[0]['do'] === 'skip-local', $mixed[0]['do']);
+check('empty category artwork is reported', $mixed[1]['do'] === 'skip-empty', $mixed[1]['do']);
+check('remote category artwork is planned', $mixed[2]['do'] === 'download'
+    && $mixed[2]['file'] === 'safety-products.jpg', $mixed[2]['do'] . ' ' . $mixed[2]['file']);
+
+$limited = vp_loc_category_plan($catRows, ['limit' => 3] + $baseOpts);
+check('--limit caps category downloads too',
+    count(array_filter($limited, function ($a) { return $a['do'] === 'download'; })) === 3);
+
+$catSql = vp_loc_category_update_sql('c9', '/assets/uploads/categories/safety-products.jpg');
+check('category UPDATE targets categories.image',
+    $catSql === "UPDATE `categories` SET `image` = '/assets/uploads/categories/safety-products.jpg' WHERE `id` = 'c9';",
+    $catSql);
+
+$allLocal = vp_loc_category_plan([
+    ['id' => 'c1', 'slug' => 'valves', 'name' => 'Valves', 'url' => '/assets/uploads/categories/valves.jpg'],
+], $baseOpts);
+check('already-local category artwork is skipped on re-run', $allLocal[0]['do'] === 'skip-local');
+
+/* ------------------------------------------------------------------ */
 /* Storing: verification + re-encode (real files)                      */
 /* ------------------------------------------------------------------ */
 section('Storing downloaded files (vp_loc_store_image)');

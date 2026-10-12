@@ -3,6 +3,8 @@
 This document lists **all 107 products across the 13 product categories** of the
 Refteck industrial catalog ([refteck.com/product](https://www.refteck.com/product/))
 as imported by `database/migrations/015_add_refteck_product_range.sql`.
+Verified product-by-product against the live site on 2026-10-12 —
+see [REFTECK_VERIFICATION_REPORT.md](REFTECK_VERIFICATION_REPORT.md).
 
 **What the migration does**
 
@@ -13,12 +15,17 @@ as imported by `database/migrations/015_add_refteck_product_range.sql`.
 - Inserts **107 products** with SKUs prefixed `RF-<CATEGORY>-<NN>`
   (e.g. `RF-VLV-01` for the Ball Valve), full catalog copy, short descriptions
   and meta tags branded `… | Vortex Precision IT`.
-- Adds **107 primary product photos**, hot-linked from `refteck.com`. They degrade
-  to the theme's fallback artwork automatically; to make them yours run:
+- Adds **107 primary product photos** and **10 category artwork URLs**,
+  hot-linked from `refteck.com`. They degrade to the theme's fallback artwork
+  automatically; to make them yours run:
 
   ```bash
   php scripts/localize_product_images.php
   ```
+
+  The localizer downloads every remote photo (product *and* category), verifies
+  it really is an image, and points the database at local copies under
+  `assets/uploads/products/` and `assets/uploads/categories/`.
 
 - Bumps the homepage category grid from `limit 24` → `limit 32` so all 29
   categories fit (base 6 + AJR NDT 13 + Refteck 10).

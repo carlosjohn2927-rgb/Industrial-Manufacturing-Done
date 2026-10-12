@@ -232,7 +232,9 @@ check('no self-referential onerror swap', ($pm[1] ?? '') !== IMG_URL . 'products
 
 $ajrTag = vp_product_image_tag(['name' => 'AJH300 Portable Hardness Tester', 'sku' => 'AJR-AJH-300'], 'w-full h-full object-cover', 'hardness-testing');
 preg_match('/\ssrc="([^"]+)"/', $ajrTag, $am);
-check('AJR product without a photo gets category artwork', ($am[1] ?? '') === IMG_URL . 'products/instrumentation.jpg', $am[1] ?? 'no src');
+// Rule 2a wins over the 2b map: assets/img/products/hardness-testing.jpg
+// ships with the theme, so the exact category-slug artwork is used.
+check('AJR product without a photo gets category artwork', ($am[1] ?? '') === IMG_URL . 'products/hardness-testing.jpg', $am[1] ?? 'no src');
 
 /* ------------------------------------------------------------------ */
 /* Non-AJR (Vortex) catalog must keep working too                      */

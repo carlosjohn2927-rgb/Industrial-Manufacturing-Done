@@ -15,7 +15,7 @@
  *   VP_DB_NAME=/absolute/path/to/site.sqlite
  */
 
-if (PHP_SAPI !== 'cli') {
+if (PHP_SAPI !== 'cli' && PHP_SAPI !== 'wasm') {
     http_response_code(403);
     exit("CLI only\n");
 }
@@ -37,6 +37,7 @@ $files = [
     $root . '/database/migrations/009_catalog_prices_500_to_5000.sql',
     $root . '/database/migrations/010_add_ajr_ndt_product_range.sql',
     $root . '/database/migrations/011_show_ajr_ndt_catalog_on_site.sql',
+    $root . '/database/migrations/012_remove_duplicate_products.sql',
     $root . '/database/migrations/013_category_images.sql',
     $root . '/database/migrations/014_category_images_data.sql',
     $root . '/database/migrations/015_add_refteck_product_range.sql',
@@ -54,6 +55,28 @@ if (is_file($target)) {
 $pdo = new PDO('sqlite:' . $target);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $pdo->exec('PRAGMA foreign_keys = ON');
+
+// Per-row MySQL function equivalents (a rewritten literal would be evaluated
+// once per statement and break multi-row INSERT ... SELECT statements).
+$vp_reg_fn = function ($name, $fn, $arity = -1) use ($pdo) {
+    if (method_exists($pdo, 'createFunction')) {          // Pdo\Sqlite (PHP 8.4+)
+        $pdo->createFunction($name, $fn, $arity);
+    } elseif (method_exists($pdo, 'sqliteCreateFunction')) {
+        $pdo->sqliteCreateFunction($name, $fn, $arity);
+    }
+};
+$vp_reg_fn('uuid', 'uuid4');
+$vp_reg_fn('substring_index', function ($s, $delim, $count) {
+    $s = (string) $s; $delim = (string) $delim; $count = (int) $count;
+    if ($delim === '' || $count === 0) return '';
+    $parts = explode($delim, $s);
+    if ($count > 0) return implode($delim, array_slice($parts, 0, $count));
+    return implode($delim, array_slice($parts, max(0, count($parts) + $count)));
+}, 3);
+$vp_reg_fn('concat', function (...$args) {
+    foreach ($args as $a) if ($a === null) return null;
+    return implode('', $args);
+});
 
 /* --------------------------------------------------------------------- */
 
@@ -96,10 +119,10 @@ function sql_statements($sql)
 /** Replace MySQL function calls that SQLite has no equivalent for. */
 function translate_functions($stmt)
 {
-    // UUID() -> literal uuid
-    while (($p = stripos($stmt, 'UUID()')) !== false) {
-        $stmt = substr($stmt, 0, $p) . "'" . uuid4() . "'" . substr($stmt, $p + 6);
-    }
+    // UUID() is NOT rewritten to a literal: a literal is evaluated once for a
+    // whole INSERT ... SELECT, which would give every row the same id. The
+    // `uuid` SQLite function registered below is evaluated per row instead,
+    // exactly like MySQL's UUID().
     // NOW() / CURRENT_TIMESTAMP() -> literal datetime
     $stmt = preg_replace('/\bNOW\(\)/i', "'" . date('Y-m-d H:i:s') . "'", $stmt);
 

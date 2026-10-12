@@ -14,7 +14,7 @@
  * No database or framework boot required. Exit code 0 = all good.
  */
 
-if (PHP_SAPI !== 'cli') {
+if (PHP_SAPI !== 'cli' && PHP_SAPI !== 'wasm') {
     http_response_code(403);
     exit("CLI only\n");
 }
