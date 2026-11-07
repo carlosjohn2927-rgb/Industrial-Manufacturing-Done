@@ -12,6 +12,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <?= vp_seo_head($page_title, $page_description, null, $csp_nonce ?? '') ?>
 
+    <?php $this->load->view('partials/meta_pixel', get_defined_vars()); ?>
+
     <!-- Favicon + touch icon come from Dashboard → Website → Logo & branding -->
     <link rel="icon" href="<?= vp_safe_html(vp_favicon_url()) ?>">
     <link rel="apple-touch-icon" href="<?= vp_safe_html(vp_logo_url('light')) ?>">
@@ -101,6 +103,7 @@
 </main>
 
 <?php $this->load->view('partials/footer', get_defined_vars()); ?>
+<?php $this->load->view('partials/meta_consent', get_defined_vars()); ?>
 
 <?php if (!empty($chat['enabled'])): ?>
     <?php $this->load->view('partials/chat_widget', get_defined_vars()); ?>

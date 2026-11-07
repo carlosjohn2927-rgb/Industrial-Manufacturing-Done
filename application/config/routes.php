@@ -163,6 +163,8 @@ $route['admin/media/upload']              = 'admin/media/upload';
 $route['admin/media/delete/(:any)']       = 'admin/media/delete/$1';
 
 $route['admin/settings']                  = 'admin/settings';
+$route['admin/settings/meta'] = 'admin/settings/meta';
+$route['admin/settings/save_meta'] = 'admin/settings/save_meta';
 $route['admin/settings/save']             = 'admin/settings/save';
 $route['admin/updates']                   = 'admin/updates/index';
 $route['admin/updates/apply/(:any)']      = 'admin/updates/apply/$1';

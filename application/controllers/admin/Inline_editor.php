@@ -89,7 +89,7 @@ class Inline_editor extends Admin_Controller
         $this->_authorize();
 
         $key = trim((string) $this->input->post('key'));
-        if ($key === '' || !preg_match('/^[a-zA-Z0-9_.-]{1,80}$/', $key)) {
+        if ($key === '' || strpos(strtolower($key), 'meta_') === 0 || !preg_match('/^[a-zA-Z0-9_.-]{1,80}$/', $key)) {
             return $this->json(['ok' => false, 'error' => 'Invalid field.', 'csrf' => $this->security->get_csrf_hash()], 400);
         }
 
