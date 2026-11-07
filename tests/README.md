@@ -97,3 +97,26 @@ of the application itself. The only mock is the Resend HTTP endpoint.
 The same suite runs in CI (`.github/workflows/acceptance.yml`) on a matrix of
 PHP 8.2/8.3 × MySQL 8.0/MariaDB 10.6, plus an Apache job that verifies the
 `.htaccess` redirects, blocking and CSP.
+
+## Meta tracking checks
+
+```bash
+node tests/meta_pixel_browser_check.js
+php tests/meta_pixel_check.php
+```
+
+These isolate consent, event gating and browser/server IDs; they do not contact
+Meta. See `docs/META_PIXEL.md` for configuration, privacy limitations and the
+required live Events Manager / Pixel Helper verification.
+
+For the optional HTTP integration check, first run a **disposable local** PHP
+server backed by an isolated SQLite database initialized by `install/dev-sqlite.php`.
+Enable a fake Pixel ID and the PageView, ViewContent, Contact and Lead switches;
+do not configure a CAPI token or real outgoing mail. The script writes test
+contacts and RFQs to that database. It refuses non-loopback targets.
+
+```bash
+META_TEST_ALLOW_WRITES=1 META_TEST_BASE_URL=http://localhost:8080 \
+META_TEST_SQLITE_DB=/absolute/path/to/disposable.sqlite \
+python3 tests/meta_pixel_http_check.py
+```

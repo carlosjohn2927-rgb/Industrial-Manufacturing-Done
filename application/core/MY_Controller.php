@@ -26,6 +26,8 @@ class MY_Controller extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->library('meta_pixel');
+        $this->meta_pixel->clear_unconsented();
 
         // Always have the language file loaded
         $this->lang->load('app_lang');
@@ -125,7 +127,7 @@ class MY_Controller extends CI_Controller
     {
         $csp = "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; "
              . "img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; "
-             . "script-src 'self' 'nonce-{$nonce}' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://code.jquery.com; "
+             . "script-src 'self' 'nonce-{$nonce}' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://code.jquery.com https://connect.facebook.net; "
              . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
              . "connect-src 'self' https:; frame-src https://www.youtube.com https://player.vimeo.com https://www.google.com https://maps.google.com https://www.openstreetmap.org";
         $this->output->set_header('Content-Security-Policy: ' . $csp);

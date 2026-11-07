@@ -67,6 +67,7 @@ class Vp_settings
         $rows = $this->CI->db->get_where('settings', ['group' => $group])->result_array();
         $out = [];
         foreach ($rows as $r) {
+            if ($r['key'] === 'meta_capi_secret') continue;
             $out[$r['key']] = $this->coerce($r);
         }
         return $out;
@@ -82,6 +83,7 @@ class Vp_settings
         $rows = $this->CI->db->get('settings')->result_array();
         $out = [];
         foreach ($rows as $r) {
+            if ($r['key'] === 'meta_capi_secret') continue;
             $out[$r['key']] = $this->coerce($r);
         }
         $this->cache = $out;

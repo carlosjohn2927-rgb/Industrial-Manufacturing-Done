@@ -108,6 +108,8 @@ class Products extends MY_Controller
         $this->page_description = $product['metaDescription'] ?: vp_truncate(strip_tags($product['shortDescription'] ?? $product['description']), 160);
 
         $this->render('products/view', [
+            'meta_product' => $product,
+            'meta_category' => $category,
             'product'   => $product,
             'images'    => $images,
             'specs'     => $specs,

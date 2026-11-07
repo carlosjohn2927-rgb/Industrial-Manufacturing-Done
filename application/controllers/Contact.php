@@ -50,6 +50,10 @@ class Contact extends MY_Controller
             'department' => $this->input->post('department'),
             'status'  => 'NEW',
         ]);
+        if ($this->db->affected_rows() !== 1) {
+            $this->flash('error', 'Could not save your message. Please try again.');
+            return $this->index();
+        }
         $this->audit->log(AUDIT_CREATE, 'contact', $id);
 
         $subject = $this->input->post('subject');
@@ -76,6 +80,13 @@ class Contact extends MY_Controller
             []
         );
 
+        $this->load->library('meta_pixel');
+        // Tracking must never prevent an already-saved enquiry from succeeding.
+        try {
+            $this->meta_pixel->conversion('Contact', 'contact', 'contact');
+        } catch (\Throwable $e) {
+            log_message('error', 'Meta conversion could not be queued.');
+        }
         $this->flash('success', 'Thank you - we will be in touch within 1 business day.');
         redirect('contact');
     }

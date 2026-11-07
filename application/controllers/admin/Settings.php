@@ -27,6 +27,7 @@ class Settings extends Admin_Controller
 
     /** Tabs rendered by the settings screen. */
     private $tabs = [
+        'meta'     => ['Meta Pixel', 'ri-facebook-circle-line'],
         'general'  => ['General',    'ri-global-line'],
         'contact'  => ['Contact',    'ri-phone-line'],
         'social'   => ['Social',     'ri-share-line'],
@@ -40,6 +41,46 @@ class Settings extends Admin_Controller
         $this->load->model('Setting_model');
         $this->load->library('form_validation');
         $this->load->helper(['form', 'url', 'security_helper']);
+    }
+
+    public function meta()
+    {
+        $this->load->library('meta_pixel');
+        $this->page_title = 'Meta Pixel';
+        $events = [];
+        foreach (Meta_pixel::EVENTS as $name) $events[$name] = $this->meta_pixel->event_enabled($name);
+        $this->render('admin/settings/meta', [
+            'tabs' => $this->_tabs(), 'tab' => 'meta', 'events' => $events,
+            'pixel_id' => $this->meta_pixel->id(), 'pixel_enabled' => $this->meta_pixel->enabled(),
+            'has_token' => $this->meta_pixel->token() !== '', 'has_curl' => function_exists('curl_init'),
+        ]);
+    }
+
+    public function save_meta()
+    {
+        if ($this->input->method() !== 'post') show_404();
+        $this->load->library('meta_pixel');
+        $id = trim((string) $this->input->post('pixel_id'));
+        if (($id !== '' && !preg_match('/^\d{5,25}$/', $id)) || ($this->input->post('enabled') && $id === '')) {
+            $this->flash('error', 'Enter a valid numeric Pixel ID before enabling tracking.');
+            return redirect('admin/settings/meta');
+        }
+        $token = trim((string) $this->input->post('capi_token'));
+        if ($token !== '' && (strlen($token) > 2048 || !preg_match('/^[A-Za-z0-9._|\-]+$/', $token))) {
+            $this->flash('error', 'Invalid access token.');
+            return redirect('admin/settings/meta');
+        }
+        if (($token !== '' || $this->input->post('clear_token')) && !$this->meta_pixel->save_token($this->input->post('clear_token') ? '' : $token)) {
+            $this->flash('error', 'Could not encrypt the token; enable OpenSSL.');
+            return redirect('admin/settings/meta');
+        }
+        $this->settings->set('meta_pixel_id', $id, 'STRING', 'META');
+        $this->settings->set('meta_pixel_enabled', $this->input->post('enabled') ? '1' : '0', 'BOOL', 'META');
+        $selected = (array) $this->input->post('events');
+        foreach (Meta_pixel::EVENTS as $name) $this->settings->set('meta_event_' . strtolower($name), in_array($name, $selected, true) ? '1' : '0', 'BOOL', 'META');
+        $this->audit->log(AUDIT_UPDATE, 'settings', null, ['group' => 'META']);
+        $this->flash('success', 'Meta settings saved.');
+        redirect('admin/settings/meta');
     }
 
     /* ---------------- General ------------------------------------------ */
@@ -245,7 +286,7 @@ class Settings extends Admin_Controller
         $rows = $this->db->order_by('group', 'ASC')->order_by('sortOrder', 'ASC')->order_by('key', 'ASC')
                          ->get('settings')->result_array();
         $grouped = [];
-        foreach ($rows as $r) $grouped[$r['group']][] = $r;
+        foreach ($rows as $r) { if ($r['key'] !== 'meta_capi_secret') $grouped[$r['group']][] = $r; }
 
         $this->render('admin/settings/index', [
             'tabs'    => $this->_tabs(),
@@ -269,7 +310,7 @@ class Settings extends Admin_Controller
         $count = 0;
         foreach ($keys as $i => $k) {
             $k = trim((string) $k);
-            if ($k === '') continue;
+            if ($k === '' || strpos(strtolower($k), 'meta_') === 0) continue;
             if (in_array($k, $protected, true) && !$this->has_permission('system.manage')) continue;
             $this->settings->set($k, $values[$i] ?? '', $types[$i] ?? 'STRING', $groups[$i] ?? 'GENERAL');
             $count++;
@@ -285,7 +326,7 @@ class Settings extends Admin_Controller
     {
         if ($this->input->method() !== 'post') show_404();
         $key = trim((string) $this->input->post('new_key'));
-        if ($key === '' || !preg_match('/^[a-z0-9_\.]+$/i', $key)) {
+        if (strpos(strtolower($key), 'meta_') === 0 || $key === '' || !preg_match('/^[a-z0-9_\.]+$/i', $key)) {
             $this->flash('error', 'Use letters, numbers, dots and underscores for the key.');
             return redirect('admin/settings/advanced');
         }
@@ -305,7 +346,7 @@ class Settings extends Admin_Controller
             $this->_deny('Only the Super Admin can delete settings.');
         }
         $key = trim((string) $this->input->post('key'));
-        if ($key === '') show_404();
+        if ($key === '' || strpos(strtolower($key), 'meta_') === 0) show_404();
         $this->db->delete('settings', ['key' => $key]);
         $this->settings->clear_cache();
         $this->audit->log(AUDIT_DELETE, 'settings', null, ['key' => $key]);

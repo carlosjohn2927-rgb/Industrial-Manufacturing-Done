@@ -121,6 +121,13 @@ class Rfq extends MY_Controller
         // Queue emails (idempotent). Admin notification, customer confirmation.
         $this->_dispatch_rfq_emails($res['id']);
 
+        $this->load->library('meta_pixel');
+        // Tracking must never prevent an already-saved enquiry from succeeding.
+        try {
+            $this->meta_pixel->conversion('Lead', 'rfq', 'rfq/thanks/' . $res['quoteNumber']);
+        } catch (\Throwable $e) {
+            log_message('error', 'Meta conversion could not be queued.');
+        }
         redirect('rfq/thanks/' . $res['quoteNumber']);
     }
 
